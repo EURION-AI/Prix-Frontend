@@ -1,9 +1,17 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Copy, Check, Users, Gift, Star, ArrowLeft, ExternalLink, CreditCard, Settings } from 'lucide-react'
+import { Loader2, Copy, Check, Users, Gift, Star, ArrowLeft, CreditCard } from 'lucide-react'
 import Link from 'next/link'
 import { AffiliateStatsSkeleton } from '@/components/skeleton'
+import { Navbar } from '@/components/navbar'
+import { HeroSection } from '@/components/hero-section'
+import { FeaturesSection } from '@/components/features-section'
+import { PricingSection } from '@/components/pricing-section'
+import { HowItWorksSection } from '@/components/how-it-works-section'
+import { ComparisonSection } from '@/components/comparison-section'
+import { CTASection } from '@/components/cta-section'
+import { Footer } from '@/components/footer'
 
 interface UserData {
   id: number
@@ -64,7 +72,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4 pt-20">
         <AffiliateStatsSkeleton />
       </div>
     )
@@ -97,7 +105,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pt-10">
       <div className="text-center">
         <div className={`inline-block px-6 py-2 rounded-full ${tierBgColors[stats.tier]} mb-4`}>
           <span className={`text-xl font-bold ${tierColors[stats.tier]}`}>
@@ -113,7 +121,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/5">
           <Users className="w-8 h-8 text-white/40 mx-auto mb-3" />
           <div className="text-4xl font-bold text-white mb-1">{stats.referralCount}</div>
@@ -205,33 +213,6 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         </div>
       )}
 
-      <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
-        <h3 className="text-lg font-bold text-white mb-6">How It Works</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-white">1</span>
-            </div>
-            <h4 className="font-bold text-white mb-2">Share Your Link</h4>
-            <p className="text-white/50 text-sm">Copy your unique referral link and share it.</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-white">2</span>
-            </div>
-            <h4 className="font-bold text-white mb-2">They Sign Up</h4>
-            <p className="text-white/50 text-sm">When someone creates an account, they become your referral.</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-white">3</span>
-            </div>
-            <h4 className="font-bold text-white mb-2">You Get Rewards</h4>
-            <p className="text-white/50 text-sm">When they purchase, you earn free Pro access!</p>
-          </div>
-        </div>
-      </div>
-
       {stats.referrals.length > 0 && (
         <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
           <h3 className="text-lg font-bold text-white mb-6">Your Referrals ({stats.referrals.length})</h3>
@@ -261,7 +242,23 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   )
 }
 
-export default function AffiliatePage() {
+function LandingPage() {
+  return (
+    <main className="min-h-screen bg-[#050508]">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
+      <Navbar />
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <ComparisonSection />
+      <PricingSection />
+      <CTASection />
+      <Footer />
+    </main>
+  )
+}
+
+export default function Home() {
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -281,10 +278,8 @@ export default function AffiliatePage() {
           avatarUrl: userData.avatarUrl,
         })
       } catch {
-        window.location.href = '/login'
+        setUser(null)
       }
-    } else {
-      window.location.href = '/login'
     }
     setIsLoading(false)
   }, [])
@@ -299,7 +294,7 @@ export default function AffiliatePage() {
   }
 
   if (!user) {
-    return null
+    return <LandingPage />
   }
 
   return (
@@ -307,20 +302,15 @@ export default function AffiliatePage() {
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-8">
-            <ArrowLeft className="w-4 h-4" />
-            Back to home
-          </Link>
-          
           <div className="text-center">
             <div className="inline-flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
                 <Gift className="w-6 h-6 text-primary" />
               </div>
-              <h1 className="text-4xl font-bold text-white">Earn Free Access</h1>
+              <h1 className="text-4xl font-bold text-white">Affiliate Dashboard</h1>
             </div>
             <p className="text-white/50 text-lg max-w-xl mx-auto">
-              Share Prix with your friends and community. Get free Pro access when they upgrade.
+              Welcome back, {user.name || user.username}! Share Prix and earn free access.
             </p>
           </div>
         </div>
