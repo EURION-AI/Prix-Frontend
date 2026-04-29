@@ -1,0 +1,46 @@
+﻿# Prix — AI-Powered Code Review
+
+## What
+Prix is an AI code review tool that automatically fixes bugs, generates implementation plans, and reviews every PR. It understands your codebase architecture to provide actionable engineering guidance.
+
+## Who It's For
+- Individual developers (Free plan)
+- Professional developers shipping daily (Base plan)
+- Engineering teams needing fastest reviews (Pro plan)
+
+## Key Features
+- Automatic code fixes ready to merge (not just alerts)
+- Implementation plan generation for every PR
+- Architecture-aware analysis (understands your codebase structure)
+- Security vulnerability detection (OWASP Top 10, secrets, SQL injection, XSS)
+- Task breakdown and actionable engineering steps
+- 5-minute setup, works with GitHub
+- Reviews complete in seconds
+
+## Key Differentiators
+- Focus: Code review and fixes vs code generation
+- Output: Working code patches and plans vs suggestions
+- Security: Built-in vulnerability scanning
+- Speed: 80% reduction in review time (2-3 days → under 4 hours)
+
+## Pricing
+See /pricing.md for detailed pricing information.
+
+## Website
+- Main: https://prix.ai
+- Demo: https://prix.ai/demo
+- Features: https://prix.ai/features
+- Blog: https://prix.ai/blog
+
+## Quick Links
+- Start Free: https://prix.ai/login
+- Documentation: https://prix.ai/docs (if available)
+- Support: Available for paid plans
+
+## Categories
+AI Code Review, Developer Tools, GitHub Integration, Code Quality, Security Scanning, Pull Request Automation
+
+## Founded
+2024
+
+Last updated: April 24, 2026
