@@ -12,29 +12,16 @@ export interface User {
 }
 
 export async function getOrCreateUser(githubId: number, username: string, email?: string, avatarUrl?: string): Promise<User> {
-  const existing = await sql`
-    SELECT * FROM users WHERE github_id = ${githubId}
-  `
-
-  if (existing.length > 0) {
-    const row = existing[0]
-    return {
-      id: row.id,
-      githubId: row.github_id,
-      username: row.username,
-      email: row.email,
-      avatarUrl: row.avatar_url,
-      plan: row.plan,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    }
-  }
-
   const id = `user_${Date.now()}_${githubId}_${crypto.randomUUID().split('-')[0]}`
 
   const result = await sql`
     INSERT INTO users (id, github_id, username, email, avatar_url)
     VALUES (${id}, ${githubId}, ${username.substring(0, 100)}, ${email || null}, ${avatarUrl || null})
+    ON CONFLICT (github_id) DO UPDATE SET
+      username = EXCLUDED.username,
+      email = EXCLUDED.email,
+      avatar_url = EXCLUDED.avatar_url,
+      updated_at = NOW()
     RETURNING *
   `
 

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getOrCreateAffiliateUser, addReferral, getAffiliateUserByCode } from '@/lib/affiliate-store-db'
-import { getOrCreateUser } from '@/lib/user-store'
+import { addReferral, getAffiliateUserByCode } from '@/lib/affiliate-store-db'
 import { sql } from '@/lib/db'
-import { hashIP } from '@/lib/affiliate'
+import { hashIP, generateAffiliateCode } from '@/lib/affiliate'
 import { getClientIP } from '@/lib/rate-limit'
 import { rateLimit } from '@/lib/security'
 import { validateAffiliateCode } from '@/lib/validation'
@@ -96,8 +95,31 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/login?error=invalid_user', request.url))
     }
 
-    await getOrCreateUser(userData.id, userData.login, userData.email || undefined, userData.avatar_url)
-    await getOrCreateAffiliateUser(userData.id, userData.login)
+    // Ensure both user and affiliate record are created atomically in a transaction
+    // to prevent foreign key constraint violations during rapid login attempts
+    await sql.begin(async (tx) => {
+      // Create or update main user record
+      const userId = `user_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
+      await tx`
+        INSERT INTO users (id, github_id, username, email, avatar_url)
+        VALUES (${userId}, ${userData.id}, ${userData.login.substring(0, 100)}, ${userData.email || null}, ${userData.avatar_url || null})
+        ON CONFLICT (github_id) DO UPDATE SET
+          username = EXCLUDED.username,
+          email = EXCLUDED.email,
+          avatar_url = EXCLUDED.avatar_url,
+          updated_at = NOW()
+      `
+
+      // Create or update affiliate record
+      const affId = `aff_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
+      const affCode = generateAffiliateCode(userData.login)
+      await tx`
+        INSERT INTO affiliate_users (id, github_id, username, affiliate_code)
+        VALUES (${affId}, ${userData.id}, ${userData.login.substring(0, 50)}, ${affCode})
+        ON CONFLICT (github_id) DO UPDATE SET
+          username = EXCLUDED.username
+      `
+    })
 
     const affiliateCode = request.cookies.get('affiliate_code')?.value
     if (affiliateCode && typeof affiliateCode === 'string' && validateAffiliateCode(affiliateCode)) {

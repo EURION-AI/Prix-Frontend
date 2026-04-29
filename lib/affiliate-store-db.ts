@@ -23,30 +23,14 @@ export interface Referral {
 }
 
 export async function getOrCreateAffiliateUser(githubId: number, username: string): Promise<AffiliateUser> {
-  const existing = await sql`
-    SELECT * FROM affiliate_users WHERE github_id = ${githubId}
-  `
-
-  if (existing.length > 0) {
-    const row = existing[0]
-    return {
-      id: row.id,
-      githubId: row.github_id,
-      username: row.username,
-      affiliateCode: row.affiliate_code,
-      referralCount: row.referral_count,
-      paidReferralCount: row.paid_referral_count,
-      tier: row.tier,
-      createdAt: row.created_at.toISOString(),
-    }
-  }
-
   const affiliateCode = generateAffiliateCode(username)
   const id = `aff_${Date.now()}_${githubId}_${crypto.randomUUID().split('-')[0]}`
 
   const result = await sql`
     INSERT INTO affiliate_users (id, github_id, username, affiliate_code)
     VALUES (${id}, ${githubId}, ${username.substring(0, 50)}, ${affiliateCode})
+    ON CONFLICT (github_id) DO UPDATE SET
+      username = EXCLUDED.username
     RETURNING *
   `
 
