@@ -11,9 +11,9 @@ export function Navbar() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 left-0 right-0 z-50 flex justify-center p-6 pointer-events-none"
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center p-6"
     >
-      <div className="flex items-center justify-between w-full max-w-7xl pointer-events-auto bg-[#050507]/80 backdrop-blur-md px-8 py-4 rounded-xl border border-white/[0.08] shadow-2xl">
+      <div className="flex items-center justify-between w-full max-w-7xl bg-[#050507]/80 backdrop-blur-md px-8 py-4 rounded-xl border border-white/[0.08] shadow-2xl">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-3 group">
             <Image 
