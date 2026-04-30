@@ -21,7 +21,6 @@ export async function initializeDatabase() {
         email VARCHAR(255) UNIQUE,
         avatar_url TEXT,
         plan VARCHAR(20) DEFAULT 'free',
-        selected_repo TEXT,
         selected_repos JSONB DEFAULT '[]'::jsonb,
         prs_reviewed INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW(),
@@ -124,31 +123,27 @@ export async function initializeDatabase() {
     `
 
     await sql`
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS selected_repo TEXT
-    `
-
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_users_selected_repo ON users(selected_repo)
-    `
-
-    // New columns for multiple repos and PR tracking
-    await sql`
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS selected_repos JSONB DEFAULT '[]'::jsonb
-    `
-
-    await sql`
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS prs_reviewed INTEGER DEFAULT 0
+      CREATE INDEX IF NOT EXISTS idx_users_selected_repos ON users USING gin(selected_repos)
     `
 
     // Migrate existing selected_repo to selected_repos if empty
     try {
-      await sql`
-        UPDATE users 
-        SET selected_repos = jsonb_build_array(selected_repo) 
-        WHERE selected_repo IS NOT NULL AND jsonb_array_length(selected_repos) = 0
+      // Check if selected_repo column still exists before attempting migration
+      const hasColumn = await sql`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'users' AND column_name = 'selected_repo'
       `
+      if (hasColumn.length > 0) {
+        await sql`
+          UPDATE users 
+          SET selected_repos = jsonb_build_array(selected_repo) 
+          WHERE selected_repo IS NOT NULL AND (selected_repos IS NULL OR jsonb_array_length(selected_repos) = 0)
+        `
+        console.log('Migrated legacy selected_repo data.')
+      }
     } catch (e) {
-      console.log('Migration info: No existing selected_repo to migrate or already migrated.', e)
+      console.log('Migration info: Skipping legacy data migration.', e)
     }
 
     // Migrate github_id to BIGINT if it was previously INTEGER
