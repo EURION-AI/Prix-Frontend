@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, LayoutDashboard, Settings, Gift } from 'lucide-react'
+import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, LayoutDashboard, Settings, Gift, LogOut } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 
@@ -20,6 +20,7 @@ interface UserData {
   name: string | null
   email: string | null
   avatarUrl: string
+  selectedRepo: string | null
 }
 
 export default function DashboardPage() {
@@ -74,6 +75,15 @@ export default function DashboardPage() {
     }
   }
 
+  async function handleLogout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      window.location.href = '/'
+    } catch (err) {
+      console.error('Failed to logout:', err)
+    }
+  }
+
   async function handleRepoSelect(repoName: string) {
     if (selectedRepo === repoName) return
     
@@ -88,7 +98,6 @@ export default function DashboardPage() {
       
       if (!response.ok) throw new Error('Failed to save selection')
       
-      // Update cookie with new selectedRepo
       if (user) {
         const updatedUser = { ...user, selectedRepo: repoName }
         document.cookie = `github_user=${encodeURIComponent(JSON.stringify(updatedUser))}; path=/; max-age=${60 * 60 * 24 * 7}`
@@ -143,9 +152,16 @@ export default function DashboardPage() {
               <Gift className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
               <span className="font-medium">Affiliate Program</span>
             </Link>
-            <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center gap-2">
-              <Settings className="w-4 h-4 text-white/40" />
+            <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center gap-2 group">
+              <Settings className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
               <span className="font-medium">Settings</span>
+            </button>
+            <button 
+              onClick={handleLogout}
+              className="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl transition-all flex items-center gap-2 group"
+            >
+              <LogOut className="w-4 h-4 text-red-400 group-hover:text-red-500 transition-colors" />
+              <span className="font-medium text-red-400 group-hover:text-red-500">Sign Out</span>
             </button>
           </div>
         </div>
