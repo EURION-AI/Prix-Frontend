@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, ArrowLeft, Check, CreditCard, Shield, Zap, Crown } from 'lucide-react'
+import { Loader2, ArrowLeft, CreditCard, Shield, Zap, Crown, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 
@@ -42,47 +42,40 @@ export default function BillingPage() {
     )
   }
 
-  const plans = [
-    {
-      name: 'Free',
-      id: 'free',
-      price: '$0',
-      description: 'Perfect for exploring Prix intelligence.',
-      icon: <Shield className="w-6 h-6 text-white/40" />,
-      features: ['Up to 5 repositories', 'Basic PR analysis', 'Community support'],
-      cta: 'Current Plan',
-      popular: false,
-    },
-    {
-      name: 'Pro',
-      id: 'pro',
-      price: '$29',
-      period: '/mo',
-      description: 'For active developers and small teams.',
-      icon: <Zap className="w-6 h-6 text-blue-400" />,
-      features: ['Up to 15 repositories', 'Advanced AST analysis', 'Priority support', 'Faster processing'],
-      cta: 'Upgrade to Pro',
-      popular: true,
-    },
-    {
-      name: 'Max',
-      id: 'max',
-      price: '$99',
-      period: '/mo',
-      description: 'Unlimited power for enterprise scale.',
-      icon: <Crown className="w-6 h-6 text-yellow-400" />,
-      features: ['Unlimited repositories', 'Custom rule engines', 'Dedicated account manager', 'SLA guarantees'],
-      cta: 'Upgrade to Max',
-      popular: false,
+  const getPlanDetails = (plan: string) => {
+    switch (plan) {
+      case 'max':
+        return {
+          name: 'Max Plan',
+          icon: <Crown className="w-10 h-10 text-yellow-400" />,
+          description: 'You have unlimited power for enterprise scale. Includes unlimited repositories, custom rule engines, and dedicated support.',
+          color: 'bg-yellow-400/10 border-yellow-400/20'
+        }
+      case 'pro':
+        return {
+          name: 'Pro Plan',
+          icon: <Zap className="w-10 h-10 text-blue-400" />,
+          description: 'You are on the Pro plan for active developers. Includes up to 15 repositories, advanced AST analysis, and priority support.',
+          color: 'bg-blue-400/10 border-blue-400/20'
+        }
+      default:
+        return {
+          name: 'Free Plan',
+          icon: <Shield className="w-10 h-10 text-white/40" />,
+          description: 'You are on the Free plan. Includes up to 5 repositories and basic PR analysis. Upgrade to unlock more power.',
+          color: 'bg-white/5 border-white/10'
+        }
     }
-  ]
+  }
+
+  const details = getPlanDetails(user.plan)
 
   return (
     <main className="min-h-screen bg-[#050508] text-white selection:bg-primary/30">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
       <Navbar />
 
-      <div className="max-w-6xl mx-auto px-4 pt-32 pb-20">
+      <div className="max-w-3xl mx-auto px-4 pt-32 pb-20">
         <Link 
           href="/dashboard"
           className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-8"
@@ -97,71 +90,36 @@ export default function BillingPage() {
             <span className="text-sm font-bold uppercase tracking-widest">Billing & Plans</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Manage Subscription
+            Current Subscription
           </h1>
           <p className="text-white/40 text-lg max-w-2xl">
-            You are currently on the <strong className="text-white capitalize">{user.plan}</strong> plan. Upgrade to unlock more repositories and advanced AI features.
+            View your active plan status and explore upgrade options.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <div 
-              key={plan.id}
-              className={`relative flex flex-col p-8 rounded-3xl border transition-all ${
-                plan.popular 
-                  ? 'bg-primary/5 border-primary/50 shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]' 
-                  : 'bg-white/5 border-white/10 hover:border-white/20'
-              } ${user.plan === plan.id ? 'ring-2 ring-white/20' : ''}`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
-                  Most Popular
-                </div>
-              )}
-              
-              <div className="flex items-center gap-4 mb-4">
-                <div className={`p-3 rounded-xl ${plan.popular ? 'bg-primary/20' : 'bg-white/5'}`}>
-                  {plan.icon}
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold">{plan.name}</h3>
-                  {user.plan === plan.id && (
-                    <span className="text-xs text-white/40 font-mono">Active Plan</span>
-                  )}
-                </div>
-              </div>
+        <div className={`relative flex flex-col md:flex-row items-start md:items-center gap-8 p-8 md:p-12 rounded-3xl border ${details.color} mb-8`}>
+          <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-xl shrink-0">
+            {details.icon}
+          </div>
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold mb-2">{details.name}</h2>
+            <p className="text-white/60 text-lg leading-relaxed">
+              {details.description}
+            </p>
+          </div>
+        </div>
 
-              <div className="mb-6">
-                <span className="text-4xl font-black">{plan.price}</span>
-                {plan.period && <span className="text-white/40">{plan.period}</span>}
-              </div>
-
-              <p className="text-white/40 mb-8 flex-1">{plan.description}</p>
-
-              <div className="space-y-4 mb-8">
-                {plan.features.map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <Check className={`w-5 h-5 ${plan.popular ? 'text-primary' : 'text-white/40'}`} />
-                    <span className="text-sm font-medium">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button 
-                disabled={user.plan === plan.id}
-                className={`w-full py-4 rounded-xl font-bold transition-all ${
-                  user.plan === plan.id
-                    ? 'bg-white/5 text-white/40 cursor-not-allowed'
-                    : plan.popular
-                      ? 'bg-primary text-white hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.4)]'
-                      : 'bg-white text-black hover:bg-white/90'
-                }`}
-              >
-                {user.plan === plan.id ? 'Current Plan' : plan.cta}
-              </button>
-            </div>
-          ))}
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Link 
+            href="/#pricing"
+            className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+          >
+            Change Plan
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+          <button className="w-full sm:w-auto px-8 py-4 bg-white/5 text-white/60 rounded-xl font-medium hover:bg-white/10 hover:text-white transition-all">
+            Update Payment Method
+          </button>
         </div>
       </div>
     </main>

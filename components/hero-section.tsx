@@ -88,7 +88,7 @@ export function HeroSection() {
                 asChild
                 className="h-14 px-8 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300"
               >
-                <Link href="#demo">
+                <Link href="/demo">
                   Watch Demo
                 </Link>
               </Button>
