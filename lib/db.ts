@@ -94,6 +94,7 @@ export async function initializeDatabase() {
         user_id VARCHAR(50),
         session_id VARCHAR(100),
         page_url TEXT,
+        referrer TEXT,
         user_agent TEXT,
         ip_hash VARCHAR(64),
         metadata JSONB DEFAULT '{}',
@@ -137,6 +138,10 @@ export async function initializeDatabase() {
     `
     await sql`
       ALTER TABLE referrals ALTER COLUMN referred_github_id TYPE BIGINT
+    `
+
+    await sql`
+      ALTER TABLE user_events ADD COLUMN IF NOT EXISTS referrer TEXT
     `
 
     console.log('Database initialized successfully')
