@@ -1,5 +1,5 @@
-import { sql } from '../lib/db'
-import { initializeDatabase } from '../lib/db'
+import { sql } from '../lib/db.ts'
+import { initializeDatabase } from '../lib/db.ts'
 
 async function seedDashboardData() {
   console.log('Starting database seed...')
