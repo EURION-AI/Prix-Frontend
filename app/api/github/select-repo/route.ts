@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 import { updateSelectedRepo } from '@/lib/user-store'
 
 export async function POST(request: Request) {
-  const userCookie = cookies().get('github_user')?.value
+  const cookieStore = await cookies()
+  const userCookie = cookieStore.get('github_user')?.value
   if (!userCookie) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
