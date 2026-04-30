@@ -22,6 +22,8 @@ export async function initializeDatabase() {
         avatar_url TEXT,
         plan VARCHAR(20) DEFAULT 'free',
         selected_repo TEXT,
+        selected_repos JSONB DEFAULT '[]'::jsonb,
+        prs_reviewed INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
@@ -128,6 +130,26 @@ export async function initializeDatabase() {
     await sql`
       CREATE INDEX IF NOT EXISTS idx_users_selected_repo ON users(selected_repo)
     `
+
+    // New columns for multiple repos and PR tracking
+    await sql`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS selected_repos JSONB DEFAULT '[]'::jsonb
+    `
+
+    await sql`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS prs_reviewed INTEGER DEFAULT 0
+    `
+
+    // Migrate existing selected_repo to selected_repos if empty
+    try {
+      await sql`
+        UPDATE users 
+        SET selected_repos = jsonb_build_array(selected_repo) 
+        WHERE selected_repo IS NOT NULL AND jsonb_array_length(selected_repos) = 0
+      `
+    } catch (e) {
+      console.log('Migration info: No existing selected_repo to migrate or already migrated.', e)
+    }
 
     // Migrate github_id to BIGINT if it was previously INTEGER
     await sql`

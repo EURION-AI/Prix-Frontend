@@ -162,8 +162,10 @@ export async function GET(request: Request) {
       path: '/',
     })
 
-    const userRecord = await sql`SELECT selected_repo FROM users WHERE github_id = ${userData.id}`
-    const selectedRepo = userRecord[0]?.selected_repo || null
+    const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
+    const selectedRepos = userRecord[0]?.selected_repos || []
+    const prsReviewed = userRecord[0]?.prs_reviewed || 0
+    const plan = userRecord[0]?.plan || 'free'
 
     response.cookies.set('github_user', JSON.stringify({
       id: userData.id,
@@ -171,7 +173,9 @@ export async function GET(request: Request) {
       name: userData.name,
       email: userData.email,
       avatarUrl: userData.avatar_url,
-      selectedRepo: selectedRepo,
+      selectedRepos,
+      prsReviewed,
+      plan,
     }), {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',

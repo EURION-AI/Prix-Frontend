@@ -29,7 +29,9 @@ interface UserData {
   name: string | null
   email: string | null
   avatarUrl: string
-  selectedRepo: string | null
+  plan: 'free' | 'pro' | 'max'
+  selectedRepos: string[]
+  prsReviewed: number
 }
 
 export default function DashboardPage() {
@@ -39,7 +41,7 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
+  const [selectedRepos, setSelectedRepos] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -51,8 +53,8 @@ export default function DashboardPage() {
       try {
         const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]))
         setUser(userData)
-        if (userData.selectedRepo) {
-          setSelectedRepo(userData.selectedRepo)
+        if (userData.selectedRepos) {
+          setSelectedRepos(userData.selectedRepos)
         }
         fetchRepos()
       } catch {
@@ -94,7 +96,16 @@ export default function DashboardPage() {
   }
 
   async function handleRepoSelect(repoName: string) {
-    if (selectedRepo === repoName) return
+    const action = selectedRepos.includes(repoName) ? 'remove' : 'add'
+    
+    // Frontend limit check
+    if (user && action === 'add') {
+      const limit = user.plan === 'max' ? Infinity : (user.plan === 'pro' ? 15 : 5)
+      if (selectedRepos.length >= limit) {
+        setError(`Your ${user.plan.toUpperCase()} plan limits you to ${limit} repositories. Please upgrade to add more.`)
+        return
+      }
+    }
     
     setIsSaving(true)
     setError(null)
@@ -102,20 +113,22 @@ export default function DashboardPage() {
       const response = await fetch('/api/github/select-repo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo: repoName }),
+        body: JSON.stringify({ repo: repoName, action }),
       })
       
-      if (!response.ok) throw new Error('Failed to save selection')
+      const data = await response.json()
+      
+      if (!response.ok) throw new Error(data.error || 'Failed to save selection')
       
       if (user) {
-        const updatedUser = { ...user, selectedRepo: repoName }
+        const updatedUser = { ...user, selectedRepos: data.selectedRepos }
         document.cookie = `github_user=${encodeURIComponent(JSON.stringify(updatedUser))}; path=/; max-age=${60 * 60 * 24 * 7}`
         setUser(updatedUser)
       }
       
-      setSelectedRepo(repoName)
-    } catch (err) {
-      setError('Failed to save your repository selection.')
+      setSelectedRepos(data.selectedRepos)
+    } catch (err: any) {
+      setError(err.message || 'Failed to save your repository selection.')
     } finally {
       setIsSaving(false)
     }
@@ -173,17 +186,21 @@ export default function DashboardPage() {
                 <DropdownMenuLabel className="text-white/40 font-mono text-[10px] uppercase tracking-widest">Account Settings</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-white/5" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
-                    <User className="mr-2 h-4 w-4 text-primary" />
-                    <span>Profile</span>
+                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer" asChild>
+                    <Link href="/dashboard/profile">
+                      <User className="mr-2 h-4 w-4 text-primary" />
+                      <span>Profile</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
                     <Bell className="mr-2 h-4 w-4 text-primary" />
                     <span>Notifications</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
-                    <CreditCard className="mr-2 h-4 w-4 text-primary" />
-                    <span>Billing</span>
+                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer" asChild>
+                    <Link href="/dashboard/settings/billing">
+                      <CreditCard className="mr-2 h-4 w-4 text-primary" />
+                      <span>Billing</span>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-white/5" />
@@ -206,17 +223,31 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="relative group mb-8">
-          <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-white/20 group-focus-within:text-primary transition-colors">
-            <Search className="w-5 h-5" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div className="relative group flex-1">
+            <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-white/20 group-focus-within:text-primary transition-colors">
+              <Search className="w-5 h-5" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search your repositories..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
+            />
           </div>
-          <input
-            type="text"
-            placeholder="Search your repositories..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
-          />
+          {user && (
+            <div className="bg-white/5 border border-white/10 rounded-2xl py-5 px-6 flex items-center gap-4 min-w-max">
+              <span className="text-white/40 font-medium">Selected Repositories</span>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-black text-primary">{selectedRepos.length}</span>
+                <span className="text-white/20">/</span>
+                <span className="text-lg font-bold text-white/60">
+                  {user.plan === 'max' ? '∞' : (user.plan === 'pro' ? '15' : '5')}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -227,7 +258,7 @@ export default function DashboardPage() {
                 onClick={() => handleRepoSelect(repo.full_name)}
                 disabled={isSaving}
                 className={`text-left p-6 rounded-2xl border transition-all relative group ${
-                  selectedRepo === repo.full_name 
+                  selectedRepos.includes(repo.full_name) 
                     ? 'bg-primary/10 border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
                     : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'
                 }`}
@@ -255,12 +286,11 @@ export default function DashboardPage() {
                     Last updated: {new Date(repo.updated_at).toLocaleDateString()}
                   </span>
                   <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                    {isSaving && selectedRepo === repo.full_name ? (
+                    {isSaving && selectedRepos.includes(repo.full_name) ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : selectedRepo === repo.full_name ? (
-                      <span className="flex items-center gap-2 text-green-400">
-                        <Check className="w-4 h-4" />
-                        Active
+                    ) : selectedRepos.includes(repo.full_name) ? (
+                      <span className="flex items-center gap-2 text-red-400 hover:text-red-300">
+                        Remove
                       </span>
                     ) : (
                       <>
@@ -271,7 +301,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {selectedRepo === repo.full_name && (
+                {selectedRepos.includes(repo.full_name) && (
                   <div className="absolute top-4 right-4 bg-primary text-white p-1 rounded-full">
                     <Check className="w-3 h-3" />
                   </div>
