@@ -1,9 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, LayoutDashboard, Settings, Gift, LogOut } from 'lucide-react'
+import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, LayoutDashboard, Settings, Gift, LogOut, User, Bell, CreditCard } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 interface Repository {
   id: number
@@ -152,17 +161,41 @@ export default function DashboardPage() {
               <Gift className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
               <span className="font-medium">Affiliate Program</span>
             </Link>
-            <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center gap-2 group">
-              <Settings className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
-              <span className="font-medium">Settings</span>
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl transition-all flex items-center gap-2 group"
-            >
-              <LogOut className="w-4 h-4 text-red-400 group-hover:text-red-500 transition-colors" />
-              <span className="font-medium text-red-400 group-hover:text-red-500">Sign Out</span>
-            </button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center gap-2 group outline-none">
+                  <Settings className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
+                  <span className="font-medium">Settings</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-[#0c0c12] border-white/10 text-white" align="end">
+                <DropdownMenuLabel className="text-white/40 font-mono text-[10px] uppercase tracking-widest">Account Settings</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
+                    <User className="mr-2 h-4 w-4 text-primary" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
+                    <Bell className="mr-2 h-4 w-4 text-primary" />
+                    <span>Notifications</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
+                    <CreditCard className="mr-2 h-4 w-4 text-primary" />
+                    <span>Billing</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className="hover:bg-red-500/10 text-red-400 focus:text-red-400 cursor-pointer"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
