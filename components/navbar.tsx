@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -37,14 +38,29 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link 
-            href="/login" 
-            className="text-[11px] font-bold uppercase tracking-wider text-black hover:text-black/80 transition-all duration-200 px-6 py-2.5 bg-white rounded-lg hover:bg-white/90 font-medium"
-          >
-            Start Free
-          </Link>
+          <NavbarAuthButton />
         </div>
       </div>
     </motion.nav>
+  )
+}
+
+function NavbarAuthButton() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const userCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('github_user='))
+    setIsLoggedIn(!!userCookie)
+  }, [])
+
+  return (
+    <Link 
+      href={isLoggedIn ? "/dashboard" : "/login"} 
+      className="text-[11px] font-bold uppercase tracking-wider text-black hover:text-black/80 transition-all duration-200 px-6 py-2.5 bg-white rounded-lg hover:bg-white/90 font-medium"
+    >
+      {isLoggedIn ? "Dashboard" : "Start Free"}
+    </Link>
   )
 }

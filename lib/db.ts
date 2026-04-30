@@ -16,11 +16,12 @@ export async function initializeDatabase() {
     await sql`
       CREATE TABLE IF NOT EXISTS users (
         id VARCHAR(50) PRIMARY KEY,
-        github_id INTEGER UNIQUE NOT NULL,
+        github_id BIGINT UNIQUE NOT NULL,
         username VARCHAR(100) NOT NULL,
         email VARCHAR(255) UNIQUE,
         avatar_url TEXT,
         plan VARCHAR(20) DEFAULT 'free',
+        selected_repo TEXT,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
@@ -29,7 +30,7 @@ export async function initializeDatabase() {
     await sql`
       CREATE TABLE IF NOT EXISTS affiliate_users (
         id VARCHAR(50) PRIMARY KEY,
-        github_id INTEGER UNIQUE NOT NULL,
+        github_id BIGINT UNIQUE NOT NULL,
         username VARCHAR(50) NOT NULL,
         affiliate_code VARCHAR(50) UNIQUE NOT NULL,
         referral_count INTEGER DEFAULT 0,
@@ -46,7 +47,7 @@ export async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS referrals (
         id VARCHAR(50) PRIMARY KEY,
         affiliate_id VARCHAR(50) NOT NULL,
-        referred_github_id INTEGER,
+        referred_github_id BIGINT,
         referred_username VARCHAR(50) NOT NULL,
         referred_ip_hash VARCHAR(64) NOT NULL,
         has_purchased BOOLEAN DEFAULT FALSE,
@@ -117,6 +118,25 @@ export async function initializeDatabase() {
     `
     await sql`
       CREATE INDEX IF NOT EXISTS idx_referrals_github_id ON referrals(referred_github_id)
+    `
+
+    await sql`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS selected_repo TEXT
+    `
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_users_selected_repo ON users(selected_repo)
+    `
+
+    // Migrate github_id to BIGINT if it was previously INTEGER
+    await sql`
+      ALTER TABLE users ALTER COLUMN github_id TYPE BIGINT
+    `
+    await sql`
+      ALTER TABLE affiliate_users ALTER COLUMN github_id TYPE BIGINT
+    `
+    await sql`
+      ALTER TABLE referrals ALTER COLUMN referred_github_id TYPE BIGINT
     `
 
     console.log('Database initialized successfully')

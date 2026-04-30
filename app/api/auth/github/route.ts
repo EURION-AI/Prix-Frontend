@@ -29,7 +29,7 @@ export async function GET(request: Request) {
   }
 
   const state = generateState()
-  const scope = 'read:user user:email'
+  const scope = 'read:user user:email repo'
   const params = new URLSearchParams({
     client_id: GITHUB_CLIENT_ID,
     redirect_uri: GITHUB_REDIRECT_URI,

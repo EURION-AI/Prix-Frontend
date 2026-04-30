@@ -152,7 +152,7 @@ export async function GET(request: Request) {
       }
     }
 
-    const response = NextResponse.redirect(new URL('/', request.url))
+    const response = NextResponse.redirect(new URL('/dashboard', request.url))
 
     response.cookies.set('github_token', accessToken, {
       httpOnly: true,
@@ -162,12 +162,16 @@ export async function GET(request: Request) {
       path: '/',
     })
 
+    const userRecord = await sql`SELECT selected_repo FROM users WHERE github_id = ${userData.id}`
+    const selectedRepo = userRecord[0]?.selected_repo || null
+
     response.cookies.set('github_user', JSON.stringify({
       id: userData.id,
       username: userData.login,
       name: userData.name,
       email: userData.email,
       avatarUrl: userData.avatar_url,
+      selectedRepo: selectedRepo,
     }), {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',

@@ -7,6 +7,7 @@ export interface User {
   email: string | null
   avatarUrl: string | null
   plan: 'free' | 'starter' | 'pro' | 'enterprise'
+  selectedRepo: string | null
   createdAt: string
   updatedAt: string
 }
@@ -33,6 +34,7 @@ export async function getOrCreateUser(githubId: number, username: string, email?
     email: row.email,
     avatarUrl: row.avatar_url,
     plan: row.plan,
+    selectedRepo: row.selected_repo,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
   }
@@ -53,6 +55,7 @@ export async function getUserByGithubId(githubId: number): Promise<User | null> 
     email: row.email,
     avatarUrl: row.avatar_url,
     plan: row.plan,
+    selectedRepo: row.selected_repo,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
   }
@@ -62,6 +65,14 @@ export async function updateUserPlan(githubId: number, plan: string): Promise<vo
   await sql`
     UPDATE users
     SET plan = ${plan}, updated_at = NOW()
+    WHERE github_id = ${githubId}
+  `
+}
+
+export async function updateSelectedRepo(githubId: number, repo: string): Promise<void> {
+  await sql`
+    UPDATE users
+    SET selected_repo = ${repo}, updated_at = NOW()
     WHERE github_id = ${githubId}
   `
 }

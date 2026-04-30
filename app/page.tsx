@@ -268,18 +268,8 @@ export default function Home() {
       .find(row => row.startsWith('github_user='))
     
     if (userCookie) {
-      try {
-        const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]))
-        setUser({
-          id: userData.id,
-          username: userData.username,
-          name: userData.name,
-          email: userData.email,
-          avatarUrl: userData.avatarUrl,
-        })
-      } catch {
-        setUser(null)
-      }
+      window.location.href = '/dashboard'
+      return
     }
     setIsLoading(false)
   }, [])
