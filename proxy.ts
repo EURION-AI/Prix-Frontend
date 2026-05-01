@@ -2,6 +2,19 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const userCookie = request.cookies.get('github_user')
+
+  // 1. Redirection Logic for Home Page
+  if (pathname === '/') {
+    if (userCookie) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    } else {
+      return NextResponse.redirect(new URL('/pricing', request.url))
+    }
+  }
+
+  // 2. Security Headers Logic
   const response = NextResponse.next()
 
   response.headers.set('X-Frame-Options', 'DENY')
