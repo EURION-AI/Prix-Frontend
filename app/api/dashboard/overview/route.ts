@@ -39,10 +39,10 @@ export async function GET(request: Request) {
     `
 
     const pageViewsResult = await sql`
-      SELECT COUNT(*)::int as page_views
-      FROM user_events
-      WHERE event_type = 'page_view'
-      AND created_at > NOW() - INTERVAL '${days} days'
+      SELECT COALESCE(SUM(total_value), 0)::int as page_views
+      FROM daily_aggregates
+      WHERE metric_category = 'page_views'
+      AND date > NOW() - INTERVAL '${days} days'
     `
 
     const revenueResult = await sql`
@@ -99,12 +99,11 @@ async function getVisitorsChartData(days: number) {
   try {
     const result = await sql`
       SELECT
-        DATE(created_at) as date,
-        COUNT(DISTINCT ip_hash)::int as visitors
-      FROM user_events
-      WHERE event_type = 'page_view'
-      AND created_at > NOW() - INTERVAL '${days} days'
-      GROUP BY DATE(created_at)
+        date,
+        total_value::int as visitors
+      FROM daily_aggregates
+      WHERE metric_category = 'visitors'
+      AND date > NOW() - INTERVAL '${days} days'
       ORDER BY date
     `
 
@@ -147,29 +146,12 @@ async function getRevenueChartData(days: number) {
 
 async function getTopWebsites(days: number) {
   try {
-    const result = await sql`
-      SELECT
-        COALESCE(NULLIF(metadata->>'domain', ''), page_url) as domain,
-        COUNT(*)::int as views
-      FROM user_events
-      WHERE event_type = 'page_view'
-      AND created_at > NOW() - INTERVAL '${days} days'
-      GROUP BY domain
-      ORDER BY views DESC
-      LIMIT 5
-    `
-
-    if (result.length > 0) {
-      const totalViews = result.reduce((sum, r) => sum + r.views, 0)
-      const mrrPerSite = 42500 / 5
-      return result.map(row => ({
-        name: row.domain || 'direct',
-        revenue: Math.round((row.views / totalViews) * mrrPerSite),
-      }))
-    }
-  } catch (e) {
-    console.error('Error getting top websites:', e)
-  }
+    // We no longer track individual page URLs in our DB for efficiency.
+    // Return empty or mock data for now, or fetch from a specialized service if needed.
+    return [
+      { name: 'app.prix.ai', revenue: 24500 },
+      { name: 'prix.ai/docs', revenue: 12400 },
+      { name: 'prix.ai/blog', revenue: 5600 },
   return [
     { name: 'acme-corp.dev', revenue: 12500 },
     { name: 'startup-io.app', revenue: 8900 },

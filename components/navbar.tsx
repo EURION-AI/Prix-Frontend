@@ -60,7 +60,7 @@ function NavbarAuthButton() {
       href={isLoggedIn ? "/dashboard" : "/login"} 
       className="text-[11px] font-bold uppercase tracking-wider text-black hover:text-black/80 transition-all duration-200 px-6 py-2.5 bg-white rounded-lg hover:bg-white/90 font-medium"
     >
-      {isLoggedIn ? "Dashboard" : "Start Free"}
+      {isLoggedIn ? "Profile" : "Start Free"}
     </Link>
   )
 }

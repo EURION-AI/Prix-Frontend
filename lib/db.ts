@@ -89,17 +89,16 @@ export async function initializeDatabase() {
     `
 
     await sql`
-      CREATE TABLE IF NOT EXISTS user_events (
+      CREATE TABLE IF NOT EXISTS daily_aggregates (
         id SERIAL PRIMARY KEY,
-        event_type VARCHAR(50) NOT NULL,
-        user_id VARCHAR(50),
-        session_id VARCHAR(100),
-        page_url TEXT,
-        referrer TEXT,
-        user_agent TEXT,
-        ip_hash VARCHAR(64),
+        date DATE NOT NULL,
+        metric_category VARCHAR(50) NOT NULL,
+        metric_name VARCHAR(100) NOT NULL,
+        total_value DECIMAL(15, 2) NOT NULL,
+        count INTEGER DEFAULT 1,
         metadata JSONB DEFAULT '{}',
-        created_at TIMESTAMP DEFAULT NOW()
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(date, metric_category, metric_name)
       )
     `
 
@@ -158,7 +157,7 @@ export async function initializeDatabase() {
     `
 
     await sql`
-      ALTER TABLE user_events ADD COLUMN IF NOT EXISTS referrer TEXT
+      CREATE INDEX IF NOT EXISTS idx_daily_aggregates_date_cat ON daily_aggregates(date, metric_category)
     `
 
     console.log('Database initialized successfully')

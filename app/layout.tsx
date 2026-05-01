@@ -4,7 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { SmoothScroll } from '@/components/smooth-scroll'
 import { NotificationContainer } from '@/components/notification'
-import { AnalyticsTracker } from '@/components/analytics-tracker'
+import { VisitTracker } from '@/components/visit-tracker'
 import { jsonLd } from './jsonld'
 
 const inter = Inter({ 
@@ -87,12 +87,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased bg-[#050508] text-foreground">
+        <NotificationContainer />
+        <VisitTracker />
+        <Analytics />
         <SmoothScroll>
           {children}
         </SmoothScroll>
-        <NotificationContainer />
-        <AnalyticsTracker />
-        <Analytics />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -155,8 +155,8 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <div className="flex items-center gap-3 mb-2 text-primary">
-              <LayoutDashboard className="w-5 h-5" />
-              <span className="text-sm font-bold uppercase tracking-widest">User Dashboard</span>
+              <User className="w-5 h-5" />
+              <span className="text-sm font-bold uppercase tracking-widest">User Profile</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">
               Initialize Your Project
@@ -189,7 +189,7 @@ export default function DashboardPage() {
                   <DropdownMenuItem className="hover:bg-white/5 cursor-pointer" asChild>
                     <Link href="/dashboard/profile">
                       <User className="mr-2 h-4 w-4 text-primary" />
-                      <span>Profile</span>
+                      <span>My Account</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
