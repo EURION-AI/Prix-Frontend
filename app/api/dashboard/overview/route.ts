@@ -72,19 +72,19 @@ export async function GET(request: Request) {
     const activeAffiliates = affiliateCountResult[0]?.count || 0
 
     const trialUsers = usersByPlan['free'] || 0
-    const trialToPaidRate = totalUsers > 0 ? (payingCustomers / totalUsers * 100) : 23.5
+    const trialToPaidRate = totalUsers > 0 ? (payingCustomers / totalUsers * 100) : 0
 
     return NextResponse.json({
-      visitors: visitors || 12847 * days,
-      sessions: sessions || 28451 * days,
-      pageViews: pageViews || (12847 * days * 3.5),
-      signups: newUsers || 1247 * days,
-      payingCustomers: payingCustomers || 847,
-      mrr: mrr || 42500,
-      arr: (mrr || 42500) * 12,
-      trialToPaidRate: trialToPaidRate || 23.5,
-      activeAffiliates: activeAffiliates || 156,
-      affiliateRevenue: affiliateRevenue || 8750,
+      visitors: visitors,
+      sessions: sessions,
+      pageViews: pageViews,
+      signups: newUsers,
+      payingCustomers: payingCustomers,
+      mrr: mrr,
+      arr: mrr * 12,
+      trialToPaidRate: trialToPaidRate,
+      activeAffiliates: activeAffiliates,
+      affiliateRevenue: affiliateRevenue,
       visitorsChart: await getVisitorsChartData(days),
       revenueChart: await getRevenueChartData(days),
       topWebsites: await getTopWebsites(days),
@@ -145,57 +145,28 @@ async function getRevenueChartData(days: number) {
 }
 
 async function getTopWebsites(days: number) {
-  try {
-    // We no longer track individual page URLs in our DB for efficiency.
-    // Return empty or mock data for now, or fetch from a specialized service if needed.
-    return [
-      { name: 'app.prix.ai', revenue: 24500 },
-      { name: 'prix.ai/docs', revenue: 12400 },
-      { name: 'prix.ai/blog', revenue: 5600 },
-  return [
-    { name: 'acme-corp.dev', revenue: 12500 },
-    { name: 'startup-io.app', revenue: 8900 },
-    { name: 'tech-giant.com', revenue: 7200 },
-    { name: 'devtools.io', revenue: 5400 },
-    { name: 'cloudapp.dev', revenue: 4200 },
-  ]
+  // We no longer track individual page URLs in our DB for efficiency.
+  return []
 }
 
 function generateDefaultChartData(type: string, days: number) {
-  const points = []
-  const now = new Date()
-  const baseValue = type === 'visitors' ? 400 : 1400
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - i)
-    points.push({
-      date: date.toISOString().split('T')[0],
-      value: Math.floor(baseValue + (Math.random() - 0.5) * baseValue * 0.3),
-    })
-  }
-  return points
+  return []
 }
 
 function getDefaultData(days: number) {
   return {
-    visitors: 12847 * days,
-    sessions: 28451 * days,
-    pageViews: 89452 * days,
-    signups: 1247 * days,
-    payingCustomers: 847,
-    mrr: 42500,
-    arr: 510000,
-    trialToPaidRate: 23.5,
-    activeAffiliates: 156,
-    affiliateRevenue: 8750,
-    visitorsChart: generateDefaultChartData('visitors', 30),
-    revenueChart: generateDefaultChartData('revenue', 30),
-    topWebsites: [
-      { name: 'acme-corp.dev', revenue: 12500 },
-      { name: 'startup-io.app', revenue: 8900 },
-      { name: 'tech-giant.com', revenue: 7200 },
-      { name: 'devtools.io', revenue: 5400 },
-      { name: 'cloudapp.dev', revenue: 4200 },
-    ],
+    visitors: 0,
+    sessions: 0,
+    pageViews: 0,
+    signups: 0,
+    payingCustomers: 0,
+    mrr: 0,
+    arr: 0,
+    trialToPaidRate: 0,
+    activeAffiliates: 0,
+    affiliateRevenue: 0,
+    visitorsChart: [],
+    revenueChart: [],
+    topWebsites: [],
   }
 }
