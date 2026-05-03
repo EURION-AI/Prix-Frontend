@@ -15,7 +15,11 @@ export function Navbar() {
     >
       <div className="flex items-center justify-between w-full max-w-7xl pointer-events-auto bg-[#050507]/80 backdrop-blur-md px-8 py-4 rounded-xl border border-white/[0.08] shadow-2xl">
         <div className="flex items-center gap-10">
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link 
+            href="/" 
+            className="flex items-center gap-3 group"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <Image 
               src="/logo.png" 
               alt="Prix" 

@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const userCookie = request.cookies.get('github_user')
 
   // 1. Redirection Logic for Home Page
-  if (pathname === '/') {
-    if (userCookie) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    } else {
-      return NextResponse.redirect(new URL('/pricing', request.url))
-    }
+  // We only redirect if they are trying to visit specific pages while logged out,
+  // or if they are already logged in and visiting login.
+  // BUT the root homepage should ALWAYS be accessible.
+  
+  if (pathname === '/login' && userCookie) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   // 2. Security Headers Logic
