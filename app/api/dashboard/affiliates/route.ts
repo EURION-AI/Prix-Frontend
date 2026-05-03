@@ -48,7 +48,7 @@ export async function GET(request: Request) {
         COUNT(*)::int as clicks
       FROM affiliate_events
       WHERE event_type = 'click'
-      AND created_at > NOW() - INTERVAL '${days} days'
+      AND created_at > NOW() - INTERVAL ${days} days
       GROUP BY affiliate_id, DATE(created_at)
       ORDER BY date
     `
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
         COUNT(*)::int as conversions
       FROM affiliate_events
       WHERE event_type = 'conversion'
-      AND created_at > NOW() - INTERVAL '${days} days'
+      AND created_at > NOW() - INTERVAL ${days} days
       GROUP BY DATE(created_at)
       ORDER BY date
     `
@@ -70,7 +70,7 @@ export async function GET(request: Request) {
         SUM(commission_amount)::int as revenue
       FROM affiliate_events
       WHERE event_type = 'commission_paid'
-      AND created_at > NOW() - INTERVAL '${days} days'
+      AND created_at > NOW() - INTERVAL ${days} days
       GROUP BY DATE(created_at)
       ORDER BY date
     `
@@ -79,21 +79,21 @@ export async function GET(request: Request) {
       SELECT COUNT(*)::int as total_clicks
       FROM affiliate_events
       WHERE event_type = 'click'
-      AND created_at > NOW() - INTERVAL '${days} days'
+      AND created_at > NOW() - INTERVAL ${days} days
     `
 
     const totalConversionsResult = await sql`
       SELECT COUNT(*)::int as total_conversions
       FROM affiliate_events
       WHERE event_type = 'conversion'
-      AND created_at > NOW() - INTERVAL '${days} days'
+      AND created_at > NOW() - INTERVAL ${days} days
     `
 
     const totalCommissionResult = await sql`
       SELECT COALESCE(SUM(commission_amount), 0)::int as total_commission
       FROM affiliate_events
       WHERE event_type = 'commission_paid'
-      AND created_at > NOW() - INTERVAL '${days} days'
+      AND created_at > NOW() - INTERVAL ${days} days
     `
 
     const totalClicks = totalClicksResult[0]?.total_clicks || 0

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Check, X, Terminal, FileCode, ArrowRight } from 'lucide-react'
 
@@ -40,35 +41,48 @@ export function CodeFixDemo() {
           
           {/* The Fix */}
           <motion.div 
-            initial={{ opacity: 0, x: -10 }}
+            initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1, duration: 0.5 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
             className="relative"
           >
-            <div className="flex gap-4 bg-red-500/10 border-l-2 border-red-500/50 py-1 -mx-6 px-6">
+            {/* Red line animation */}
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+              className="flex gap-4 bg-red-500/10 border-l-2 border-red-500/50 py-1 -mx-6 px-6 overflow-hidden"
+            >
               <span className="w-4 text-red-500/40 select-none">14</span>
-              <span className="text-red-400/80 line-through decoration-red-500/50">  useEffect(() =&gt; &#123; fetchUser() &#125;, [])</span>
-            </div>
-            <div className="flex gap-4 bg-green-500/10 border-l-2 border-green-500/50 py-1 -mx-6 px-6">
-              <span className="w-4 text-green-500/40 select-none">15</span>
-              <span className="text-green-400/90 font-semibold">  useEffect(() =&gt; &#123; </span>
-            </div>
-            <div className="flex gap-4 bg-green-500/10 border-l-2 border-green-500/50 py-1 -mx-6 px-6">
-              <span className="w-4 text-green-500/40 select-none">16</span>
-              <span className="text-green-400/90 font-semibold">    const controller = new AbortController();</span>
-            </div>
-            <div className="flex gap-4 bg-green-500/10 border-l-2 border-green-500/50 py-1 -mx-6 px-6">
-              <span className="w-4 text-green-500/40 select-none">17</span>
-              <span className="text-green-400/90 font-semibold">    fetchUser(&#123; signal: controller.signal &#125;);</span>
-            </div>
-            <div className="flex gap-4 bg-green-500/10 border-l-2 border-green-500/50 py-1 -mx-6 px-6">
-              <span className="w-4 text-green-500/40 select-none">18</span>
-              <span className="text-green-400/90 font-semibold">    return () =&gt; controller.abort();</span>
-            </div>
-            <div className="flex gap-4 bg-green-500/10 border-l-2 border-green-500/50 py-1 -mx-6 px-6">
-              <span className="w-4 text-green-500/40 select-none">19</span>
-              <span className="text-green-400/90 font-semibold">  &#125;, [])</span>
-            </div>
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.2, duration: 0.3 }}
+                className="text-red-400/80 line-through decoration-red-500/50"
+              >
+                {"useEffect(() => { fetchUser() }, [])"}
+              </motion.span>
+            </motion.div>
+            
+            {/* Green lines animation */}
+            {[15, 16, 17, 18, 19].map((lineNum, index) => (
+              <motion.div
+                key={lineNum}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.4 + index * 0.15, duration: 0.5 }}
+                className="flex gap-4 bg-green-500/10 border-l-2 border-green-500/50 py-1 -mx-6 px-6"
+              >
+                <span className="w-4 text-green-500/40 select-none">{lineNum}</span>
+                <span className="text-green-400/90 font-semibold">
+                  {lineNum === 15 && "  useEffect(() => &#123;"}
+                  {lineNum === 16 && "    const controller = new AbortController();"}
+                  {lineNum === 17 && "    fetchUser(&#123; signal: controller.signal &#125;);"}
+                  {lineNum === 18 && "    return () => controller.abort();"}
+                  {lineNum === 19 && "  &#125;, [])"}
+                </span>
+              </motion.div>
+            ))}
           </motion.div>
 
           <div className="flex gap-4 text-white/20">
@@ -96,19 +110,40 @@ export function CodeFixDemo() {
 
       {/* Floating Badge */}
       <motion.div 
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ 
+          y: [0, -8, 0],
+          rotate: [0, 2, -2, 0]
+        }}
+        transition={{ 
+          duration: 4, 
+          repeat: Infinity, 
+          ease: "easeInOut",
+          rotate: {
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }
+        }}
         className="absolute -top-6 -right-6 p-4 rounded-2xl bg-glass-vibrant shadow-2xl border border-white/10 backdrop-blur-xl z-20"
       >
-        <div className="flex items-center gap-3">
+        <motion.div
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex items-center gap-3"
+        >
           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-            <Terminal className="w-5 h-5 text-primary" />
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            >
+              <Terminal className="w-5 h-5 text-primary" />
+            </motion.div>
           </div>
           <div>
             <p className="text-[10px] font-bold text-white uppercase tracking-widest">Prix Engine</p>
             <p className="text-[9px] text-white/40">Fixing architectural debt...</p>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   )

@@ -6,9 +6,41 @@ const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
 const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI || `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`
 
 function generateState(): string {
-  const array = new Uint8Array(32)
+  // Increase entropy to 64 bytes (512 bits) for stronger security
+  const array = new Uint8Array(64)
   crypto.getRandomValues(array)
-  return Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('')
+  
+  // Add timestamp and nonce for additional entropy
+  const timestamp = Date.now().toString(36)
+  const nonce = crypto.randomUUID().replace(/-/g, '')
+  
+  // Combine all entropy sources
+  const randomHex = Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('')
+  return `${timestamp}_${nonce}_${randomHex}`
+}
+
+function validateState(state: string): boolean {
+  // Validate state format: timestamp_nonce_randomhex
+  const stateRegex = /^[a-z0-9]+_[a-f0-9]{32}[a-f0-9]*$/
+  if (!stateRegex.test(state)) {
+    return false
+  }
+  
+  const parts = state.split('_')
+  if (parts.length !== 3) {
+    return false
+  }
+  
+  // Validate timestamp (should be recent, within 10 minutes)
+  const timestamp = parseInt(parts[0], 36)
+  const now = Date.now()
+  const maxAge = 10 * 60 * 1000 // 10 minutes
+  
+  if (now - timestamp > maxAge) {
+    return false
+  }
+  
+  return true
 }
 
 export async function GET(request: Request) {

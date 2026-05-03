@@ -2,9 +2,32 @@ import { NextRequest, NextResponse } from 'next/server'
 import { addReferral, getAffiliateUserByCode } from '@/lib/affiliate-store-db'
 import { sql } from '@/lib/db'
 import { hashIP, generateAffiliateCode } from '@/lib/affiliate'
-import { getClientIP } from '@/lib/rate-limit'
-import { rateLimit } from '@/lib/security'
+import { getEnhancedClientIP, rateLimiters } from '@/lib/enhanced-rate-limit'
 import { validateAffiliateCode } from '@/lib/validation'
+
+function validateState(state: string): boolean {
+  // Validate state format: timestamp_nonce_randomhex
+  const stateRegex = /^[a-z0-9]+_[a-f0-9]{32}[a-f0-9]*$/
+  if (!stateRegex.test(state)) {
+    return false
+  }
+  
+  const parts = state.split('_')
+  if (parts.length !== 3) {
+    return false
+  }
+  
+  // Validate timestamp (should be recent, within 10 minutes)
+  const timestamp = parseInt(parts[0], 36)
+  const now = Date.now()
+  const maxAge = 10 * 60 * 1000 // 10 minutes
+  
+  if (now - timestamp > maxAge) {
+    return false
+  }
+  
+  return true
+}
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
@@ -28,7 +51,8 @@ interface GitHubUser {
 }
 
 export async function GET(request: NextRequest) {
-  const rateLimitResult = rateLimit(request, 5)
+  const ip = getEnhancedClientIP(request)
+  const rateLimitResult = rateLimiters.auth(`${ip}:GET`)
   if (!rateLimitResult.allowed && rateLimitResult.response) {
     return rateLimitResult.response
   }
@@ -52,7 +76,14 @@ export async function GET(request: NextRequest) {
 
   const storedState = request.cookies.get('oauth_state')?.value
   if (!storedState || storedState !== returnedState) {
+    console.error('[AUTH] OAuth state mismatch', { stored: storedState?.substring(0, 20) + '...', returned: returnedState?.substring(0, 20) + '...' })
     return NextResponse.redirect(new URL('/login?error=invalid_state', request.url))
+  }
+
+  // Additional state validation
+  if (!validateState(returnedState)) {
+    console.error('[AUTH] OAuth state validation failed', { state: returnedState?.substring(0, 20) + '...' })
+    return NextResponse.redirect(new URL('/login?error=invalid_state_format', request.url))
   }
 
   try {
@@ -96,36 +127,31 @@ export async function GET(request: NextRequest) {
     }
 
     let isNewUser = false
-    // Ensure both user and affiliate record are created atomically in a transaction
-    // to prevent foreign key constraint violations during rapid login attempts
-    await sql.begin(async (tx) => {
-      const existingUser = await tx`SELECT id FROM users WHERE github_id = ${userData.id}`
-      if (existingUser.length === 0) {
-        isNewUser = true
-      }
+    // Check if user exists and create/update records
+    const existingUser = await sql`SELECT id FROM users WHERE github_id = ${userData.id}`
+    if (existingUser.length === 0) {
+      isNewUser = true
+    }
 
-      // Create or update main user record
-      const userId = `user_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
-      await tx`
-        INSERT INTO users (id, github_id, username, email, avatar_url)
-        VALUES (${userId}, ${userData.id}, ${userData.login.substring(0, 100)}, ${userData.email || null}, ${userData.avatar_url || null})
-        ON CONFLICT (github_id) DO UPDATE SET
-          username = EXCLUDED.username,
-          email = EXCLUDED.email,
-          avatar_url = EXCLUDED.avatar_url,
-          updated_at = NOW()
-      `
+    // Create or update main user record
+    const userId = `user_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
+    await sql`INSERT INTO users (id, github_id, username, email, avatar_url)
+      VALUES (${userId}, ${userData.id}, ${userData.login.substring(0, 100)}, ${userData.email || null}, ${userData.avatar_url || null})
+      ON CONFLICT (github_id) DO UPDATE SET
+        username = EXCLUDED.username,
+        email = EXCLUDED.email,
+        avatar_url = EXCLUDED.avatar_url,
+        updated_at = NOW()
+    `
 
-      // Create or update affiliate record
-      const affId = `aff_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
-      const affCode = generateAffiliateCode(userData.login)
-      await tx`
-        INSERT INTO affiliate_users (id, github_id, username, affiliate_code)
-        VALUES (${affId}, ${userData.id}, ${userData.login.substring(0, 50)}, ${affCode})
-        ON CONFLICT (github_id) DO UPDATE SET
-          username = EXCLUDED.username
-      `
-    })
+    // Create or update affiliate record
+    const affId = `aff_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
+    const affCode = generateAffiliateCode(userData.login)
+    await sql`INSERT INTO affiliate_users (id, github_id, username, affiliate_code)
+      VALUES (${affId}, ${userData.id}, ${userData.login.substring(0, 50)}, ${affCode})
+      ON CONFLICT (github_id) DO UPDATE SET
+        username = EXCLUDED.username
+    `
 
     const affiliateCode = request.cookies.get('affiliate_code')?.value
     let referralMessage = ''
@@ -134,7 +160,7 @@ export async function GET(request: NextRequest) {
         try {
           const affiliate = await getAffiliateUserByCode(affiliateCode)
           if (affiliate) {
-            const clientIP = getClientIP(request)
+            const clientIP = getEnhancedClientIP(request)
             const ipHash = await hashIP(clientIP)
             await addReferral(affiliateCode, userData.id, userData.login, ipHash)
 
@@ -188,9 +214,9 @@ export async function GET(request: NextRequest) {
       prsReviewed,
       plan,
     }), {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
     })

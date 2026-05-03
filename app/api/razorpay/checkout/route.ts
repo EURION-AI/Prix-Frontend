@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 import { validatePlan } from '@/lib/validation'
 import { rateLimit } from '@/lib/security'
+import { validateCSRFToken, addCSRFTokenToResponse, generateCSRFToken } from '@/lib/csrf'
 
 const PLANS = {
   starter: {
@@ -26,7 +27,17 @@ function getRazorpayClient(): Razorpay | null {
   })
 }
 
+export async function GET(request: Request) {
+  // Provide CSRF token for frontend
+  const response = NextResponse.json({ csrfToken: generateCSRFToken() })
+  return addCSRFTokenToResponse(response)
+}
+
 export async function POST(request: Request) {
+  // Validate CSRF token for POST requests
+  const csrfError = await validateCSRFToken(request)
+  if (csrfError) return csrfError
+
   const rateLimitResult = rateLimit(request, 10)
   if (!rateLimitResult.allowed && rateLimitResult.response) {
     return rateLimitResult.response

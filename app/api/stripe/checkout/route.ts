@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { validatePlan } from '@/lib/validation'
 import { rateLimit } from '@/lib/security'
+import { validateCSRFToken, addCSRFTokenToResponse, generateCSRFToken } from '@/lib/csrf'
 
 const PLANS = {
   starter: {
@@ -22,12 +23,20 @@ function getStripeClient(): Stripe | null {
   if (!process.env.STRIPE_SECRET_KEY) {
     return null
   }
-  return new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2025-02-24.acacia',
-  })
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
+}
+
+export async function GET(request: Request) {
+  // Provide CSRF token for frontend
+  const response = NextResponse.json({ csrfToken: generateCSRFToken() })
+  return addCSRFTokenToResponse(response)
 }
 
 export async function POST(request: Request) {
+  // Validate CSRF token for POST requests
+  const csrfError = await validateCSRFToken(request)
+  if (csrfError) return csrfError
+
   const rateLimitResult = rateLimit(request, 10)
   if (!rateLimitResult.allowed && rateLimitResult.response) {
     return rateLimitResult.response
