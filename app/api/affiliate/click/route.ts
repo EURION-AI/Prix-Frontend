@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { getAffiliateUserByCode } from '@/lib/affiliate-store-db'
 import { rateLimit } from '@/lib/security'
 import { validateAffiliateCode } from '@/lib/validation'
 import { hashIP } from '@/lib/affiliate'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const rateLimitResult = rateLimit(request, 30)
   if (!rateLimitResult.allowed && rateLimitResult.response) {
     return NextResponse.redirect(new URL('/?error=rate_limit', request.url))

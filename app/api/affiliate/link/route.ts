@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getAffiliateUserByCode } from '@/lib/affiliate-store-db'
 import { validateAffiliateCode } from '@/lib/validation'
 import { csrfCheck, rateLimit, addSecurityHeaders } from '@/lib/security'
 
-function isAuthenticated(request: Request): boolean {
+function isAuthenticated(request: NextRequest): boolean {
   const token = request.cookies.get('github_token')?.value
   return !!token
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const csrfResult = csrfCheck(request)
   if (csrfResult) return csrfResult
 

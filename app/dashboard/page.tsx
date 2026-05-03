@@ -43,15 +43,22 @@ export default function DashboardPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [selectedRepos, setSelectedRepos] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [infoMessage, setInfoMessage] = useState<string | null>(null)
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('message') === 'account_exists_no_referral') {
+      setInfoMessage('You already have an account! You have been logged in. Referral link was ignored.')
+    }
+
     const userCookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('github_user='))
     
     if (userCookie) {
       try {
-        const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]))
+        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
+        const userData = JSON.parse(decodeURIComponent(cookieValue))
         setUser(userData)
         if (userData.selectedRepos) {
           setSelectedRepos(userData.selectedRepos)
@@ -220,6 +227,13 @@ export default function DashboardPage() {
           <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400">
             <AlertCircle className="w-5 h-5" />
             <p>{error}</p>
+          </div>
+        )}
+
+        {infoMessage && (
+          <div className="mb-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center gap-3 text-blue-400">
+            <Check className="w-5 h-5" />
+            <p>{infoMessage}</p>
           </div>
         )}
 

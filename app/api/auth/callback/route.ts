@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { addReferral, getAffiliateUserByCode } from '@/lib/affiliate-store-db'
 import { sql } from '@/lib/db'
 import { hashIP, generateAffiliateCode } from '@/lib/affiliate'
@@ -27,7 +27,7 @@ interface GitHubUser {
   bio: string | null
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const rateLimitResult = rateLimit(request, 5)
   if (!rateLimitResult.allowed && rateLimitResult.response) {
     return rateLimitResult.response
@@ -95,9 +95,15 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/login?error=invalid_user', request.url))
     }
 
+    let isNewUser = false
     // Ensure both user and affiliate record are created atomically in a transaction
     // to prevent foreign key constraint violations during rapid login attempts
     await sql.begin(async (tx) => {
+      const existingUser = await tx`SELECT id FROM users WHERE github_id = ${userData.id}`
+      if (existingUser.length === 0) {
+        isNewUser = true
+      }
+
       // Create or update main user record
       const userId = `user_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
       await tx`
@@ -122,37 +128,42 @@ export async function GET(request: Request) {
     })
 
     const affiliateCode = request.cookies.get('affiliate_code')?.value
+    let referralMessage = ''
     if (affiliateCode && typeof affiliateCode === 'string' && validateAffiliateCode(affiliateCode)) {
-      try {
-        const affiliate = await getAffiliateUserByCode(affiliateCode)
-        if (affiliate) {
-          const clientIP = getClientIP(request)
-          const ipHash = await hashIP(clientIP)
-          await addReferral(affiliateCode, userData.id, userData.login, ipHash)
+      if (isNewUser) {
+        try {
+          const affiliate = await getAffiliateUserByCode(affiliateCode)
+          if (affiliate) {
+            const clientIP = getClientIP(request)
+            const ipHash = await hashIP(clientIP)
+            await addReferral(affiliateCode, userData.id, userData.login, ipHash)
 
-          await sql`
-            INSERT INTO affiliate_events (event_type, affiliate_id, affiliate_code, commission_amount, conversion_status, metadata, created_at)
-            VALUES (
-              'conversion',
-              ${affiliate.id},
-              ${affiliateCode},
-              0,
-              'completed',
-              ${JSON.stringify({
-                newUserId: userData.id,
-                newUsername: userData.login,
-                referredAt: new Date().toISOString(),
-              })},
-              NOW()
-            )
-          `
+            await sql`
+              INSERT INTO affiliate_events (event_type, affiliate_id, affiliate_code, commission_amount, conversion_status, metadata, created_at)
+              VALUES (
+                'conversion',
+                ${affiliate.id},
+                ${affiliateCode},
+                0,
+                'completed',
+                ${JSON.stringify({
+                  newUserId: userData.id,
+                  newUsername: userData.login,
+                  referredAt: new Date().toISOString(),
+                })},
+                NOW()
+              )
+            `
+          }
+        } catch (err) {
+          console.error('Failed to track referral:', err)
         }
-      } catch (err) {
-        console.error('Failed to track referral:', err)
+      } else {
+        referralMessage = '?message=account_exists_no_referral'
       }
     }
 
-    const response = NextResponse.redirect(new URL('/dashboard', request.url))
+    const response = NextResponse.redirect(new URL(`/dashboard${referralMessage}`, request.url))
 
     response.cookies.set('github_token', accessToken, {
       httpOnly: true,

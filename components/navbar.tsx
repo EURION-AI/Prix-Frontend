@@ -31,7 +31,7 @@ export function Navbar() {
             <Link href="/demo" className="text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-all duration-200">Demo</Link>
             <Link href="/features" className="text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-all duration-200">Features</Link>
             <Link href="/blog" className="text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-all duration-200">Blog</Link>
-            <Link href="/#pricing" className="text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-all duration-200">Pricing</Link>
+            <Link href="/pricing" className="text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-all duration-200">Pricing</Link>
             <Link href="/affiliate" className="text-[11px] font-bold uppercase tracking-wider text-primary hover:text-primary/80 transition-all duration-200">Earn Free</Link>
             <Link href="/feedback" className="text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-all duration-200">Feedback</Link>
           </div>

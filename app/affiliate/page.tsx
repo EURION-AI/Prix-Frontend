@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Copy, Check, Users, Gift, Star, ArrowLeft, ExternalLink, CreditCard, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { AffiliateStatsSkeleton } from '@/components/skeleton'
+import { Navbar } from '@/components/navbar'
 
 interface UserData {
   id: number
@@ -43,10 +44,19 @@ function AffiliateDashboard({ user }: { user: UserData }) {
     async function fetchStats() {
       try {
         const response = await fetch(`/api/affiliate/stats?githubId=${user.id}&username=${user.username}`)
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}))
+          setError(errData.error || `Failed to load affiliate stats (${response.status})`)
+          return
+        }
         const data = await response.json()
+        if (data.error) {
+          setError(data.error)
+          return
+        }
         setStats(data)
       } catch {
-        setError('Failed to load affiliate stats')
+        setError('Failed to load affiliate stats. Please try again later.')
       } finally {
         setIsLoading(false)
       }
@@ -272,7 +282,9 @@ export default function AffiliatePage() {
     
     if (userCookie) {
       try {
-        const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]))
+        // Use indexOf to avoid breaking on '=' inside the cookie value
+        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
+        const userData = JSON.parse(decodeURIComponent(cookieValue))
         setUser({
           id: userData.id,
           username: userData.username,
@@ -280,7 +292,8 @@ export default function AffiliatePage() {
           email: userData.email,
           avatarUrl: userData.avatarUrl,
         })
-      } catch {
+      } catch (e) {
+        console.error('Failed to parse user cookie:', e)
         window.location.href = '/login'
       }
     } else {
@@ -305,6 +318,7 @@ export default function AffiliatePage() {
   return (
     <div className="min-h-screen bg-[#050508] pt-32 pb-20 px-4 relative">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
+      <Navbar />
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
           <Link href="/" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-8">

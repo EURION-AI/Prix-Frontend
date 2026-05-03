@@ -166,7 +166,7 @@ export async function markReferralAsPurchased(referredGithubId: number): Promise
         SELECT paid_referral_count FROM affiliate_users WHERE id = ${referral.affiliate_id}
       `
       const newPaidCount = (affiliateResult[0]?.paid_referral_count || 0) + 1
-      const newTier = newPaidCount >= 5 ? 'advanced' : newPaidCount >= 2 ? 'basic' : 'free'
+      const newTier = getAffiliateTier(newPaidCount)
 
       await tx`
         UPDATE affiliate_users

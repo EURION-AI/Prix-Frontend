@@ -22,7 +22,8 @@ export default function BillingPage() {
     
     if (userCookie) {
       try {
-        const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]))
+        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
+        const userData = JSON.parse(decodeURIComponent(cookieValue))
         setUser(userData)
       } catch {
         window.location.href = '/login'
