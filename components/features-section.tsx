@@ -1,20 +1,20 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Brain, Cpu, Zap, Shield, LayoutGrid, MessageSquare, Check } from 'lucide-react'
+import { Brain, Cpu, Zap, Shield, LayoutGrid, MessageSquare, Check, Search } from 'lucide-react'
 
 const features = [
   {
-    icon: Zap,
-    title: 'Automatic Fixes',
-    description: 'Get working code fixes ready to merge. Prix generates patches that follow your coding style, pass your tests, and solve problems permanently.',
-    spec: '1-click apply'
+    icon: Search,
+    title: 'Autonomous Repo Intelligence',
+    description: 'Prix visualizes and maps your entire codebase in real-time. It understands how a change in your Auth layer affects your Database schema, ensuring every fix is architecturally sound.',
+    spec: 'Full AST Mapping'
   },
   {
-    icon: Brain,
-    title: 'Code Understanding + Planning',
-    description: 'Prix comprehends your entire codebase architecture, generates implementation plans, and tracks dependencies across millions of lines.',
-    spec: 'Full-repo context'
+    icon: Cpu,
+    title: 'Context-Aware Agentic Fixes',
+    description: 'Powered by LangGraph and agentic workflows, Prix doesn\'t just suggest code—it executes deep reasoning loops to verify fixes before they ever hit your PR.',
+    spec: 'LangGraph Powered'
   },
   {
     icon: Shield,

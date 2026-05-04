@@ -2,21 +2,44 @@
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Code, Brain, Zap, Check, X } from 'lucide-react'
+import { Check, X, Zap, Cpu, Search, Brain, Shield } from 'lucide-react'
 
-const features = [
-  { name: 'Auto-fix generation', icon: Zap },
-  { name: 'Implementation plans', icon: Brain },
-  { name: 'Task breakdowns', icon: Check },
-  { name: 'Architecture proposals', icon: Code },
-  { name: 'Zero-config setup', icon: Zap },
-  { name: 'Multi-repo support', icon: Code },
-]
-
-const competitors = [
-  { name: 'CodeRabbit', issues: ['Reviews only, no auto-fix', 'No implementation plans', 'No task breakdowns', 'Surface-level analysis only'] },
-  { name: 'GitHub Copilot', issues: ['Code completion only', 'No PR review capability', 'No auto-fix generation', 'No planning engine'] },
-  { name: 'SonarQube', issues: ['Static analysis only', 'High false positives', 'Complex configuration', 'No implementation plans'] },
+const comparisonData = [
+  {
+    feature: 'Auto PR Fixing',
+    prix: 'Yes (Context-Aware)',
+    codeRabbit: 'Partial (Basic)',
+    qodo: 'No',
+    icon: Zap
+  },
+  {
+    feature: 'Speed / Latency',
+    prix: 'Sub-second (Groq API)',
+    codeRabbit: 'Standard (GPT-4)',
+    qodo: 'Standard',
+    icon: Cpu
+  },
+  {
+    feature: 'Full Repo Scanning',
+    prix: 'Integrated (AST-based)',
+    codeRabbit: 'File-based',
+    qodo: 'File-based',
+    icon: Search
+  },
+  {
+    feature: 'SEO Optimization Prompting',
+    prix: 'Integrated',
+    codeRabbit: 'No',
+    qodo: 'No',
+    icon: Brain
+  },
+  {
+    feature: 'Model Quality',
+    prix: 'Custom Agentic Workflows',
+    codeRabbit: 'LLM Wrapper',
+    qodo: 'Static + LLM',
+    icon: Shield
+  }
 ]
 
 export function ComparisonSection() {
@@ -28,91 +51,84 @@ export function ComparisonSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="flex flex-col items-start mb-16 max-w-2xl"
+          className="flex flex-col items-center text-center mb-20"
         >
-          <h2 className="text-editorial text-4xl md:text-5xl font-semibold text-white leading-tight">
-            Why teams switch to<br />
-            <span className="text-primary">Prix over competitors</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-4 block font-bold">
+            04 — Benchmark
+          </span>
+          <h2 className="text-editorial text-4xl md:text-6xl font-semibold text-white leading-tight mb-6">
+            The new standard in<br />
+            <span className="text-gradient-vibrant">autonomous engineering.</span>
           </h2>
+          <p className="text-white/40 text-lg max-w-2xl">
+            Prix isn't just another reviewer. It's an agentic engine designed to outpace and out-think traditional static tools.
+          </p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.98 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/[0.05] rounded-2xl overflow-hidden"
+          className="relative bg-[#0a0a0c] border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
         >
-          <div className="grid grid-cols-4 border-b border-white/[0.05]">
-            <div className="p-6 border-r border-white/[0.05]">
-              <span className="text-xs font-mono text-white/30 uppercase tracking-widest">Capability</span>
-            </div>
-            <div className="p-6 border-r border-white/[0.05] bg-primary/5">
+          {/* Table Header */}
+          <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] border-b border-white/10 bg-white/[0.02]">
+            <div className="p-8 font-bold text-white/40 text-xs uppercase tracking-widest">Core Capabilities</div>
+            <div className="p-8 bg-primary/5 flex flex-col items-center justify-center gap-3">
               <div className="flex items-center gap-2">
-                <Image 
-                  src="/logo.png" 
-                  alt="Prix" 
-                  width={36} 
-                  height={36} 
-                  className="rounded-md object-contain" 
-                />
-                <span className="text-sm font-bold text-white">Prix</span>
+                <Image src="/logo.png" alt="Prix" width={24} height={24} className="rounded-md" />
+                <span className="text-lg font-bold text-white tracking-tight uppercase">Prix</span>
               </div>
+              <span className="text-[10px] font-bold text-primary uppercase tracking-widest animate-pulse">Winner</span>
             </div>
-            <div className="p-6 border-r border-white/[0.05]">
-              <span className="text-sm font-bold text-white/40">CodeRabbit</span>
+            <div className="p-8 flex flex-col items-center justify-center gap-2">
+              <span className="text-sm font-bold text-white/60">CodeRabbit</span>
             </div>
-            <div className="p-6">
-              <span className="text-sm font-bold text-white/40">GitHub Copilot</span>
+            <div className="p-8 flex flex-col items-center justify-center gap-2">
+              <span className="text-sm font-bold text-white/60">Qodo</span>
             </div>
           </div>
 
-          {features.map((feature, index) => (
+          {/* Table Rows */}
+          {comparisonData.map((row, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-              className="grid grid-cols-4 border-b border-white/[0.03] last:border-0"
+              transition={{ delay: index * 0.1 }}
+              className="grid grid-cols-[1.5fr_1fr_1fr_1fr] border-b border-white/[0.05] last:border-0 hover:bg-white/[0.01] transition-colors"
             >
-              <div className="p-5 border-r border-white/[0.05] flex items-center gap-3">
-                <feature.icon className="w-4 h-4 text-primary/60" strokeWidth={1.5} />
-                <span className="text-sm text-white/60">{feature.name}</span>
+              <div className="p-8 flex items-center gap-4">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                  <row.icon className="w-4 h-4 text-white/40" />
+                </div>
+                <span className="font-semibold text-white/80">{row.feature}</span>
               </div>
-              <div className="p-5 border-r border-white/[0.05] bg-primary/5 flex items-center justify-center">
-                <Check className="w-5 h-5 text-primary" />
+              
+              <div className="p-8 bg-primary/[0.02] flex items-center justify-center flex-col gap-1">
+                <div className="flex items-center gap-2 text-primary font-bold">
+                  <Check className="w-4 h-4" />
+                  <span className="text-sm">{row.prix}</span>
+                </div>
               </div>
-              <div className="p-5 border-r border-white/[0.05] flex items-center justify-center">
-                <X className="w-5 h-5 text-white/20" />
+
+              <div className="p-8 flex items-center justify-center text-center">
+                <span className="text-xs text-white/40 font-medium">{row.codeRabbit}</span>
               </div>
-              <div className="p-5 flex items-center justify-center">
-                <X className="w-5 h-5 text-white/20" />
+
+              <div className="p-8 flex items-center justify-center text-center">
+                <span className="text-xs text-white/40 font-medium">{row.qodo}</span>
               </div>
             </motion.div>
           ))}
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
-          {competitors.map((comp, index) => (
-            <div key={index} className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-5">
-              <h4 className="text-sm font-bold text-white/40 mb-4">{comp.name}</h4>
-              <div className="space-y-2">
-                {comp.issues.map((issue, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs text-white/30">
-                    <X className="w-3 h-3 text-red-400/40" />
-                    <span>{issue}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </motion.div>
+        <div className="mt-12 text-center">
+          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">
+            * Benchmark data based on internal testing and publicly available features as of April 2026.
+          </p>
+        </div>
       </div>
     </section>
   )

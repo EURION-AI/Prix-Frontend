@@ -40,9 +40,9 @@ export default function FeaturesPage() {
       <SecuritySection />
       <IntegrationsSection />
       <VisionSection />
-      <div className="py-20 text-center">
-        <h3 className="text-white text-2xl font-bold mb-6">Ready to accelerate?</h3>
-        <Button size="lg" asChild className="h-14 px-10 rounded-xl btn-premium text-lg font-bold">
+      <div className="py-24 text-center border-t border-white/[0.03]">
+        <h3 className="text-white text-3xl font-bold mb-8">Ready to accelerate?</h3>
+        <Button size="lg" asChild className="h-12 px-8 rounded-xl btn-premium text-base font-bold">
           <Link href="/login">Start Free Trial</Link>
         </Button>
       </div>
