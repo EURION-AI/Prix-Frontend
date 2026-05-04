@@ -9,9 +9,7 @@ import Link from 'next/link'
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background px-4">
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:32px_32px]" />
-      </div>
+
 
       <div className="relative z-[60] w-full max-w-[1600px] mx-auto px-6 lg:px-12 pt-32 pb-16">
         <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-8 xl:gap-16 2xl:gap-20 items-center min-h-[calc(100vh-200px)]">

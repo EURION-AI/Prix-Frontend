@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+
 
 export const metadata: Metadata = {
   title: 'Blog | Prix AI - Insights on AI Code Review & Engineering Velocity',
@@ -48,7 +50,6 @@ const blogs = [
 export default function BlogIndex() {
   return (
     <div className="min-h-screen bg-[#050508]">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <Navbar />
       
       <main className="pt-32 pb-20 relative">
@@ -71,6 +72,12 @@ export default function BlogIndex() {
                 className="group flex flex-col bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-primary/30 hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="aspect-[16/9] bg-white/5 relative overflow-hidden">
+                  <Image 
+                    src={blog.image} 
+                    alt={blog.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050508] to-transparent opacity-60" />
                   <div className="absolute bottom-4 left-4">
                     <Badge className={blog.color === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-primary/10 text-primary border-primary/20'}>

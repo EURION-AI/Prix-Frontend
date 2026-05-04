@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, CheckCircle, AlertTriangle, Target, Settings, Users, Shield, Zap, BookOpen, Lightbulb, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+
 
 export const metadata: Metadata = {
   title: 'AI Code Review Best Practices for Engineering Teams | Prix',
@@ -112,7 +114,6 @@ const metrics = [
 export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <Navbar />
       
       <article className="pt-32 pb-20 relative">
@@ -127,6 +128,17 @@ export default function BlogPost() {
 
           {/* Header */}
           <header className="mb-12">
+            <div className="relative aspect-video w-full mb-12 rounded-2xl overflow-hidden border border-white/10">
+              <Image 
+                src="/blog/ai-code-review-best-practices/og-image.jpg"
+                alt="AI Code Review Best Practices for Engineering Teams"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
+            </div>
+
             <div className="flex items-center gap-3 mb-6">
               <Badge className="bg-primary/10 text-primary border-primary/20">Best Practices</Badge>
               <div className="flex items-center gap-2 text-white/40 text-sm">

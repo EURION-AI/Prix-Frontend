@@ -32,21 +32,6 @@ export function Navbar() {
             <span className="text-sm font-bold tracking-tight text-white uppercase hidden lg:block">Prix</span>
           </Link>
 
-          {/* Search Bar with Logo */}
-          <div className="hidden md:flex items-center flex-1 max-w-md relative group">
-            <div className="absolute left-3 flex items-center pointer-events-none">
-              <Image src="/logo.png" alt="" width={16} height={16} className="opacity-40 group-focus-within:opacity-100 transition-opacity" />
-            </div>
-            <input 
-              type="text" 
-              placeholder="Search features, docs, or PRs..." 
-              className="w-full bg-white/[0.03] border border-white/10 rounded-lg py-2 pl-10 pr-10 text-xs text-white/80 focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all"
-            />
-            <div className="absolute right-3 flex items-center gap-1 pointer-events-none">
-              <kbd className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[10px] text-white/40 font-mono">⌘</kbd>
-              <kbd className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[10px] text-white/40 font-mono">K</kbd>
-            </div>
-          </div>
 
           <div className="hidden xl:flex items-center gap-8">
             <Link href="/demo" className="text-[11px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-all duration-200">Demo</Link>

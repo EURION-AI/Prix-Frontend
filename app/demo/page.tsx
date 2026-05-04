@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function DemoPage() {
   return (
     <div className="min-h-screen bg-[#050508]">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <Navbar />
       <main className="pt-32 pb-20 relative min-h-screen flex flex-col justify-between">
         <div className="flex-1 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-center">

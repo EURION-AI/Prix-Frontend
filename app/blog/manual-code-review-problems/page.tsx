@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, AlertTriangle, TrendingDown, Users, Code, BarChart3, Target, Zap, Shield, DollarSign, Timer, Brain } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+
 
 export const metadata: Metadata = {
   title: 'Why Manual Code Reviews Are Slowing Your Team Down | Prix',
@@ -136,7 +138,6 @@ const scaleProblems = [
 export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <Navbar />
       
       <article className="pt-32 pb-20 relative">
@@ -151,6 +152,17 @@ export default function BlogPost() {
 
           {/* Header */}
           <header className="mb-12">
+            <div className="relative aspect-video w-full mb-12 rounded-2xl overflow-hidden border border-white/10">
+              <Image 
+                src="/blog/manual-code-review-problems/og-image.jpg"
+                alt="Why Manual Code Reviews Are Slowing Your Team Down"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
+            </div>
+
             <div className="flex items-center gap-3 mb-6">
               <Badge className="bg-red-500/10 text-red-400 border-red-500/20">Engineering</Badge>
               <div className="flex items-center gap-2 text-white/40 text-sm">

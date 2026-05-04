@@ -2,9 +2,23 @@
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Check, X, Zap, Cpu, Search, Brain, Shield } from 'lucide-react'
+import { Check, X, Zap, Cpu, Search, Brain, Shield, DollarSign, Infinity } from 'lucide-react'
 
 const comparisonData = [
+  {
+    feature: 'Monthly Pricing',
+    prix: '$6.99',
+    codeRabbit: '$60',
+    qodo: '$38',
+    icon: DollarSign
+  },
+  {
+    feature: 'PR Fixes / Month',
+    prix: 'Unlimited',
+    codeRabbit: 'Limited',
+    qodo: 'Limited',
+    icon: Infinity
+  },
   {
     feature: 'Auto PR Fixing',
     prix: 'Yes (Context-Aware)',
@@ -14,8 +28,8 @@ const comparisonData = [
   },
   {
     feature: 'Speed / Latency',
-    prix: 'Sub-second (Groq API)',
-    codeRabbit: 'Standard (GPT-4)',
+    prix: 'Sub-second',
+    codeRabbit: 'Standard',
     qodo: 'Standard',
     icon: Cpu
   },
@@ -27,20 +41,21 @@ const comparisonData = [
     icon: Search
   },
   {
-    feature: 'SEO Optimization Prompting',
+    feature: 'SEO Optimization',
     prix: 'Integrated',
     codeRabbit: 'No',
     qodo: 'No',
     icon: Brain
   },
   {
-    feature: 'Model Quality',
-    prix: 'Custom Agentic Workflows',
-    codeRabbit: 'LLM Wrapper',
-    qodo: 'Static + LLM',
+    feature: 'Autonomous Logic',
+    prix: 'Agentic Workflows',
+    codeRabbit: 'Scripted',
+    qodo: 'Static Analysis',
     icon: Shield
   }
 ]
+
 
 export function ComparisonSection() {
   return (

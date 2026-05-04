@@ -49,8 +49,7 @@ interface FeaturesSectionProps {
 export function FeaturesSection({ hideHeader = false }: FeaturesSectionProps) {
   return (
     <section id="features" className="py-32 bg-background relative border-t border-white/[0.03] overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none opacity-[0.015]"
-           style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '80px 100%' }} />
+
 
       <div className="w-full max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
         {!hideHeader && (

@@ -67,7 +67,6 @@ const benefits = [
 export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <Navbar />
       
       <article className="pt-32 pb-20 relative">
@@ -82,6 +81,17 @@ export default function BlogPost() {
 
           {/* Header */}
           <header className="mb-12">
+            <div className="relative aspect-video w-full mb-12 rounded-2xl overflow-hidden border border-white/10">
+              <Image 
+                src="/blog/reduce-code-review-time/og-image.jpg"
+                alt="How to Reduce Code Review Time by 80% with AI"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
+            </div>
+
             <div className="flex items-center gap-3 mb-6">
               <Badge className="bg-primary/10 text-primary border-primary/20">Productivity</Badge>
               <div className="flex items-center gap-2 text-white/40 text-sm">
