@@ -160,20 +160,22 @@ export function PricingSection() {
                 <Link href={plan.href}>{plan.cta}</Link>
               </Button>
               
-              {plan.price !== 'Free' && (
-                <div className="mt-4 flex flex-col items-center gap-2">
-                  <p className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">
-                    Or you can get it for <Link href="/affiliate" className="underline hover:text-primary/80">FREE!!!</Link>
-                  </p>
-                  <Button variant="ghost" size="sm" asChild className="text-[10px] text-white/40 hover:text-white">
-                    <Link href="/affiliate">Earn Free via Affiliate</Link>
-                  </Button>
-                </div>
-              )}
-              
-              <p className="text-center text-white/30 text-xs mt-4">
-                {plan.guarantee}
-              </p>
+              <div className="mt-4 flex flex-col items-center gap-2">
+                {plan.price !== 'Free' ? (
+                  <Link 
+                    href="/affiliate" 
+                    className="text-[10px] font-bold text-green-400 hover:text-green-300 transition-colors uppercase tracking-widest"
+                  >
+                    Earn Free via Affiliate
+                  </Link>
+                ) : (
+                  <div className="h-[14px]" /> // Spacer to keep buttons aligned
+                )}
+                
+                <p className="text-center text-white/30 text-xs">
+                  {plan.guarantee}
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>
