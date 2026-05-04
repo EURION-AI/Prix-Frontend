@@ -49,7 +49,8 @@ interface FeaturesSectionProps {
 export function FeaturesSection({ hideHeader = false }: FeaturesSectionProps) {
   return (
     <section id="features" className="py-32 bg-background relative border-t border-white/[0.03] overflow-hidden">
-
+      <div className="absolute inset-0 pointer-events-none opacity-[0.015]"
+           style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '80px 100%' }} />
 
       <div className="w-full max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
         {!hideHeader && (
@@ -70,7 +71,7 @@ export function FeaturesSection({ hideHeader = false }: FeaturesSectionProps) {
           </motion.div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border border-white/[0.05] rounded-2xl overflow-hidden bg-white/[0.08]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border border-white/[0.05] rounded-2xl overflow-hidden bg-white/[0.01]">
           {features.map((feature, index) => (
             <motion.div
               key={index}

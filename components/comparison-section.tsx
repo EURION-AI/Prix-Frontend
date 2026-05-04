@@ -84,7 +84,7 @@ export function ComparisonSection() {
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="relative bg-[#0a0a0c] border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+          className="relative bg-gradient-to-br from-white/[0.02] to-white/[0.01] border border-white/[0.05] rounded-3xl overflow-hidden shadow-2xl"
         >
           {/* Table Header */}
           <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] border-b border-white/10 bg-white/[0.02]">

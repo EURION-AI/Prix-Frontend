@@ -39,7 +39,7 @@ export function CTASection() {
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10">
               <Button
                 size="lg"
-                className="h-11 px-10 rounded-full bg-white text-black hover:bg-white/90 transition-all text-lg font-bold group w-fit mx-auto lg:mx-0"
+                className="h-14 px-10 rounded-full bg-white text-black hover:bg-white/90 transition-all text-lg font-bold group"
               >
                 <span className="flex items-center gap-2">
                   Start for Free

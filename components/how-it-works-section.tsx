@@ -56,7 +56,7 @@ export function HowItWorksSection() {
             >
               <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl" />
               
-              <div className="relative bg-white/[0.08] border border-white/[0.05] hover:border-primary/20 rounded-3xl p-8 transition-all duration-500 h-full">
+              <div className="relative bg-white/[0.01] border border-white/[0.05] hover:border-primary/20 rounded-3xl p-8 transition-all duration-500 h-full">
                 <div className="mb-8">
                   <span className="text-[10px] font-mono text-primary/60 tracking-[0.3em]">{step.step}</span>
                   <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center mt-4 group-hover:border-primary/20 group-hover:bg-primary/5 transition-all duration-500">
