@@ -46,30 +46,52 @@ export default function DashboardPage() {
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('message') === 'account_exists_no_referral') {
-      setInfoMessage('You already have an account! You have been logged in. Referral link was ignored.')
-    }
+    async function initializeDashboard() {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('message') === 'account_exists_no_referral') {
+        setInfoMessage('You already have an account! You have been logged in. Referral link was ignored.')
+      }
 
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    
-    if (userCookie) {
-      try {
-        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-        const userData = JSON.parse(decodeURIComponent(cookieValue))
-        setUser(userData)
-        if (userData.selectedRepos) {
-          setSelectedRepos(userData.selectedRepos)
+      const userCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('github_user='))
+      
+      if (userCookie) {
+        try {
+          const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
+          const userData = JSON.parse(decodeURIComponent(cookieValue))
+          setUser(userData)
+          if (userData.selectedRepos) {
+            setSelectedRepos(userData.selectedRepos)
+          }
+          await fetchRepos()
+          return
+        } catch {
+          // Continue to API check if cookie parsing fails
         }
-        fetchRepos()
+      }
+
+      // Fallback: Check API in case cookie is httpOnly or missing
+      try {
+        const response = await fetch('/api/auth/user')
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+          if (data.user.selectedRepos) {
+            setSelectedRepos(data.user.selectedRepos)
+          }
+          // Sync cookie for client-side use
+          document.cookie = `github_user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=${60 * 60 * 24 * 7}`
+          await fetchRepos()
+        } else {
+          window.location.href = '/login'
+        }
       } catch {
         window.location.href = '/login'
       }
-    } else {
-      window.location.href = '/login'
     }
+
+    initializeDashboard()
   }, [])
 
   useEffect(() => {
@@ -129,7 +151,7 @@ export default function DashboardPage() {
       
       if (user) {
         const updatedUser = { ...user, selectedRepos: data.selectedRepos }
-        document.cookie = `github_user=${encodeURIComponent(JSON.stringify(updatedUser))}; path=/; max-age=${60 * 60 * 24 * 7}`
+        document.cookie = `github_user=${encodeURIComponent(JSON.stringify(updatedUser))}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
         setUser(updatedUser)
       }
       
@@ -143,11 +165,31 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center relative">
-        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 animate-spin text-primary" />
-          <p className="text-white/50 animate-pulse">Loading your GitHub universe...</p>
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-[#050508] to-[#050508] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-glow-pulse" />
+        
+        <div className="flex flex-col items-center gap-8 relative z-10">
+          <div className="relative">
+            {/* Outer spinning ring */}
+            <div className="w-20 h-20 border-2 border-primary/20 rounded-full" />
+            <div className="absolute inset-0 w-20 h-20 border-t-2 border-primary rounded-full animate-spin" />
+            
+            {/* Inner pulsing icon */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center animate-pulse">
+                <Github className="w-5 h-5 text-primary" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-2 text-center">
+            <h2 className="text-xl font-bold text-white tracking-tight">Synchronizing Universe</h2>
+            <p className="text-white/30 text-sm font-mono uppercase tracking-[0.2em] animate-pulse">
+              Initializing Secure Session...
+            </p>
+          </div>
         </div>
       </div>
     )

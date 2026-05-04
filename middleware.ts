@@ -11,7 +11,13 @@ export function middleware(request: NextRequest) {
   // BUT the root homepage should ALWAYS be accessible.
   
   if (pathname === '/login' && userCookie) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    try {
+      // Basic validation to ensure the cookie is valid JSON
+      JSON.parse(userCookie.value)
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    } catch {
+      // If cookie is malformed, don't redirect to allow user to re-authenticate
+    }
   }
 
   // 2. Security Headers Logic

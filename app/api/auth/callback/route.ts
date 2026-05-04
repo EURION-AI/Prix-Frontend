@@ -214,7 +214,7 @@ export async function GET(request: NextRequest) {
       prsReviewed,
       plan,
     }), {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 7,

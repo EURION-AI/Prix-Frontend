@@ -309,20 +309,40 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    
-    if (userCookie) {
+    async function checkAuth() {
+      const userCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('github_user='))
+      
+      if (userCookie) {
+        try {
+          const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
+          const userData = JSON.parse(decodeURIComponent(cookieValue))
+          setUser(userData)
+          setIsLoading(false)
+          return
+        } catch {
+          // Continue to API check
+        }
+      }
+
+      // Check API in case cookie is httpOnly
       try {
-        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-        const userData = JSON.parse(decodeURIComponent(cookieValue))
-        setUser(userData)
-      } catch {
-        setUser(null)
+        const response = await fetch('/api/auth/user')
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+          // Sync cookie for client-side use
+          document.cookie = `github_user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
+        }
+      } catch (err) {
+        console.error('Failed to check auth:', err)
+      } finally {
+        setIsLoading(false)
       }
     }
-    setIsLoading(false)
+
+    checkAuth()
   }, [])
 
   const handleLogout = async () => {
