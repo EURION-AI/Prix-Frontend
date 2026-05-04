@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import { Navbar } from '@/components/navbar'
 import { FeaturesSection } from '@/components/features-section'
 import { ComparisonSection } from '@/components/comparison-section'
@@ -10,6 +11,14 @@ import { CTASection } from '@/components/cta-section'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Features | Prix AI - Automated Code Review Platform',
+  description: 'AI-powered code review with automatic bug detection, security scanning, and PR fix generation. Integrates with GitHub, GitLab, and Bitbucket.',
+  alternates: {
+    canonical: './',
+  },
+}
 
 export default function FeaturesPage() {
   return (

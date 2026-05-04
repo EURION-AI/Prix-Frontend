@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     images: ['/blog/manual-code-review-problems/og-image.jpg'],
   },
   alternates: {
-    canonical: 'https://www.prixai.xyz/blog/manual-code-review-problems',
+    canonical: './',
   },
 }
 

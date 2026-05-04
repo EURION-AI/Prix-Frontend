@@ -1,7 +1,16 @@
+import { Metadata } from 'next'
 import { Navbar } from '@/components/navbar'
 import { PricingSection } from '@/components/pricing-section'
 import { CTASection } from '@/components/cta-section'
 import { Footer } from '@/components/footer'
+
+export const metadata: Metadata = {
+  title: 'Pricing | Prix AI - Plans for Every Team',
+  description: 'Start free with 5 PR reviews per month. Upgrade to Base ($7/month) or Pro ($9.99/month) for unlimited AI-powered code review and automated PR fixes.',
+  alternates: {
+    canonical: './',
+  },
+}
 
 export default function PricingPage() {
   return (

@@ -204,6 +204,7 @@ export async function GET(request: NextRequest) {
     const prsReviewed = userRecord[0]?.prs_reviewed || 0
     const plan = userRecord[0]?.plan || 'free'
 
+    // Store user data in httpOnly cookie (secure from XSS)
     response.cookies.set('github_user', JSON.stringify({
       id: userData.id,
       username: userData.login,
@@ -214,7 +215,7 @@ export async function GET(request: NextRequest) {
       prsReviewed,
       plan,
     }), {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 7,

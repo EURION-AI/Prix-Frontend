@@ -4,6 +4,12 @@ import { markReferralAsPurchased } from '@/lib/affiliate-store-db'
 import { updateUserPlan, getUserByGithubId } from '@/lib/user-store'
 import { sql } from '@/lib/db'
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
 export async function POST(request: Request) {
   const body = await request.text()
   const signature = request.headers.get('x-razorpay-signature')

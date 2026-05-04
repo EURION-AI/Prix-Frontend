@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: 'Blog | Prix AI - Insights on AI Code Review & Engineering Velocity',
   description: 'Explore our latest articles on AI code review best practices, engineering productivity, and how to accelerate your development workflow.',
   keywords: ['AI code review blog', 'engineering productivity', 'developer velocity', 'automated PR review', 'code quality insights'],
+  alternates: {
+    canonical: './',
+  },
 }
 
 const blogs = [

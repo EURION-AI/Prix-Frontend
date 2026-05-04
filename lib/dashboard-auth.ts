@@ -12,7 +12,11 @@ export function checkDashboardAuth(request: Request): NextResponse | null {
 
   const expectedSecret = process.env.DASHBOARD_SECRET || process.env.ADMIN_SECRET
 
-  if (!expectedSecret || dashboardSecret !== expectedSecret) {
+  if (!expectedSecret) {
+    throw new Error('DASHBOARD_SECRET or ADMIN_SECRET must be configured')
+  }
+
+  if (dashboardSecret !== expectedSecret) {
     return NextResponse.json(
       { error: 'Invalid session' },
       { status: 401 }

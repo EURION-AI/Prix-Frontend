@@ -5,6 +5,12 @@ import { markReferralAsPurchased } from '@/lib/affiliate-store-db'
 import { updateUserPlan, getUserByGithubId } from '@/lib/user-store'
 import { sql } from '@/lib/db'
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
 function getStripeClient(): Stripe | null {
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
     return null
