@@ -69,7 +69,7 @@ export default function BlogIndex() {
               <Link 
                 key={index} 
                 href={blog.href}
-                className="group flex flex-col bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-primary/30 hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1"
+                className="group flex flex-col bg-white/[0.05] border border-white/10 rounded-2xl overflow-hidden hover:border-primary/30 hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="aspect-[16/9] bg-white/5 relative overflow-hidden">
                   <Image 
