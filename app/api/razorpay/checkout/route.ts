@@ -7,11 +7,11 @@ import { validateCSRFToken, addCSRFTokenToResponse, generateCSRFToken } from '@/
 const PLANS = {
   starter: {
     name: 'Base',
-    price: 24900, // INR 249.00 (approx $2.99)
+    price: 58100, // INR 581.00 (approx $7)
   },
   pro: {
     name: 'Pro',
-    price: 41500, // INR 415.00 (approx $4.99)
+    price: 83000, // INR 830.00 (approx $9.99)
   },
 } as const
 

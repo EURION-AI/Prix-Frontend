@@ -1,11 +1,11 @@
-﻿# Pricing - Prix
+# Pricing - Prix
 
 AI-powered code review tool that automatically fixes bugs, generates implementation plans, and reviews every PR.
 
 ## Free
 - Price: $0/month (forever)
 - Target: Individual developers, personal projects
-- Limits: 10 automated fixes per month, public repositories only
+- Limits: 5 PR and 5 issue fixes per month, public repositories only
 - Features:
   - GitHub integration
   - Community support
@@ -13,7 +13,7 @@ AI-powered code review tool that automatically fixes bugs, generates implementat
 - Sign up: https://prix.ai/login
 
 ## Base (Starter Plan)
-- Price: $2.99/month (billed annually) | $4.99/month (billed monthly)
+- Price: $7/month (billed annually) | $9.99/month (billed monthly)
 - Launch special: 50% off (limited time, expires April 30, 2026)
 - Target: Professional developers who ship code daily
 - Limits: Unlimited automated fixes, unlimited private repositories
@@ -28,7 +28,7 @@ AI-powered code review tool that automatically fixes bugs, generates implementat
 - Sign up: https://prix.ai/checkout?plan=starter
 
 ## Pro (Team Plan)
-- Price: $4.99/month (billed annually) | $9.99/month (billed monthly)
+- Price: $9.99/month (billed annually) | $19.99/month (billed monthly)
 - Launch special: 50% off (limited time, expires April 30, 2026)
 - Target: Engineering teams that need the fastest reviews and deepest analysis
 - Limits: Unlimited automated fixes, unlimited team members
@@ -48,7 +48,7 @@ AI-powered code review tool that automatically fixes bugs, generates implementat
 - Review time: 2-3 days to under 4 hours (80% reduction)
 - Availability: Business hours only to 24/7
 - Consistency: Varies by reviewer to 95% consistent quality
-- Cost: Senior engineer time to $2.99-4.99/month
+- Cost: Senior engineer time to $7-9.99/month
 
 ### Prix vs GitHub Copilot
 - Focus: Code review vs code generation
