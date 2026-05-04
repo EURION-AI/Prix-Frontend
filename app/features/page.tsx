@@ -41,7 +41,7 @@ export default function FeaturesPage() {
       <VisionSection />
       <div className="py-24 text-center border-t border-white/[0.03]">
         <h3 className="text-white text-3xl font-bold mb-8">Ready to accelerate?</h3>
-        <Button size="lg" asChild className="h-11 px-8 rounded-xl btn-premium text-base font-bold">
+        <Button size="lg" asChild className="h-10 px-6 rounded-lg btn-premium text-sm font-bold w-fit mx-auto">
           <Link href="/login">Start Free Trial</Link>
         </Button>
       </div>

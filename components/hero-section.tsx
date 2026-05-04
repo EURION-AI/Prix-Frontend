@@ -59,7 +59,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 asChild
-                className="h-14 px-8 rounded-xl btn-premium text-base group shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300"
+                className="h-12 px-8 rounded-xl btn-premium text-base group shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300"
               >
                 <Link href="/login">
                   <span className="relative z-10 flex items-center gap-3 font-semibold">
@@ -73,7 +73,7 @@ export function HeroSection() {
                 variant="outline"
                 size="lg"
                 asChild
-                className="h-14 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white text-base transition-all duration-300"
+                className="h-12 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white text-base transition-all duration-300"
               >
                 <Link href="/features">
                   Explore Features
@@ -84,7 +84,7 @@ export function HeroSection() {
                 variant="ghost"
                 size="lg"
                 asChild
-                className="h-14 px-8 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300"
+                className="h-12 px-8 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300"
               >
                 <Link href="/demo">
                   Watch Demo
