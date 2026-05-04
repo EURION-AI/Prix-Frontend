@@ -54,7 +54,7 @@ function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
-    const targetDate = new Date('2026-04-30T23:59:59')
+    const targetDate = new Date('2026-06-07T23:59:59')
 
     const calculateTimeLeft = () => {
       const now = new Date()
@@ -164,7 +164,7 @@ export function PricingSection() {
                 {plan.price !== 'Free' ? (
                   <Link 
                     href="/affiliate" 
-                    className="text-[10px] font-bold text-green-400 hover:text-green-300 transition-colors uppercase tracking-widest"
+                    className="px-4 py-1.5 rounded-lg border border-green-500/20 bg-green-500/5 text-[10px] font-bold text-green-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 uppercase tracking-widest"
                   >
                     Earn Free via Affiliate
                   </Link>
