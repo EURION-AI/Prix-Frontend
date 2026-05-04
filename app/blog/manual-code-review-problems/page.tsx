@@ -419,10 +419,10 @@ export default function BlogPost() {
               Stop letting manual reviews slow your team down. See how AI-powered code review can restore your engineering velocity.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" asChild className="h-14 px-8 rounded-xl bg-primary hover:bg-primary/90">
+              <Button size="lg" asChild className="h-11 px-8 rounded-xl bg-primary hover:bg-primary/90 w-fit">
                 <Link href="/login">Start Free Trial</Link>
               </Button>
-              <Button variant="outline" size="lg" asChild className="h-14 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white">
+              <Button variant="outline" size="lg" asChild className="h-11 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white w-fit">
                 <Link href="/demo">See the Solution</Link>
               </Button>
             </div>

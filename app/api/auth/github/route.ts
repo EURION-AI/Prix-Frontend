@@ -21,7 +21,7 @@ function generateState(): string {
 
 function validateState(state: string): boolean {
   // Validate state format: timestamp_nonce_randomhex
-  const stateRegex = /^[a-z0-9]+_[a-f0-9]{32}[a-f0-9]*$/
+  const stateRegex = /^[a-z0-9]+_[a-f0-9]{32}_[a-f0-9]+$/
   if (!stateRegex.test(state)) {
     return false
   }

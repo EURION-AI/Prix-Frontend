@@ -59,7 +59,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 asChild
-                className="h-12 px-8 rounded-xl btn-premium text-base group shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300"
+                className="h-11 px-8 rounded-xl btn-premium text-base group shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 w-fit"
               >
                 <Link href="/login">
                   <span className="relative z-10 flex items-center gap-3 font-semibold">

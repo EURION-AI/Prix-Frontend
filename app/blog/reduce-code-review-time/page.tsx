@@ -268,10 +268,10 @@ export default function BlogPost() {
               Join hundreds of teams using Prix to ship code 5x faster with AI-powered code review.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" asChild className="h-14 px-8 rounded-xl bg-primary hover:bg-primary/90">
+              <Button size="lg" asChild className="h-11 px-8 rounded-xl bg-primary hover:bg-primary/90 w-fit">
                 <Link href="/login">Start Free Trial</Link>
               </Button>
-              <Button variant="outline" size="lg" asChild className="h-14 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white">
+              <Button variant="outline" size="lg" asChild className="h-11 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white w-fit">
                 <Link href="/demo">See Demo</Link>
               </Button>
             </div>
