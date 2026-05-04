@@ -29,13 +29,20 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
 
+  // Development mode requires 'unsafe-eval' for React debugging
+  // Production builds never use eval()
+  const isDev = process.env.NODE_ENV === 'development'
+  const scriptSrc = isDev 
+    ? "'self' 'unsafe-inline' 'unsafe-eval'"
+    : "'self' 'unsafe-inline'"
+
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval';
+    script-src ${scriptSrc};
     style-src 'self' 'unsafe-inline';
-    img-src 'self' data: https: blob:;
-    font-src 'self' data:;
-    connect-src 'self' https://github.com https://api.github.com https://stripe.com https://api.stripe.com;
+    img-src 'self' data: https:;
+    font-src 'self';
+    connect-src 'self' https:;
     frame-src 'none';
     object-src 'none';
     base-uri 'self';
