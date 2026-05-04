@@ -78,7 +78,7 @@ export function FeaturesSection({ hideHeader = false }: FeaturesSectionProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05, duration: 0.5 }}
-              className="group p-10 flex flex-col items-start transition-all duration-300 hover:bg-white/[0.12] border border-white/[0.02] relative"
+              className="group p-10 flex flex-col items-start card-interactive"
             >
               <div className="mb-8 text-white/30 group-hover:text-primary transition-colors duration-300">
                 <feature.icon className="w-8 h-8" strokeWidth={1.5} />

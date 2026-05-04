@@ -182,17 +182,17 @@ function AffiliateDashboard({ user }: { user: UserData }) {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white/5 rounded-xl p-4 text-center">
+        <div className="rounded-xl p-4 text-center card-interactive !opacity-100">
           <Users className="w-6 h-6 text-white/40 mx-auto mb-2" />
           <div className="text-2xl font-bold text-white">{stats.referralCount}</div>
           <div className="text-white/40 text-xs uppercase tracking-wider">Referrals</div>
         </div>
-        <div className="bg-white/5 rounded-xl p-4 text-center">
+        <div className="rounded-xl p-4 text-center card-interactive !opacity-100">
           <Gift className="w-6 h-6 text-green-400 mx-auto mb-2" />
           <div className="text-2xl font-bold text-white">{stats.paidReferralCount}</div>
           <div className="text-white/40 text-xs uppercase tracking-wider">Paid</div>
         </div>
-        <div className="bg-white/5 rounded-xl p-4 text-center">
+        <div className="rounded-xl p-4 text-center card-interactive !opacity-100">
           <Star className={`w-6 h-6 mx-auto mb-2 ${tierColors[stats.tier]}`} />
           <div className={`text-2xl font-bold ${tierColors[stats.tier]}`}>
             {stats.tier === 'free' ? '0' : stats.tier === 'basic' ? '1' : '2'}
@@ -377,7 +377,7 @@ export default function LoginPage() {
           </p>
         </div>
         
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+        <div className="rounded-2xl p-8 card-interactive !opacity-100">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-white/50" />

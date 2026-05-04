@@ -34,7 +34,7 @@ export function ProblemSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="relative p-10 rounded-2xl bg-white/[0.02] border border-white/[0.08] overflow-hidden group hover:border-primary/20 transition-all duration-500"
+            className="p-10 rounded-2xl card-interactive"
           >
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
@@ -53,7 +53,7 @@ export function ProblemSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="relative p-10 rounded-2xl bg-white/[0.02] border border-white/[0.08] overflow-hidden group hover:border-primary/20 transition-all duration-500"
+            className="p-10 rounded-2xl card-interactive"
           >
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
@@ -72,7 +72,7 @@ export function ProblemSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="relative p-10 rounded-2xl bg-white/[0.02] border border-white/[0.08] overflow-hidden group hover:border-primary/20 transition-all duration-500"
+            className="p-10 rounded-2xl card-interactive"
           >
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">

@@ -313,10 +313,10 @@ export default function DashboardPage() {
                 key={repo.id}
                 onClick={() => handleRepoSelect(repo.full_name)}
                 disabled={isSaving}
-                className={`text-left p-6 rounded-2xl border transition-all relative group ${
+                className={`text-left p-6 rounded-2xl border transition-all relative group card-interactive ${
                   selectedRepos.includes(repo.full_name) 
-                    ? 'bg-primary/10 border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
-                    : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'
+                    ? 'bg-primary/10 border-primary !opacity-100 shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
+                    : ''
                 }`}
               >
                 <div className="flex justify-between items-start mb-3">
