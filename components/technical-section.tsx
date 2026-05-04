@@ -38,7 +38,7 @@ export function TechnicalSection() {
       label: 'Contextual Recall', 
       value: '100%', 
       desc: 'Cross-file dependency mapping',
-      icon: <Globe className="w-3 h-3 text-secondary" />
+      icon: <Cpu className="w-3 h-3 text-secondary" />
     },
     { 
       label: 'Privacy', 

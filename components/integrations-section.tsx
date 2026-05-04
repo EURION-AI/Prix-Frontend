@@ -1,14 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Github, Code2, Terminal, Globe, Smartphone, Coffee } from 'lucide-react'
+import { Github, Code2, Terminal, Gitlab, Briefcase, Coffee } from 'lucide-react'
 
 const integrations = [
   { name: 'GitHub', icon: Github, color: '#ffffff' },
   { name: 'VS Code', icon: Code2, color: '#007ACC' },
   { name: 'JetBrains', icon: Coffee, color: '#FF318C' },
-  { name: 'GitLab', icon: Globe, color: '#FC6D26' },
-  { name: 'Bitbucket', icon: Smartphone, color: '#0052CC' },
+  { name: 'GitLab', icon: Gitlab, color: '#FC6D26' },
+  { name: 'Bitbucket', icon: Briefcase, color: '#0052CC' },
   { name: 'CLI', icon: Terminal, color: '#22C55E' },
 ]
 
