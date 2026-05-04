@@ -70,7 +70,7 @@ export function FeaturesSection({ hideHeader = false }: FeaturesSectionProps) {
           </motion.div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border border-white/[0.05] rounded-2xl overflow-hidden bg-white/[0.03]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border border-white/[0.05] rounded-2xl overflow-hidden bg-white/[0.08]">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -78,7 +78,7 @@ export function FeaturesSection({ hideHeader = false }: FeaturesSectionProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05, duration: 0.5 }}
-              className="group p-10 flex flex-col items-start transition-all duration-300 hover:bg-white/[0.05] border border-white/[0.02] relative"
+              className="group p-10 flex flex-col items-start transition-all duration-300 hover:bg-white/[0.12] border border-white/[0.02] relative"
             >
               <div className="mb-8 text-white/30 group-hover:text-primary transition-colors duration-300">
                 <feature.icon className="w-8 h-8" strokeWidth={1.5} />
