@@ -14,7 +14,7 @@ AI-powered code review tool that automatically fixes bugs, generates implementat
 
 ## Base (Starter Plan)
 - Price: $7/month (billed annually) | $9.99/month (billed monthly)
-- Launch special: 50% off (limited time, expires April 30, 2026)
+- Launch special: 50% off (limited time, expires June 7, 2026)
 - Target: Professional developers who ship code daily
 - Limits: Unlimited automated fixes, unlimited private repositories
 - Features:
