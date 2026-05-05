@@ -10,7 +10,7 @@ function SuccessContent() {
   const sessionId = searchParams.get('session_id')
   const plan = searchParams.get('plan')
 
-  const planName = plan === 'basic' ? 'Basic' : plan === 'advanced' ? 'Advanced' : null
+  const planName = plan === 'starter' ? 'Starter' : plan === 'pro' ? 'Pro' : null
 
   return (
     <div className="w-full max-w-md text-center">

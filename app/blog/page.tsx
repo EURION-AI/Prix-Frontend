@@ -19,9 +19,39 @@ export const metadata: Metadata = {
 
 const blogs = [
   {
+    title: 'Getting Started with AI Code Review: A Complete Guide for 2026',
+    description: 'New to AI-powered code review? This comprehensive guide covers everything from setup to best practices, helping your team achieve 80% faster review cycles and higher code quality.',
+    date: 'May 4, 2026',
+    readTime: '8 min read',
+    category: 'Guide',
+    href: '/blog/ai-code-review-guide-2026',
+    image: '/blog/ai-code-review-guide-2026/og-image.jpg',
+    color: 'primary'
+  },
+  {
+    title: 'How to Fix Security Vulnerabilities with Automated Code Review',
+    description: 'Security breaches cost companies millions. Learn how AI code review tools detect SQL injection, XSS, and hardcoded secrets before they reach production.',
+    date: 'April 28, 2026',
+    readTime: '6 min read',
+    category: 'Security',
+    href: '/blog/security-vulnerabilities-automated-review',
+    image: '/blog/security-vulnerabilities-automated-review/og-image.jpg',
+    color: 'red'
+  },
+  {
+    title: 'Reducing Technical Debt with AI-Powered Code Analysis',
+    description: 'Technical debt slowing your feature delivery? Discover how AI code review identifies code smells, complexity hotspots, and refactoring opportunities automatically.',
+    date: 'April 18, 2026',
+    readTime: '7 min read',
+    category: 'Best Practices',
+    href: '/blog/technical-debt-ai-analysis',
+    image: '/blog/technical-debt-ai-analysis/og-image.jpg',
+    color: 'primary'
+  },
+  {
     title: 'How to Reduce Code Review Time by 80% with AI',
     description: 'Manual code reviews are killing your team\'s velocity. Learn how leading engineering teams use AI-powered automated PR review to eliminate bottlenecks and ship code 5x faster.',
-    date: 'January 15, 2024',
+    date: 'April 12, 2026',
     readTime: '5 min read',
     category: 'Productivity',
     href: '/blog/reduce-code-review-time',
@@ -31,7 +61,7 @@ const blogs = [
   {
     title: 'AI Code Review Best Practices for Engineering Teams',
     description: 'Implementing AI code review tools successfully requires more than just installation. Learn the proven strategies that top engineering teams use to maximize code quality.',
-    date: 'January 10, 2024',
+    date: 'April 8, 2026',
     readTime: '7 min read',
     category: 'Best Practices',
     href: '/blog/ai-code-review-best-practices',
@@ -41,7 +71,7 @@ const blogs = [
   {
     title: 'Why Manual Code Reviews Are Slowing Your Team Down',
     description: 'Code review backlog killing your velocity? Discover why traditional review processes fail at scale and how AI-powered tools solve the core problems.',
-    date: 'January 5, 2024',
+    date: 'April 2, 2026',
     readTime: '4 min read',
     category: 'Engineering',
     href: '/blog/manual-code-review-problems',

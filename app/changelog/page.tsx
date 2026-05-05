@@ -10,26 +10,17 @@ export const metadata: Metadata = {
 
 const updates = [
   {
-    version: 'v1.2.0',
-    date: 'March 2026',
-    type: 'New Feature',
-    typeColor: 'bg-primary',
-    title: 'Deep Security Vulnerability Scanning',
-    description: 'Integrated CVE monitoring and real-time dependency scanning. Catches OWASP Top 10 vulnerabilities before they reach production.',
-    icon: Shield
+    version: 'v1.0.0',
+    date: 'May 5, 2026',
+    type: 'Launch',
+    typeColor: 'bg-purple-500',
+    title: 'Prix Launch',
+    description: 'Official launch with AI-powered PR reviews, bug detection, and automated fix generation. GitHub integration and 30-second average review time.',
+    icon: Search
   },
   {
-    version: 'v1.1.0',
-    date: 'February 2026',
-    type: 'Improvement',
-    typeColor: 'bg-green-500',
-    title: '10x Faster Analysis Engine',
-    description: 'Rewrote the analysis pipeline from scratch. PR reviews that took minutes now complete in seconds. Average review time: 47 seconds.',
-    icon: Zap
-  },
-  {
-    version: 'v1.0.5',
-    date: 'January 2026',
+    version: 'v0.9.0',
+    date: 'Late April 2026',
     type: 'New Feature',
     typeColor: 'bg-primary',
     title: 'Chat With Your Code',
@@ -37,13 +28,22 @@ const updates = [
     icon: Code
   },
   {
-    version: 'v1.0.0',
-    date: 'December 2025',
-    type: 'Launch',
-    typeColor: 'bg-purple-500',
-    title: 'Prix Launch',
-    description: 'Initial release with AI-powered PR reviews, bug detection, and automated fix generation. GitHub integration and 30-second average review time.',
-    icon: Search
+    version: 'v0.5.0',
+    date: 'Mid April 2026',
+    type: 'Improvement',
+    typeColor: 'bg-green-500',
+    title: '10x Faster Analysis Engine',
+    description: 'Rewrote the analysis pipeline from scratch. PR reviews that took minutes now complete in seconds. Average review time: 47 seconds.',
+    icon: Zap
+  },
+  {
+    version: 'v0.1.0',
+    date: 'March 28, 2026',
+    type: 'New Feature',
+    typeColor: 'bg-primary',
+    title: 'Deep Security Vulnerability Scanning',
+    description: 'Integrated CVE monitoring and real-time dependency scanning. Catches OWASP Top 10 vulnerabilities before they reach production.',
+    icon: Shield
   }
 ]
 
