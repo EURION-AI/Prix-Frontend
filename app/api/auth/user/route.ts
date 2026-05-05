@@ -42,7 +42,8 @@ export async function GET(request: Request) {
       avatarUrl: userData.avatarUrl || null,
       selectedRepos: userData.selectedRepos || [],
       prsReviewed: userData.prsReviewed || 0,
-      plan: userData.plan || 'free'
+      plan: userData.plan || 'free',
+      githubInstallationId: userData.githubInstallationId || null
     }
 
     return NextResponse.json({ user: safeUserData })

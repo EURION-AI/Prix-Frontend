@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+  const [loadingRepo, setLoadingRepo] = useState<string | null>(null)
   const [selectedRepos, setSelectedRepos] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
@@ -155,7 +155,7 @@ export default function DashboardPage() {
       }
     }
     
-    setIsSaving(true)
+    setLoadingRepo(repoName)
     setError(null)
     try {
       const response = await fetch('/api/github/select-repo', {
@@ -178,7 +178,7 @@ export default function DashboardPage() {
     } catch (err: any) {
       setError(err.message || 'Failed to save your repository selection.')
     } finally {
-      setIsSaving(false)
+      setLoadingRepo(null)
     }
   }
 
@@ -346,7 +346,7 @@ export default function DashboardPage() {
               <button
                 key={repo.id}
                 onClick={() => handleRepoSelect(repo.full_name)}
-                disabled={isSaving}
+                disabled={!!loadingRepo}
                 className={`text-left p-6 rounded-2xl border transition-all relative group card-interactive ${
                   selectedRepos.includes(repo.full_name) 
                     ? 'bg-primary/10 border-primary !opacity-100 shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
@@ -376,7 +376,7 @@ export default function DashboardPage() {
                     Last updated: {new Date(repo.updated_at).toLocaleDateString()}
                   </span>
                   <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                    {isSaving && selectedRepos.includes(repo.full_name) ? (
+                    {loadingRepo === repo.full_name ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : selectedRepos.includes(repo.full_name) ? (
                       <span className="flex items-center gap-2 text-red-400 hover:text-red-300">
