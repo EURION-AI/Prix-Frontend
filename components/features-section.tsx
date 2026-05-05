@@ -35,7 +35,7 @@ const features = [
     spec: 'Universal integrations'
   },
   {
-    icon: Cpu,
+    icon: Zap,
     title: 'Performance',
     description: 'Detect N+1 queries, memory leaks, and inefficient algorithms. Prix suggests optimizations with benchmarks.',
     spec: '40+ checks'

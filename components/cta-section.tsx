@@ -39,12 +39,15 @@ export function CTASection() {
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10">
               <Button
                 size="lg"
+                asChild
                 className="h-14 px-10 rounded-full bg-white text-black hover:bg-white/90 transition-all text-lg font-bold group"
               >
-                <span className="flex items-center gap-2">
-                  Start for Free
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </span>
+                <Link href="/login">
+                  <span className="flex items-center gap-2">
+                    Start for Free
+                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
               </Button>
 
               <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-white/40">
