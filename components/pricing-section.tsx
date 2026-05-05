@@ -41,7 +41,7 @@ const plans = [
     originalPrice: '$14.99',
     priceValue: 9.99,
     description: 'For teams that need the fastest fixes and deepest analysis.',
-    features: ['Everything in Base', 'Architecture proposals', 'Unlimited team members', 'Admin dashboard', 'SSO/SAML support', 'Custom integrations'],
+    features: ['Everything in Base', 'Unlimited PR Reviews','Unlimited Architecture proposals', 'Performance optimization', 'Advanced Security scanning (OWASP Top 10)', 'Priority support'],
     cta: 'Subscribe for $9.99',
     href: '/checkout?plan=pro',
     popular: true,
