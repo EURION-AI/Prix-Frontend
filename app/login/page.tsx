@@ -18,7 +18,7 @@ interface AffiliateStats {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
-  tier: 'free' | 'basic' | 'advanced'
+  tier: 'free' | 'starter' | 'advanced'
   requiredForBasic: number
   requiredForAdvanced: number
   progressToBasic: number
