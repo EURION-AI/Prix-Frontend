@@ -43,27 +43,57 @@ export async function GET() {
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error(`Repos API: GitHub error ${response.status}:`, errorText)
+      console.error(`Repos API: GitHub error ${response.status} at ${url}:`, errorText)
+      
+      // FALLBACK: If installation fetch fails, try the standard user repos fetch
+      if (installationId) {
+        console.log('Repos API: Installation fetch failed, falling back to standard user repos')
+        const fallbackResponse = await fetch('https://api.github.com/user/repos?sort=updated&per_page=100', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        })
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json()
+          return NextResponse.json(mapRepos(fallbackData))
+        }
+      }
+      
       return NextResponse.json({ error: 'Failed to fetch repositories' }, { status: response.status })
     }
 
     const data = await response.json()
-    // GitHub returns an object with a 'repositories' array for installations, 
-    // or a direct array for user/repos
-    const repos = installationId ? data.repositories : data
+    
+    // Handle different response formats
+    let repos = []
+    if (installationId && data.repositories) {
+      repos = data.repositories
+    } else if (Array.isArray(data)) {
+      repos = data
+    } else if (data.repositories) {
+      repos = data.repositories
+    } else {
+      console.error('Repos API: Unexpected GitHub response format:', data)
+      throw new Error('Unexpected response format')
+    }
 
     console.log(`Repos API: Successfully fetched ${repos.length} repositories`)
-    return NextResponse.json(repos.map((repo: any) => ({
-      id: repo.id,
-      name: repo.name,
-      full_name: repo.full_name,
-      description: repo.description,
-      html_url: repo.html_url,
-      private: repo.private,
-      updated_at: repo.updated_at,
-    })))
+    return NextResponse.json(mapRepos(repos))
   } catch (error) {
     console.error('Error fetching GitHub repos:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
+}
+
+function mapRepos(repos: any[]) {
+  return repos.map((repo: any) => ({
+    id: repo.id,
+    name: repo.name,
+    full_name: repo.full_name,
+    description: repo.description,
+    html_url: repo.html_url,
+    private: repo.private,
+    updated_at: repo.updated_at,
+  }))
 }
