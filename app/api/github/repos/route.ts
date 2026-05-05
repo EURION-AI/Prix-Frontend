@@ -26,7 +26,7 @@ export async function GET() {
       console.error('Repos API: Failed to fetch installation ID from DB:', err)
     }
   }
-
+  try {
     if (!installationId) {
       console.log('Repos API: No installation ID found, returning empty list to enforce strict filtering')
       return NextResponse.json([])
