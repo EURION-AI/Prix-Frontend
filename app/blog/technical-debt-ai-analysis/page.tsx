@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, TrendingDown, GitGraph, Layers, Sparkles, Target, Zap, Code2, Recycle } from 'lucide-react'
 import Link from 'next/link'
-import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Reducing Technical Debt with AI-Powered Code Analysis | Prix',
