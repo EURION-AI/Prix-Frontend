@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import Link from 'next/link'
 
 
 export const metadata: Metadata = {

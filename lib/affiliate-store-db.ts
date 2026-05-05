@@ -8,7 +8,7 @@ export interface AffiliateUser {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
-  tier: 'free' | 'basic' | 'advanced'
+  tier: 'free' | 'starter' | 'advanced'
   createdAt: string
 }
 

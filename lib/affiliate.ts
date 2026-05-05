@@ -5,7 +5,7 @@ export interface AffiliateUser {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
-  tier: 'free' | 'basic' | 'advanced'
+  tier: 'free' | 'starter' | 'advanced'
   createdAt: string
 }
 
@@ -21,7 +21,7 @@ export interface Referral {
 
 export const AFFILIATE_TIERS = {
   free: { requiredReferrals: 0 },
-  basic: { requiredReferrals: 2 },
+  starter: { requiredReferrals: 2 },
   advanced: { requiredReferrals: 3 },
 } as const
 
@@ -43,8 +43,8 @@ export async function hashIP(ip: string): Promise<string> {
     .substring(0, 32)
 }
 
-export function getAffiliateTier(paidReferralCount: number): 'free' | 'basic' | 'advanced' {
+export function getAffiliateTier(paidReferralCount: number): 'free' | 'starter' | 'advanced' {
   if (paidReferralCount >= AFFILIATE_TIERS.advanced.requiredReferrals) return 'advanced'
-  if (paidReferralCount >= AFFILIATE_TIERS.basic.requiredReferrals) return 'basic'
+  if (paidReferralCount >= AFFILIATE_TIERS.starter.requiredReferrals) return 'starter'
   return 'free'
 }

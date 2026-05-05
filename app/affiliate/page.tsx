@@ -18,7 +18,7 @@ interface AffiliateStats {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
-  tier: 'free' | 'basic' | 'advanced'
+  tier: 'free' | 'starter' | 'advanced'
   requiredForBasic: number
   requiredForAdvanced: number
   progressToBasic: number
@@ -90,19 +90,19 @@ function AffiliateDashboard({ user }: { user: UserData }) {
 
   const tierColors = {
     free: 'text-white/40',
-    basic: 'text-blue-400',
+    starter: 'text-blue-400',
     advanced: 'text-primary',
   }
 
   const tierLabels = {
     free: 'Free Tier',
-    basic: 'Pro Plan',
-    advanced: 'Team Plan',
+    starter: 'Starter Plan',
+    advanced: 'Pro Plan',
   }
 
   const tierBgColors = {
     free: 'bg-white/5',
-    basic: 'bg-blue-500/10',
+    starter: 'bg-blue-500/10',
     advanced: 'bg-primary/10',
   }
 
@@ -117,7 +117,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         <p className="text-white/50 text-sm max-w-lg mx-auto">
           {stats.tier === 'advanced' 
             ? '🎉 You have lifetime Team access!' 
-            : stats.tier === 'basic'
+            : stats.tier === 'starter'
             ? '✨ You have lifetime Pro access!'
             : `Earn free access! Get ${stats.requiredForBasic - stats.paidReferralCount} more paid referrals for Pro.`}
         </p>
@@ -137,7 +137,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/5">
           <Star className={`w-8 h-8 mx-auto mb-3 ${tierColors[stats.tier]}`} />
           <div className={`text-4xl font-bold mb-1 ${tierColors[stats.tier]}`}>
-            {stats.tier === 'free' ? '0' : stats.tier === 'basic' ? '1' : '2'}
+            {stats.tier === 'free' ? '0' : stats.tier === 'starter' ? '1' : '2'}
           </div>
           <div className="text-white/40 text-xs uppercase tracking-wider">Unlocks</div>
         </div>
