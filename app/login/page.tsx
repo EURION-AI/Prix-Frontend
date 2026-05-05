@@ -42,15 +42,18 @@ function GitHubOAuthButton() {
     setError(null)
     
     try {
-      // replace 'prix-ai-automation' with your actual GitHub App slug
-      const GITHUB_APP_SLUG = 'prix-ai-automation' 
-      const url = `https://github.com/apps/${GITHUB_APP_SLUG}/installations/new`
+      // First, get the OAuth URL from our backend to log the user in
+      const response = await fetch('/api/auth/github')
+      const data = await response.json()
       
-      if (refCode) {
-        await fetch(`/api/affiliate/link?code=${encodeURIComponent(refCode)}`)
+      if (data.url) {
+        // We add a 'setup=true' flag so our callback knows to redirect to the installation page
+        const authUrl = new URL(data.url)
+        window.location.href = authUrl.toString()
+      } else {
+        setError('Failed to initiate GitHub login')
+        setIsLoading(false)
       }
-      
-      window.location.href = url
     } catch {
       setError('Failed to initiate GitHub setup')
       setIsLoading(false)
