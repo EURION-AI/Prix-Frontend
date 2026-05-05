@@ -133,12 +133,17 @@ export default function DashboardPage() {
   async function fetchRepos() {
     try {
       const response = await fetch('/api/github/repos')
-      if (!response.ok) throw new Error('Failed to fetch repositories')
       const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Failed to fetch repositories')
+      }
+      
       setRepos(data)
       setFilteredRepos(data)
-    } catch (err) {
-      setError('Could not load repositories from GitHub. Please try logging in again.')
+    } catch (err: any) {
+      console.error('Fetch repos error:', err)
+      setError(`GitHub Error: ${err.message}`)
     } finally {
       setIsLoading(false)
     }

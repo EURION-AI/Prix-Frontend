@@ -43,9 +43,12 @@ export async function GET() {
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
+      const errorData = await response.json().catch(() => ({ message: 'No response body' }))
+      const errorText = JSON.stringify(errorData)
       console.error(`Repos API: GitHub error ${response.status} at ${url}:`, errorText)
-      return NextResponse.json({ error: 'Failed to fetch authorized repositories' }, { status: response.status })
+      return NextResponse.json({ 
+        error: `GitHub API ${response.status}: ${errorData.message || 'Unknown error'}` 
+      }, { status: response.status })
     }
 
     const data = await response.json()
