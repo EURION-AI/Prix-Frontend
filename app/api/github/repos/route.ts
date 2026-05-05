@@ -38,6 +38,7 @@ export async function GET() {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
+        'User-Agent': 'Prix-AI-App'
       },
     })
 
