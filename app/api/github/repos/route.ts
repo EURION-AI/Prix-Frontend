@@ -10,9 +10,18 @@ export async function GET() {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
+  const userCookie = cookieStore.get('github_user')?.value
+  const userData = userCookie ? JSON.parse(userCookie) : null
+  const installationId = userData?.githubInstallationId
+
   try {
     console.log('Repos API: Fetching repos from GitHub...')
-    const response = await fetch('https://api.github.com/user/repos?sort=updated&per_page=100', {
+    
+    const url = installationId 
+      ? `https://api.github.com/user/installations/${installationId}/repositories`
+      : 'https://api.github.com/user/repos?sort=updated&per_page=100'
+
+    const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
@@ -25,7 +34,11 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch repositories' }, { status: response.status })
     }
 
-    const repos = await response.json()
+    const data = await response.json()
+    // GitHub returns an object with a 'repositories' array for installations, 
+    // or a direct array for user/repos
+    const repos = installationId ? data.repositories : data
+
     console.log(`Repos API: Successfully fetched ${repos.length} repositories`)
     return NextResponse.json(repos.map((repo: any) => ({
       id: repo.id,

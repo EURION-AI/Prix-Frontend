@@ -178,39 +178,6 @@ async function seedDashboardData() {
       }
     }
 
-    console.log('Seeding user events (page views)...')
-    const pages = ['/', '/pricing', '/features', '/docs', '/blog']
-    for (let i = 30; i >= 0; i--) {
-      const date = new Date(now)
-      date.setDate(date.getDate() - i)
-
-      for (let h = 0; h < 24; h++) {
-        const pageViews = Math.floor(50 + Math.random() * 200)
-        for (let p = 0; p < pageViews; p++) {
-          const eventDate = new Date(date)
-          eventDate.setHours(h)
-          eventDate.setMinutes(Math.floor(Math.random() * 60))
-
-          try {
-            await sql`
-              INSERT INTO user_events (event_type, user_id, session_id, page_url, user_agent, ip_hash, metadata, created_at)
-              VALUES (
-                'page_view',
-                null,
-                ${`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`},
-                ${pages[Math.floor(Math.random() * pages.length)]},
-                'Mozilla/5.0',
-                ${Math.abs(Math.floor(Math.random() * 0xFFFFFFFF)).toString(16)},
-                ${JSON.stringify({})},
-                ${eventDate}
-              )
-            `
-          } catch (e) {
-          }
-        }
-      }
-    }
-
     console.log('Seed completed successfully!')
     console.log('')
     console.log('Summary:')
@@ -218,7 +185,6 @@ async function seedDashboardData() {
     console.log('- Affiliate users table: 5 affiliates')
     console.log('- Affiliate events table: clicks, conversions, commissions')
     console.log('- Revenue events table: subscriptions and purchases')
-    console.log('- User events table: page views')
   } catch (error) {
     console.error('Seed failed:', error)
     throw error

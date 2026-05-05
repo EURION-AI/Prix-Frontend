@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import Link from 'next/link'
 
 
 export const metadata: Metadata = {
@@ -104,22 +104,12 @@ export default function BlogIndex() {
                 href={blog.href}
                 className="group flex flex-col bg-white/[0.1] border border-white/10 rounded-2xl overflow-hidden hover:border-primary/30 hover:bg-white/[0.15] transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="aspect-[16/9] bg-white/5 relative overflow-hidden">
-                  <Image 
-                    src={blog.image} 
-                    alt={blog.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050508] to-transparent opacity-60" />
-                  <div className="absolute bottom-4 left-4">
+                <div className="p-8 flex-1 flex flex-col">
+                  <div className="mb-4">
                     <Badge className={blog.color === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-primary/10 text-primary border-primary/20'}>
                       {blog.category}
                     </Badge>
                   </div>
-                </div>
-                
-                <div className="p-8 flex-1 flex flex-col">
                   <div className="flex items-center gap-4 text-white/40 text-sm mb-4">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-4 h-4" />

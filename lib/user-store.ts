@@ -8,6 +8,7 @@ export interface User {
   avatarUrl: string | null
   plan: 'free' | 'pro' | 'max'
   selectedRepos: string[]
+  githubInstallationId: number | null
   prsReviewed: number
   createdAt: string
   updatedAt: string
@@ -36,6 +37,7 @@ export async function getOrCreateUser(githubId: number, username: string, email?
     avatarUrl: row.avatar_url,
     plan: row.plan,
     selectedRepos: row.selected_repos || [],
+    githubInstallationId: row.github_installation_id,
     prsReviewed: row.prs_reviewed || 0,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
@@ -58,6 +60,7 @@ export async function getUserByGithubId(githubId: number): Promise<User | null> 
     avatarUrl: row.avatar_url,
     plan: row.plan,
     selectedRepos: row.selected_repos || [],
+    githubInstallationId: row.github_installation_id,
     prsReviewed: row.prs_reviewed || 0,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
@@ -76,6 +79,14 @@ export async function updateSelectedRepos(githubId: number, repos: string[]): Pr
   await sql`
     UPDATE users
     SET selected_repos = ${sql.json(repos)}, updated_at = NOW()
+    WHERE github_id = ${githubId}
+  `
+}
+
+export async function updateInstallationId(githubId: number, installationId: number): Promise<void> {
+  await sql`
+    UPDATE users
+    SET github_installation_id = ${installationId}, updated_at = NOW()
     WHERE github_id = ${githubId}
   `
 }

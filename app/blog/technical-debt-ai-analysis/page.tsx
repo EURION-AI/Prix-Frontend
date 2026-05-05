@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, TrendingDown, GitGraph, Layers, Sparkles, Target, Zap, Code2, Recycle } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Reducing Technical Debt with AI-Powered Code Analysis | Prix',
@@ -108,16 +108,7 @@ export default function BlogPost() {
 
           {/* Header */}
           <header className="mb-12">
-            <div className="relative aspect-video w-full mb-12 rounded-2xl overflow-hidden border border-white/10">
-              <Image 
-                src="/blog/technical-debt-ai-analysis/og-image.jpg"
-                alt="Reducing Technical Debt with AI-Powered Code Analysis"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
-            </div>
+
 
             <div className="flex items-center gap-3 mb-6 flex-wrap">
               <Badge className="bg-primary/10 text-primary border-primary/20">Best Practices</Badge>

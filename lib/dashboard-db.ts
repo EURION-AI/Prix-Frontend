@@ -28,20 +28,7 @@ export async function initializeDashboardDatabase() {
       )
     `
 
-    await sql`
-      CREATE TABLE IF NOT EXISTS user_events (
-        id SERIAL PRIMARY KEY,
-        event_type VARCHAR(50) NOT NULL,
-        user_id VARCHAR(100),
-        session_id VARCHAR(100) NOT NULL,
-        page_url TEXT,
-        referrer TEXT,
-        user_agent TEXT,
-        ip_hash VARCHAR(64),
-        metadata JSONB,
-        created_at TIMESTAMP DEFAULT NOW()
-      )
-    `
+
 
     await sql`
       CREATE TABLE IF NOT EXISTS revenue_events (
@@ -80,15 +67,7 @@ export async function initializeDashboardDatabase() {
     await sql`
       CREATE INDEX IF NOT EXISTS idx_daily_aggregates_date ON daily_aggregates(date)
     `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_user_events_type ON user_events(event_type)
-    `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_user_events_created ON user_events(created_at)
-    `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_user_events_type_created ON user_events(event_type, created_at)
-    `
+
     await sql`
       CREATE INDEX IF NOT EXISTS idx_daily_aggregates_date_cat ON daily_aggregates(date, metric_category)
     `
@@ -108,9 +87,7 @@ export async function initializeDashboardDatabase() {
     await sql`
       CREATE INDEX IF NOT EXISTS idx_revenue_events_github ON revenue_events(github_id)
     `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_user_events_session ON user_events(session_id)
-    `
+
 
     console.log('Dashboard database initialized successfully')
   } catch (error) {
@@ -137,18 +114,7 @@ export async function addRevenueGithubIdColumn() {
   }
 }
 
-export async function addUserEventIndexes() {
-  try {
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_user_events_session ON user_events(session_id)
-    `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_user_events_user_id ON user_events(user_id)
-    `
-  } catch (error) {
-    console.error('Failed to add user_events indexes:', error)
-  }
-}
+
 
 export async function recordMetric(
   metricType: string,
@@ -197,12 +163,8 @@ export async function getDailyAggregates(
 }
 
 export async function archiveOldEvents(daysToKeep: number = 90) {
-  const deletedUserEvents = await sql`
-    DELETE FROM user_events
-    WHERE created_at < NOW() - INTERVAL '${daysToKeep} days'
-    RETURNING id
-  `
-  console.log(`Archived ${deletedUserEvents.length} user_events older than ${daysToKeep} days`)
+  const deletedUserEventsCount = 0; // Removed user_events tracking
+
 
   const deletedAffiliateEvents = await sql`
     DELETE FROM affiliate_events
@@ -213,7 +175,7 @@ export async function archiveOldEvents(daysToKeep: number = 90) {
   console.log(`Archived ${deletedAffiliateEvents.length} old click events`)
 
   return {
-    userEventsArchived: deletedUserEvents.length,
+    userEventsArchived: deletedUserEventsCount,
     affiliateEventsArchived: deletedAffiliateEvents.length
   }
 }

@@ -42,22 +42,17 @@ function GitHubOAuthButton() {
     setError(null)
     
     try {
-      let url = '/api/auth/github'
+      // replace 'prix-ai-automation' with your actual GitHub App slug
+      const GITHUB_APP_SLUG = 'prix-ai-automation' 
+      const url = `https://github.com/apps/${GITHUB_APP_SLUG}/installations/new`
+      
       if (refCode) {
         await fetch(`/api/affiliate/link?code=${encodeURIComponent(refCode)}`)
       }
       
-      const response = await fetch(url)
-      const data = await response.json()
-      
-      if (data.url) {
-        window.location.href = data.url
-      } else {
-        setError('Failed to initiate GitHub login')
-        setIsLoading(false)
-      }
+      window.location.href = url
     } catch {
-      setError('Failed to initiate GitHub login')
+      setError('Failed to initiate GitHub setup')
       setIsLoading(false)
     }
   }

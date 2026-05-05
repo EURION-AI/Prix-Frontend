@@ -31,6 +31,7 @@ interface UserData {
   avatarUrl: string
   plan: 'free' | 'pro' | 'max'
   selectedRepos: string[]
+  githubInstallationId: number | null
   prsReviewed: number
 }
 
@@ -48,8 +49,26 @@ export default function DashboardPage() {
   useEffect(() => {
     async function initializeDashboard() {
       const params = new URLSearchParams(window.location.search)
+      const installationId = params.get('installation_id')
+      
       if (params.get('message') === 'account_exists_no_referral') {
         setInfoMessage('You already have an account! You have been logged in. Referral link was ignored.')
+      }
+
+      // If returning from a fresh "mounting" installation
+      if (installationId) {
+        try {
+          const response = await fetch('/api/github/mount', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ installationId }),
+          })
+          if (response.ok) {
+            setInfoMessage('Successfully mounted repositories! You can now select them below.')
+          }
+        } catch (err) {
+          console.error('Failed to sync installation:', err)
+        }
       }
 
       const userCookie = document.cookie
@@ -216,6 +235,21 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-3">
+            <a 
+              href={user?.githubInstallationId 
+                ? `https://github.com/settings/installations/${user.githubInstallationId}`
+                : `https://github.com/apps/prix-ai-automation/installations/new`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl transition-all flex items-center gap-2 group"
+            >
+              <Github className="w-4 h-4 text-primary" />
+              <span className="font-medium text-primary">
+                {user?.githubInstallationId ? 'Manage Repositories' : 'Mount Repositories'}
+              </span>
+            </a>
+
             <Link 
               href="/affiliate"
               className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center gap-2 group"

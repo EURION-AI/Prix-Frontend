@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, Shield, AlertTriangle, Lock, Eye, Bug, FileCode, Terminal } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'How to Fix Security Vulnerabilities with Automated Code Review | Prix',
@@ -112,16 +112,7 @@ export default function BlogPost() {
 
           {/* Header */}
           <header className="mb-12">
-            <div className="relative aspect-video w-full mb-12 rounded-2xl overflow-hidden border border-white/10">
-              <Image 
-                src="/blog/security-vulnerabilities-automated-review/og-image.jpg"
-                alt="How to Fix Security Vulnerabilities with Automated Code Review"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
-            </div>
+
 
             <div className="flex items-center gap-3 mb-6 flex-wrap">
               <Badge className="bg-red-500/10 text-red-400 border-red-500/20">Security</Badge>

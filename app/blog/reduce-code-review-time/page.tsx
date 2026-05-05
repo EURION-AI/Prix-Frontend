@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, TrendingUp, Users, Code, Zap, Shield, Target, BarChart3, Lightbulb } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'How to Reduce Code Review Time by 80% with AI | Prix',
@@ -81,16 +81,7 @@ export default function BlogPost() {
 
           {/* Header */}
           <header className="mb-12">
-            <div className="relative aspect-video w-full mb-12 rounded-2xl overflow-hidden border border-white/10">
-              <Image 
-                src="/blog/reduce-code-review-time/og-image.jpg"
-                alt="How to Reduce Code Review Time by 80% with AI"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
-            </div>
+
 
             <div className="flex items-center gap-3 mb-6">
               <Badge className="bg-primary/10 text-primary border-primary/20">Productivity</Badge>
