@@ -65,6 +65,16 @@ export default function DashboardPage() {
           })
           if (response.ok) {
             setInfoMessage('Successfully mounted repositories! You can now select them below.')
+            // Update the local cookie immediately so subsequent API calls use the new installation ID
+            const existingCookie = document.cookie
+              .split('; ')
+              .find(row => row.startsWith('github_user='))
+            if (existingCookie) {
+              const cookieValue = existingCookie.substring(existingCookie.indexOf('=') + 1)
+              const userData = JSON.parse(decodeURIComponent(cookieValue))
+              userData.githubInstallationId = parseInt(installationId)
+              document.cookie = `github_user=${encodeURIComponent(JSON.stringify(userData))}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
+            }
           }
         } catch (err) {
           console.error('Failed to sync installation:', err)
