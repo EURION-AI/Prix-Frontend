@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, BookOpen, Zap, Shield, Target, Lightbulb, Rocket, Settings, Code2 } from 'lucide-react'
 import Link from 'next/link'
-import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Getting Started with AI Code Review: A Complete Guide for 2026 | Prix',

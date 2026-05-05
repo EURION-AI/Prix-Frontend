@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, TrendingUp, Users, Code, Zap, Shield, Target, BarChart3, Lightbulb } from 'lucide-react'
 import Link from 'next/link'
-import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'How to Reduce Code Review Time by 80% with AI | Prix',
