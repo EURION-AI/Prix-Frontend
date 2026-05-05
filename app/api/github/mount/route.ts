@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const userData = JSON.parse(userCookie)
-    const githubId = userData.githubId
+    const githubId = userData.id
 
     if (!githubId) {
       return NextResponse.json({ error: 'Invalid user session' }, { status: 401 })
