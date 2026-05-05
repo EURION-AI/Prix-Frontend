@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { sql } from '@/lib/db'
 
 export async function GET() {
   const cookieStore = await cookies()
@@ -12,7 +13,19 @@ export async function GET() {
 
   const userCookie = cookieStore.get('github_user')?.value
   const userData = userCookie ? JSON.parse(userCookie) : null
-  const installationId = userData?.githubInstallationId
+  let installationId = userData?.githubInstallationId
+
+  // If missing from cookie, try fetching from database
+  if (!installationId && userData?.id) {
+    try {
+      const result = await sql`SELECT github_installation_id FROM users WHERE github_id = ${userData.id}`
+      if (result.length > 0) {
+        installationId = result[0].github_installation_id
+      }
+    } catch (err) {
+      console.error('Repos API: Failed to fetch installation ID from DB:', err)
+    }
+  }
 
   try {
     console.log('Repos API: Fetching repos from GitHub...')

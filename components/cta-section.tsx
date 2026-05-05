@@ -5,8 +5,18 @@ import { Button } from '@/components/ui/button'
 import { ArrowRight, Check, MessageSquare } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 export function CTASection() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const userCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('github_user='))
+    setIsLoggedIn(!!userCookie)
+  }, [])
+
   return (
     <section className="py-32 bg-background relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -42,9 +52,9 @@ export function CTASection() {
                 asChild
                 className="h-14 px-10 rounded-full bg-white text-black hover:bg-white/90 transition-all text-lg font-bold group"
               >
-                <Link href="/login">
+                <Link href={isLoggedIn ? "/dashboard" : "/login"}>
                   <span className="flex items-center gap-2">
-                    Start for Free
+                    {isLoggedIn ? "Go to Dashboard" : "Start for Free"}
                     <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
