@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, ArrowLeft, Github, GitPullRequest, LayoutDashboard, Shield, Crown } from 'lucide-react'
+import { Loader2, ArrowLeft, Github, GitPullRequest, LayoutDashboard, Shield, Crown, User as UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
-import Image from 'next/image'
+import type { Plan } from '@/lib/user-store'
 
 interface UserData {
   id: number
@@ -12,7 +12,7 @@ interface UserData {
   name: string | null
   email: string | null
   avatarUrl: string
-  plan: 'free' | 'pro' | 'max'
+  plan: Plan
   selectedRepos: string[]
   prsReviewed: number
 }
@@ -22,22 +22,22 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    
-    if (userCookie) {
+    async function fetchUser() {
       try {
-        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-        const userData = JSON.parse(decodeURIComponent(cookieValue))
-        setUser(userData)
+        const response = await fetch('/api/auth/user')
+        if (!response.ok) {
+          window.location.href = '/login'
+          return
+        }
+        const data = await response.json()
+        setUser(data.user)
       } catch {
         window.location.href = '/login'
+      } finally {
+        setIsLoading(false)
       }
-    } else {
-      window.location.href = '/login'
     }
-    setIsLoading(false)
+    fetchUser()
   }, [])
 
   if (isLoading || !user) {
@@ -87,7 +87,7 @@ export default function ProfilePage() {
                 />
               ) : (
                 <div className="relative w-32 h-32 rounded-full border-2 border-white/10 bg-white/5 flex items-center justify-center">
-                  <User className="w-12 h-12 text-white/20" />
+                  <UserIcon className="w-12 h-12 text-white/20" />
                 </div>
               )}
             </div>
@@ -114,7 +114,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-[#0c0c12] border border-white/5 rounded-2xl p-6">
               <div className="flex items-center gap-3 text-primary mb-4">
                 <LayoutDashboard className="w-5 h-5" />
@@ -140,6 +140,25 @@ export default function ProfilePage() {
               <p className="text-white/40 text-sm mt-2">Total pull requests processed by Prix</p>
             </div>
           </div>
+
+          {user.selectedRepos && user.selectedRepos.length > 0 && (
+            <div className="bg-[#0c0c12] border border-white/5 rounded-2xl p-6">
+              <div className="flex items-center gap-3 text-primary mb-4">
+                <Github className="w-5 h-5" />
+                <h3 className="font-bold uppercase tracking-widest text-sm">Selected Repositories</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {user.selectedRepos.map((repo) => (
+                  <span 
+                    key={repo}
+                    className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 font-mono"
+                  >
+                    {repo}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>

@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     .digest('hex')
 
   if (signature !== expectedSignature) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
   const event = JSON.parse(body)

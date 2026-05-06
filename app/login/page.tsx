@@ -42,18 +42,15 @@ function GitHubOAuthButton() {
     setError(null)
     
     try {
-      // First, get the OAuth URL from our backend to log the user in
-      const response = await fetch('/api/auth/github')
-      const data = await response.json()
+      // replace 'prix-ai-automation' with your actual GitHub App slug
+      const GITHUB_APP_SLUG = 'prix-ai-automation' 
+      const url = `https://github.com/apps/${GITHUB_APP_SLUG}/installations/new`
       
-      if (data.url) {
-        // We add a 'setup=true' flag so our callback knows to redirect to the installation page
-        const authUrl = new URL(data.url)
-        window.location.href = authUrl.toString()
-      } else {
-        setError('Failed to initiate GitHub login')
-        setIsLoading(false)
+      if (refCode) {
+        await fetch(`/api/affiliate/link?code=${encodeURIComponent(refCode)}`)
       }
+      
+      window.location.href = url
     } catch {
       setError('Failed to initiate GitHub setup')
       setIsLoading(false)
@@ -308,30 +305,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     async function checkAuth() {
-      const userCookie = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('github_user='))
-      
-      if (userCookie) {
-        try {
-          const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-          const userData = JSON.parse(decodeURIComponent(cookieValue))
-          setUser(userData)
-          setIsLoading(false)
-          return
-        } catch {
-          // Continue to API check
-        }
-      }
-
-      // Check API in case cookie is httpOnly
       try {
         const response = await fetch('/api/auth/user')
         if (response.ok) {
           const data = await response.json()
           setUser(data.user)
-          // Sync cookie for client-side use
-          document.cookie = `github_user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
         }
       } catch (err) {
         console.error('Failed to check auth:', err)

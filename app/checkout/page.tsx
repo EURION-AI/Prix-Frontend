@@ -1,16 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { Loader2, Check, ArrowLeft, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
+import { PRICING } from '@/lib/pricing'
 
 interface PlanInfo {
   id: string
   name: string
   price: string
+  pricePaise: number
   features: string[]
 }
 
@@ -18,7 +20,8 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
   starter: {
     id: 'starter',
     name: 'Starter',
-    price: '$6.99/mo',
+    price: '₹699/mo',
+    pricePaise: 69900,
     features: [
       'AI-powered PR reviews (generous usage)',
       'Automated PR fixes (generous usage)',
@@ -32,7 +35,8 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
   pro: {
     id: 'pro',
     name: 'Pro',
-    price: '$9.99/mo',
+    price: '₹899/mo',
+    pricePaise: 89900,
     features: [
       'Everything in Starter',
       'Unlimited PR reviews',
@@ -45,65 +49,52 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
   }
 }
 
+function getPlanPricing(plan: string, region: string) {
+  const pricing = PRICING[region as keyof typeof PRICING] || PRICING.IN
+  return pricing[plan as keyof typeof pricing] || pricing.starter
+}
+
 function CheckoutContent() {
   const searchParams = useSearchParams()
-  const planId = searchParams.get('plan') || 'starter'
-  const region = searchParams.get('region') || 'US'
-  
+  const router = useRouter()
+  const planId = (searchParams.get('plan') || 'starter') as 'starter' | 'pro'
+  const region = searchParams.get('region') || 'IN'
+
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
   const plan = PLAN_DETAILS[planId] || PLAN_DETAILS.starter
+  const planPricing = getPlanPricing(planId, region)
+  const displayPrice = `${planPricing.currency === 'INR' ? '₹' : planPricing.currency === 'USD' ? '$' : planPricing.currency === 'GBP' ? '£' : '€'}${(planPricing.price / (planPricing.currency === 'INR' ? 100 : 100)).toFixed(2)}/mo`
+  const displayPricePaise = planPricing.price
 
   useEffect(() => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    
-    if (userCookie) {
+    async function fetchUserId() {
       try {
-        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-        const userData = JSON.parse(decodeURIComponent(cookieValue))
-        setUserId(String(userData.id))
+        const response = await fetch('/api/auth/user')
+        if (response.ok) {
+          const data = await response.json()
+          setUserId(String(data.user.id))
+        } else {
+          setUserId('anonymous')
+        }
       } catch {
         setUserId('anonymous')
+      } finally {
+        setIsLoading(false)
       }
-    } else {
-      setUserId('anonymous')
     }
-    setIsLoading(false)
+    fetchUserId()
   }, [])
 
-  const handleCheckout = async () => {
-    setIsLoading(true)
-    setError(null)
+  const handleSuccess = () => {
+    router.push('/dashboard?refresh=true')
+  }
 
-    try {
-      const response = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan: planId,
-          userId: userId
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
-      }
-
-      if (data.url) {
-        window.location.href = data.url
-      } else {
-        throw new Error('No checkout URL returned')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start checkout')
-      setIsLoading(false)
-    }
+  const handleError = (errorMessage: string) => {
+    setError(errorMessage)
+    setIsLoading(false)
   }
 
   if (isLoading) {
@@ -123,7 +114,7 @@ function CheckoutContent() {
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
           <Check className="w-8 h-8 text-primary" />
         </div>
-        
+
         <h1 className="text-3xl font-bold text-white mb-3 text-center">
           Subscribe to {plan.name}
         </h1>
@@ -167,20 +158,15 @@ function CheckoutContent() {
           </div>
         )}
 
-        <Button
-          onClick={handleCheckout}
+        <RazorpayCheckoutButton
+          plan={planId}
+          amount={displayPricePaise}
+          currency={planPricing.currency === 'INR' ? '₹' : planPricing.currency === 'USD' ? '$' : planPricing.currency === 'GBP' ? '£' : '€'}
+          userId={userId}
+          onSuccess={handleSuccess}
+          onError={handleError}
           disabled={isLoading}
-          className="w-full h-14 rounded-xl bg-primary text-white font-bold text-base hover:bg-primary/90 transition-all"
-        >
-          {isLoading ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Redirecting to Stripe...
-            </span>
-          ) : (
-            'Continue to Payment'
-          )}
-        </Button>
+        />
       </div>
 
       <div className="flex flex-col items-center gap-4">
@@ -188,9 +174,9 @@ function CheckoutContent() {
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
           </svg>
-          <span>Secure payment powered by Stripe</span>
+          <span>Secure payment powered by Razorpay</span>
         </div>
-        
+
         <Link
           href="/pricing"
           className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm"

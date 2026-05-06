@@ -11,7 +11,7 @@ export function corsResponse(response: NextResponse, request?: Request): NextRes
   }
 
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, stripe-signature')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   response.headers.set('Access-Control-Allow-Credentials', 'true')
   response.headers.set('Access-Control-Max-Age', '86400')
   return response
@@ -44,6 +44,6 @@ export function validateAffiliateCode(code: string): boolean {
   return regex.test(code) && code.length <= 50
 }
 
-export function validatePlan(plan: unknown): plan is 'starter' | 'pro' {
-  return plan === 'starter' || plan === 'pro'
+export function validatePlan(plan: unknown): plan is 'free' | 'starter' | 'pro' | 'max' {
+  return plan === 'free' || plan === 'starter' || plan === 'pro' || plan === 'max'
 }

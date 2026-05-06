@@ -1,12 +1,14 @@
 import { sql } from './db'
 
+export type Plan = 'free' | 'starter' | 'pro' | 'max'
+
 export interface User {
   id: string
   githubId: number
   username: string
   email: string | null
   avatarUrl: string | null
-  plan: 'free' | 'pro' | 'max'
+  plan: Plan
   selectedRepos: string[]
   githubInstallationId: number | null
   prsReviewed: number

@@ -276,30 +276,29 @@ export default function AffiliatePage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    
-    if (userCookie) {
+    async function fetchUser() {
       try {
-        // Use indexOf to avoid breaking on '=' inside the cookie value
-        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-        const userData = JSON.parse(decodeURIComponent(cookieValue))
+        const response = await fetch('/api/auth/user')
+        if (!response.ok) {
+          window.location.href = '/login'
+          return
+        }
+        const data = await response.json()
         setUser({
-          id: userData.id,
-          username: userData.username,
-          name: userData.name,
-          email: userData.email,
-          avatarUrl: userData.avatarUrl,
+          id: data.user.id,
+          username: data.user.username,
+          name: data.user.name,
+          email: data.user.email,
+          avatarUrl: data.user.avatarUrl,
         })
       } catch (e) {
-        console.error('Failed to parse user cookie:', e)
+        console.error('Failed to fetch user:', e)
         window.location.href = '/login'
+      } finally {
+        setIsLoading(false)
       }
-    } else {
-      window.location.href = '/login'
     }
-    setIsLoading(false)
+    fetchUser()
   }, [])
 
   if (isLoading) {

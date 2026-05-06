@@ -3,25 +3,7 @@ import Razorpay from 'razorpay'
 import { validatePlan } from '@/lib/validation'
 import { rateLimit } from '@/lib/security'
 import { validateCSRFToken, addCSRFTokenToResponse, generateCSRFToken } from '@/lib/csrf'
-
-const REGIONAL_PRICING = {
-  IN: {
-    starter: { price: 69900, currency: 'INR' }, // ₹699
-    pro: { price: 89900, currency: 'INR' }, // ₹899
-  },
-  GB: {
-    starter: { price: 699, currency: 'GBP' }, // £6.99
-    pro: { price: 999, currency: 'GBP' }, // £9.99
-  },
-  EU: {
-    starter: { price: 699, currency: 'EUR' }, // €6.99
-    pro: { price: 999, currency: 'EUR' }, // €9.99
-  },
-  US: {
-    starter: { price: 699, currency: 'USD' }, // $6.99
-    pro: { price: 999, currency: 'USD' }, // $9.99
-  },
-}
+import { PRICING } from '@/lib/pricing'
 
 const PLANS = {
   starter: {
@@ -73,8 +55,8 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get regional pricing
-    const regionalPricing = REGIONAL_PRICING[region as keyof typeof REGIONAL_PRICING] || REGIONAL_PRICING.US
+    // Get regional pricing from shared config
+    const regionalPricing = PRICING[region as keyof typeof PRICING] || PRICING.US
     const planPricing = regionalPricing[plan as PlanKey]
 
     if (!planPricing) {

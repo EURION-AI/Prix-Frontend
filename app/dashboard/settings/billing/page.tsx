@@ -1,38 +1,76 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, ArrowLeft, CreditCard, Shield, Zap, Crown, ArrowRight } from 'lucide-react'
+import { Loader2, ArrowLeft, CreditCard, Shield, Zap, Crown, ArrowRight, Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
+import type { Plan } from '@/lib/user-store'
 
 interface UserData {
   id: number
   username: string
-  plan: 'free' | 'pro' | 'max'
+  plan: Plan
+}
+
+interface UpgradeOption {
+  id: string
+  name: string
+  price: string
+  description: string
+  features: string[]
+  icon: React.ReactNode
+  color: string
+  popular?: boolean
+}
+
+const regionalUpgradePricing = {
+  US: { currency: '$', starterPrice: '6.99', proPrice: '9.99', starterProDiff: '+2.00' },
+  EU: { currency: '€', starterPrice: '6.99', proPrice: '9.99', starterProDiff: '+2.00' },
+  GB: { currency: '£', starterPrice: '6.99', proPrice: '9.99', starterProDiff: '+2.00' },
+  IN: { currency: '₹', starterPrice: '₹699', proPrice: '₹899', starterProDiff: '+₹200' },
+}
+
+function detectRegion() {
+  if (typeof window === 'undefined') return 'US'
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const locale = navigator.language || 'en-US'
+  if (timezone.includes('Asia/Kolkata') || locale.includes('IN')) return 'IN'
+  if (timezone.includes('Europe') && !timezone.includes('London')) return 'EU'
+  if (timezone.includes('Europe/London') || locale.includes('GB')) return 'GB'
+  return 'US'
 }
 
 export default function BillingPage() {
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [region, setRegion] = useState('US')
+  const [isUpgrading, setIsUpgrading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    
-    if (userCookie) {
+    setRegion(detectRegion())
+    async function fetchUser() {
       try {
-        const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-        const userData = JSON.parse(decodeURIComponent(cookieValue))
-        setUser(userData)
+        const response = await fetch('/api/auth/user')
+        if (!response.ok) {
+          window.location.href = '/login'
+          return
+        }
+        const data = await response.json()
+        setUser(data.user)
       } catch {
         window.location.href = '/login'
+      } finally {
+        setIsLoading(false)
       }
-    } else {
-      window.location.href = '/login'
     }
-    setIsLoading(false)
+    fetchUser()
   }, [])
+
+  const handleUpgrade = (targetPlan: string) => {
+    window.location.href = `/checkout?plan=${targetPlan}&region=${region}`
+  }
 
   if (isLoading || !user) {
     return (
@@ -43,41 +81,18 @@ export default function BillingPage() {
     )
   }
 
-  const getPlanDetails = (plan: string) => {
-    switch (plan) {
-      case 'max':
-        return {
-          name: 'Max Plan',
-          icon: <Crown className="w-10 h-10 text-yellow-400" />,
-          description: 'You have unlimited power for enterprise scale. Includes unlimited repositories, custom rule engines, and dedicated support.',
-          color: 'bg-yellow-400/10 border-yellow-400/20'
-        }
-      case 'pro':
-        return {
-          name: 'Pro Plan',
-          icon: <Zap className="w-10 h-10 text-blue-400" />,
-          description: 'You are on the Pro plan for active developers. Includes up to 15 repositories, advanced AST analysis, and priority support.',
-          color: 'bg-blue-400/10 border-blue-400/20'
-        }
-      default:
-        return {
-          name: 'Free Plan',
-          icon: <Shield className="w-10 h-10 text-white/40" />,
-          description: 'You are on the Free plan. Includes up to 5 repositories and basic PR analysis. Upgrade to unlock more power.',
-          color: 'bg-white/5 border-white/10'
-        }
-    }
-  }
+  const regional = regionalUpgradePricing[region as keyof typeof regionalUpgradePricing] || regionalUpgradePricing.US
+  const currentPlanDetails = getPlanDetails(user.plan, regional)
 
-  const details = getPlanDetails(user.plan)
+  const upgradeOptions = getUpgradeOptions(user.plan, regional)
 
   return (
     <main className="min-h-screen bg-[#050508] text-white selection:bg-primary/30">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
       <Navbar />
 
-      <div className="max-w-3xl mx-auto px-4 pt-32 pb-20">
-        <Link 
+      <div className="max-w-4xl mx-auto px-4 pt-32 pb-20">
+        <Link
           href="/dashboard"
           className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-8"
         >
@@ -91,38 +106,221 @@ export default function BillingPage() {
             <span className="text-sm font-bold uppercase tracking-widest">Billing & Plans</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Current Subscription
+            {user.plan === 'free' ? 'Upgrade Your Plan' : 'Manage Subscription'}
           </h1>
           <p className="text-white/40 text-lg max-w-2xl">
-            View your active plan status and explore upgrade options.
+            {user.plan === 'free'
+              ? 'Choose a plan that fits your needs and unlock more power.'
+              : 'View your current plan and explore upgrade options.'}
           </p>
         </div>
 
-        <div className={`relative flex flex-col md:flex-row items-start md:items-center gap-8 p-8 md:p-12 rounded-3xl border ${details.color} mb-8`}>
+        <div className={`relative flex flex-col md:flex-row items-start md:items-center gap-8 p-8 md:p-12 rounded-3xl border ${currentPlanDetails.color} mb-8`}>
           <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-xl shrink-0">
-            {details.icon}
+            {currentPlanDetails.icon}
           </div>
           <div className="flex-1">
-            <h2 className="text-3xl font-bold mb-2">{details.name}</h2>
+            <h2 className="text-3xl font-bold mb-2">{currentPlanDetails.name}</h2>
             <p className="text-white/60 text-lg leading-relaxed">
-              {details.description}
+              {currentPlanDetails.description}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <Link 
-            href="/#pricing"
-            className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
-          >
-            Change Plan
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-          <button className="w-full sm:w-auto px-8 py-4 bg-white/5 text-white/60 rounded-xl font-medium hover:bg-white/10 hover:text-white transition-all">
-            Update Payment Method
-          </button>
+        {error && (
+          <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400">
+            <AlertCircle className="w-5 h-5" />
+            <p>{error}</p>
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center gap-3 text-green-400">
+            <Check className="w-5 h-5" />
+            <p>{successMessage}</p>
+          </div>
+        )}
+
+        {upgradeOptions.length > 0 ? (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-white/80">
+              {user.plan === 'free' ? 'Available Plans' : 'Upgrade Options'}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {upgradeOptions.map((option) => (
+                <div
+                  key={option.id}
+                  className={`relative p-6 rounded-2xl border transition-all hover:-translate-y-1 ${option.color}`}
+                >
+                  {option.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wider">
+                      Recommended
+                    </div>
+                  )}
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-3 rounded-xl bg-white/5">
+                      {option.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-xl font-bold mb-1">{option.name}</h4>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-black">{option.price}</span>
+                        <span className="text-white/40 text-sm">/month</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-white/50 text-sm mb-4">{option.description}</p>
+                  <ul className="space-y-2 mb-6">
+                    {option.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                        <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => handleUpgrade(option.id)}
+                    disabled={isUpgrading}
+                    className="w-full py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {isUpgrading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        {user.plan === 'free' ? 'Subscribe Now' : 'Upgrade'}
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+            <Crown className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold mb-2">You're on the Max Plan!</h3>
+            <p className="text-white/50">You have unlimited access to all features.</p>
+          </div>
+        )}
+
+        <div className="mt-8 pt-8 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-white/30 text-sm">
+              Need to manage your subscription or cancel?
+            </p>
+            <a
+              href="mailto:support@prixai.xyz"
+              className="px-6 py-3 bg-white/5 text-white/60 rounded-xl font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-2"
+            >
+              <CreditCard className="w-4 h-4" />
+              Contact Support
+            </a>
+          </div>
         </div>
       </div>
     </main>
   )
+}
+
+function getPlanDetails(plan: string, regional: typeof regionalUpgradePricing.US) {
+  switch (plan) {
+    case 'max':
+      return {
+        name: 'Max Plan',
+        icon: <Crown className="w-10 h-10 text-yellow-400" />,
+        description: 'You have unlimited power for enterprise scale. Includes unlimited repositories, custom rule engines, and dedicated support.',
+        color: 'bg-yellow-400/10 border-yellow-400/20'
+      }
+    case 'pro':
+      return {
+        name: 'Pro Plan',
+        icon: <Zap className="w-10 h-10 text-blue-400" />,
+        description: 'You are on the Pro plan for active developers. Includes up to 15 repositories, advanced AST analysis, and priority support.',
+        color: 'bg-blue-400/10 border-blue-400/20'
+      }
+    case 'starter':
+      return {
+        name: 'Starter Plan',
+        icon: <Zap className="w-10 h-10 text-green-400" />,
+        description: 'You are on the Starter plan. Includes up to 5 repositories, AI-powered PR reviews, and automated fixes.',
+        color: 'bg-green-400/10 border-green-400/20'
+      }
+    default:
+      return {
+        name: 'Free Plan',
+        icon: <Shield className="w-10 h-10 text-white/40" />,
+        description: 'You are on the Free plan. Includes up to 5 repositories and basic PR analysis. Upgrade to unlock more power.',
+        color: 'bg-white/5 border-white/10'
+      }
+  }
+}
+
+function getUpgradeOptions(currentPlan: string, regional: typeof regionalUpgradePricing.US): UpgradeOption[] {
+  const { currency, starterPrice, proPrice, starterProDiff } = regional
+
+  if (currentPlan === 'max') return []
+
+  if (currentPlan === 'starter') {
+    return [
+      {
+        id: 'pro',
+        name: 'Pro Plan',
+        price: `${currency}${parseFloat(proPrice.replace(/[^0-9.]/g, '')).toFixed(2)}`,
+        description: 'Everything in Starter, plus unlimited PRs and deeper analysis.',
+        features: [
+          'Everything in Starter',
+          'Unlimited PR reviews',
+          'Unlimited AI issue planning',
+          'Priority processing queue',
+          'Better multi-file context',
+          'Deeper bug & security analysis'
+        ],
+        icon: <Zap className="w-6 h-6 text-blue-400" />,
+        color: 'border-blue-400/30 bg-blue-400/5 hover:border-blue-400/50',
+        popular: true
+      }
+    ]
+  }
+
+  if (currentPlan === 'pro') return []
+
+  return [
+    {
+      id: 'starter',
+      name: 'Starter Plan',
+      price: `${currency}${parseFloat(starterPrice.replace(/[^0-9.]/g, '')).toFixed(2)}`,
+      description: 'Perfect for individual developers wanting reliable automation.',
+      features: [
+        '5 repositories',
+        'AI-powered PR reviews',
+        'Automated PR fixes',
+        'Private repositories',
+        'Bug & security detection',
+        'Basic AI planning'
+      ],
+      icon: <Zap className="w-6 h-6 text-green-400" />,
+      color: 'border-white/20 bg-white/5 hover:border-white/30'
+    },
+    {
+      id: 'pro',
+      name: 'Pro Plan',
+      price: `${currency}${parseFloat(proPrice.replace(/[^0-9.]/g, '')).toFixed(2)}`,
+      description: 'For developers who rely on AI daily for fast, high-quality fixes.',
+      features: [
+        'Everything in Starter',
+        'Unlimited PR reviews',
+        'Unlimited AI issue planning',
+        'Priority processing queue',
+        'Better multi-file context',
+        'Deeper bug & security analysis'
+      ],
+      icon: <Zap className="w-6 h-6 text-blue-400" />,
+      color: 'border-primary/30 bg-primary/5 hover:border-primary/50',
+      popular: true
+    }
+  ]
 }

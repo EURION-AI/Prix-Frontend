@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, LayoutDashboard, Settings, Gift, LogOut, User, Bell, CreditCard } from 'lucide-react'
+import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, LayoutDashboard, Settings, Gift, LogOut, User, CreditCard } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 import {
@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import type { Plan } from '@/lib/user-store'
 
 interface Repository {
   id: number
@@ -29,7 +30,7 @@ interface UserData {
   name: string | null
   email: string | null
   avatarUrl: string
-  plan: 'free' | 'pro' | 'max'
+  plan: Plan
   selectedRepos: string[]
   githubInstallationId: number | null
   prsReviewed: number
@@ -50,12 +51,11 @@ export default function DashboardPage() {
     async function initializeDashboard() {
       const params = new URLSearchParams(window.location.search)
       const installationId = params.get('installation_id')
-      
+
       if (params.get('message') === 'account_exists_no_referral') {
         setInfoMessage('You already have an account! You have been logged in. Referral link was ignored.')
       }
 
-      // If returning from a fresh "mounting" installation
       if (installationId) {
         try {
           const response = await fetch('/api/github/mount', {
@@ -71,40 +71,18 @@ export default function DashboardPage() {
         }
       }
 
-      const userCookie = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('github_user='))
-      
-      if (userCookie) {
-        try {
-          const cookieValue = userCookie.substring(userCookie.indexOf('=') + 1)
-          const userData = JSON.parse(decodeURIComponent(cookieValue))
-          setUser(userData)
-          if (userData.selectedRepos) {
-            setSelectedRepos(userData.selectedRepos)
-          }
-          await fetchRepos()
-          return
-        } catch {
-          // Continue to API check if cookie parsing fails
-        }
-      }
-
-      // Fallback: Check API in case cookie is httpOnly or missing
       try {
         const response = await fetch('/api/auth/user')
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data.user)
-          if (data.user.selectedRepos) {
-            setSelectedRepos(data.user.selectedRepos)
-          }
-          // Sync cookie for client-side use
-          document.cookie = `github_user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=${60 * 60 * 24 * 7}`
-          await fetchRepos()
-        } else {
+        if (!response.ok) {
           window.location.href = '/login'
+          return
         }
+        const data = await response.json()
+        setUser(data.user)
+        if (data.user.selectedRepos) {
+          setSelectedRepos(data.user.selectedRepos)
+        }
+        await fetchRepos()
       } catch {
         window.location.href = '/login'
       }
@@ -112,7 +90,31 @@ export default function DashboardPage() {
 
     initializeDashboard()
   }, [])
+// Refetch user state when refresh=true is in URL (after successful payment)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('refresh') === 'true') {
+      async function refetchUser() {
+        try {
+          const response = await fetch('/api/auth/user')
+          if (response.ok) {
+            const data = await response.json()
+            setUser(data.user)
+            if (data.user.selectedRepos) {
+              setSelectedRepos(data.user.selectedRepos)
+            }
+            // Clear refresh param from URL
+            window.history.replaceState({}, '', '/dashboard')
+          }
+        } catch (err) {
+          console.error('Failed to refetch user:', err)
+        }
+      }
+      refetchUser()
+    }
+  }, [])
 
+  
   useEffect(() => {
     const filtered = repos.filter(repo => 
       repo.full_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -275,10 +277,7 @@ export default function DashboardPage() {
                       <span>My Account</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer">
-                    <Bell className="mr-2 h-4 w-4 text-primary" />
-                    <span>Notifications</span>
-                  </DropdownMenuItem>
+
                   <DropdownMenuItem className="hover:bg-white/5 cursor-pointer" asChild>
                     <Link href="/dashboard/settings/billing">
                       <CreditCard className="mr-2 h-4 w-4 text-primary" />
