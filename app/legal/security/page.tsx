@@ -72,11 +72,11 @@ export default function SecurityPage() {
             Payment Security
           </h2>
           <p className="text-white/60 leading-relaxed mb-4">
-            Payment processing is handled securely by Stripe:
+            Payment processing is handled securely by Razorpay:
           </p>
           <ul className="list-disc list-inside text-white/60 space-y-2 ml-4">
-            <li><strong>PCI DSS Level 1 compliant</strong> - The highest level of payment security certification</li>
-            <li><strong>No card data stored</strong> - All payment information is handled by Stripe</li>
+            <li><strong>PCI DSS compliant</strong> - Industry-standard payment security certification</li>
+            <li><strong>No card data stored</strong> - All payment information is handled by Razorpay</li>
             <li><strong>Encrypted transactions</strong> - End-to-end encryption for all payments</li>
             <li><strong>3D Secure support</strong> - Additional authentication for fraud prevention</li>
           </ul>

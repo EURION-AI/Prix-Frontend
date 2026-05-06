@@ -126,7 +126,7 @@ export default function CookiePage() {
           </p>
           <ul className="list-disc list-inside text-white/60 space-y-2 ml-4">
             <li><strong>GitHub:</strong> Used for OAuth authentication when you sign in with GitHub</li>
-            <li><strong>Stripe:</strong> Used for secure payment processing</li>
+            <li><strong>Razorpay:</strong> Used for secure payment processing</li>
             <li><strong>Vercel:</strong> Used for analytics and performance monitoring</li>
           </ul>
           <p className="text-white/60 leading-relaxed mt-4">

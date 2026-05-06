@@ -18,11 +18,11 @@ interface AffiliateStats {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
-  tier: 'free' | 'starter' | 'advanced'
-  requiredForBasic: number
-  requiredForAdvanced: number
-  progressToBasic: number
-  progressToAdvanced: number
+  tier: 'free' | 'starter' | 'pro'
+  requiredForStarter: number
+  requiredForPro: number
+  progressToStarter: number
+  progressToPro: number
   referrals: {
     username: string
     hasPurchased: boolean
@@ -151,14 +151,14 @@ function AffiliateDashboard({ user }: { user: UserData }) {
 
   const tierColors = {
     free: 'text-white/40',
-    basic: 'text-blue-400',
-    advanced: 'text-primary',
+    starter: 'text-blue-400',
+    pro: 'text-primary',
   }
 
   const tierLabels = {
     free: 'Free Tier',
-    basic: 'Pro Plan',
-    advanced: 'Team Plan',
+    starter: 'Pro Plan',
+    pro: 'Team Plan',
   }
 
   return (
@@ -168,11 +168,11 @@ function AffiliateDashboard({ user }: { user: UserData }) {
           {tierLabels[stats.tier]}
         </div>
         <p className="text-white/40 text-sm">
-          {stats.tier === 'advanced' 
-            ? '🎉 You have lifetime Team access!' 
-            : stats.tier === 'basic'
+          {stats.tier === 'pro'
+            ? '🎉 You have lifetime Team access!'
+            : stats.tier === 'starter'
             ? '✨ You have lifetime Pro access!'
-            : `Get ${stats.requiredForBasic - stats.paidReferralCount} more paid referrals for Pro, ${stats.requiredForAdvanced - stats.paidReferralCount} for Team`}
+            : `Get ${stats.requiredForStarter - stats.paidReferralCount} more paid referrals for Pro, ${stats.requiredForPro - stats.paidReferralCount} for Team`}
         </p>
       </div>
 

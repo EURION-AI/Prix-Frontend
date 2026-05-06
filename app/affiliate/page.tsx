@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Copy, Check, Users, Gift, Star, ArrowLeft, ExternalLink, CreditCard, Settings } from 'lucide-react'
+import { Loader2, Copy, Check, Users, Gift, Star, ArrowLeft, ExternalLink, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { AffiliateStatsSkeleton } from '@/components/skeleton'
 import { Navbar } from '@/components/navbar'
@@ -18,11 +18,11 @@ interface AffiliateStats {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
-  tier: 'free' | 'starter' | 'advanced'
-  requiredForBasic: number
-  requiredForAdvanced: number
-  progressToBasic: number
-  progressToAdvanced: number
+  tier: 'free' | 'starter' | 'pro'
+  requiredForStarter: number
+  requiredForPro: number
+  progressToStarter: number
+  progressToPro: number
   referrals: {
     username: string
     hasPurchased: boolean
@@ -91,19 +91,19 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   const tierColors = {
     free: 'text-white/40',
     starter: 'text-blue-400',
-    advanced: 'text-primary',
+    pro: 'text-primary',
   }
 
   const tierLabels = {
     free: 'Free Tier',
     starter: 'Starter Plan',
-    advanced: 'Pro Plan',
+    pro: 'Pro Plan',
   }
 
   const tierBgColors = {
     free: 'bg-white/5',
     starter: 'bg-blue-500/10',
-    advanced: 'bg-primary/10',
+    pro: 'bg-primary/10',
   }
 
   return (
@@ -115,11 +115,11 @@ function AffiliateDashboard({ user }: { user: UserData }) {
           </span>
         </div>
         <p className="text-white/50 text-sm max-w-lg mx-auto">
-          {stats.tier === 'advanced' 
-            ? '🎉 You have lifetime Team access!' 
+          {stats.tier === 'pro'
+            ? '🎉 You have lifetime Team access!'
             : stats.tier === 'starter'
             ? '✨ You have lifetime Pro access!'
-            : `Earn free access! Get ${stats.requiredForBasic - stats.paidReferralCount} more paid referrals for Pro.`}
+            : `Earn free access! Get ${stats.requiredForStarter - stats.paidReferralCount} more paid referrals for Pro.`}
         </p>
       </div>
 
@@ -143,19 +143,19 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         </div>
       </div>
 
-      {stats.tier !== 'advanced' && (
+      {stats.tier !== 'pro' && (
         <div className="bg-white/5 rounded-2xl p-6 border border-white/5 space-y-6">
           <h3 className="text-lg font-bold text-white text-center">Progress to Next Tier</h3>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-white/60">Pro Plan ({stats.requiredForBasic} paid)</span>
-                <span className="text-white font-medium">{stats.paidReferralCount}/{stats.requiredForBasic}</span>
+                <span className="text-white/60">Pro Plan ({stats.requiredForStarter} paid)</span>
+                <span className="text-white font-medium">{stats.paidReferralCount}/{stats.requiredForStarter}</span>
               </div>
               <div className="h-3 bg-white/10 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-blue-400 transition-all duration-700 ease-out rounded-full"
-                  style={{ width: `${stats.progressToBasic}%` }}
+                  style={{ width: `${stats.progressToStarter}%` }}
                 />
               </div>
             </div>
@@ -185,36 +185,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         </div>
       </div>
 
-      {stats.tier !== 'free' && (
-        <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
-          <h3 className="text-lg font-bold text-white mb-4">Manage Subscription</h3>
-          <p className="text-white/50 text-sm mb-4">
-            You have an active {tierLabels[stats.tier]} subscription. Click below to manage your billing, update payment method, or cancel.
-          </p>
-          <button
-            onClick={async () => {
-              try {
-                const response = await fetch('/api/stripe/portal', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ githubId: user.id }),
-                })
-                const data = await response.json()
-                if (data.url) {
-                  window.location.href = data.url
-                }
-              } catch {
-                console.error('Failed to open billing portal')
-              }
-            }}
-            className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors font-medium flex items-center gap-2"
-          >
-            <CreditCard className="w-5 h-5" />
-            Manage Billing
-          </button>
-        </div>
-      )}
-
+      
       <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
         <h3 className="text-lg font-bold text-white mb-6">How It Works</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

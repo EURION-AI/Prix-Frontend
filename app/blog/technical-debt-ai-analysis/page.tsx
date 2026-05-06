@@ -18,14 +18,6 @@ export const metadata: Metadata = {
     publishedTime: '2026-04-18T10:00:00Z',
     modifiedTime: '2026-04-18T10:00:00Z',
     authors: ['Prix Team'],
-    images: [
-      {
-        url: '/blog/technical-debt-ai-analysis/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Technical Debt AI Analysis',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',

@@ -19,7 +19,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc list-inside text-white/60 space-y-2 ml-4">
             <li><strong>Account Information:</strong> When you sign up via GitHub OAuth, we receive your GitHub profile information including username, email, and public profile data.</li>
-            <li><strong>Payment Information:</strong> Payment processing is handled by Stripe. We do not store your credit card or payment details on our servers.</li>
+            <li><strong>Payment Information:</strong> Payment processing is handled by Razorpay. We do not store your credit card or payment details on our servers.</li>
             <li><strong>Code Submissions:</strong> Code you submit for review is processed temporarily and not permanently stored.</li>
             <li><strong>Usage Data:</strong> We collect information about how you interact with our service, including API calls, feature usage, and preferences.</li>
           </ul>
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
             We do not sell, trade, or otherwise transfer your personal information to third parties, except:
           </p>
           <ul className="list-disc list-inside text-white/60 space-y-2 ml-4">
-            <li><strong>Service Providers:</strong> We share information with trusted service providers who assist us in operating our service (e.g., Stripe for payments, GitHub for authentication).</li>
+            <li><strong>Service Providers:</strong> We share information with trusted service providers who assist us in operating our service (e.g., Razorpay for payments, GitHub for authentication).</li>
             <li><strong>Legal Requirements:</strong> We may disclose information if required by law or in good faith belief that such action is necessary.</li>
             <li><strong>Business Transfers:</strong> In the event of a merger or acquisition, user information may be transferred as part of the transaction.</li>
           </ul>
@@ -115,7 +115,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc list-inside text-white/60 space-y-2 ml-4">
             <li><strong>GitHub:</strong> Used for authentication. See GitHub&apos;s Privacy Policy.</li>
-            <li><strong>Stripe:</strong> Handles all payment processing. See Stripe&apos;s Privacy Policy.</li>
+            <li><strong>Razorpay:</strong> Handles all payment processing. See Razorpay&apos;s Privacy Policy.</li>
             <li><strong>Vercel:</strong> Hosts our application and analytics. See Vercel&apos;s Privacy Policy.</li>
           </ul>
         </section>

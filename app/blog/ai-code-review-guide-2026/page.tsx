@@ -18,14 +18,6 @@ export const metadata: Metadata = {
     publishedTime: '2026-05-04T10:00:00Z',
     modifiedTime: '2026-05-04T10:00:00Z',
     authors: ['Prix Team'],
-    images: [
-      {
-        url: '/blog/ai-code-review-guide-2026/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'AI Code Review Guide 2026',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',

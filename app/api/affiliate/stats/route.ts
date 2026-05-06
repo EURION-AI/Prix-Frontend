@@ -54,11 +54,11 @@ export async function GET(request: NextRequest) {
 
   const referrals = await getReferralsForAffiliate(affiliate.id)
     
-  const requiredForBasic = 2
-  const requiredForAdvanced = 3
-  const progressToBasic = Math.min(affiliate.paidReferralCount / requiredForBasic * 100, 100)
-  const progressToAdvanced = Math.min(
-    Math.max(0, affiliate.paidReferralCount - requiredForBasic) / (requiredForAdvanced - requiredForBasic) * 100, 
+  const requiredForStarter = 2
+  const requiredForPro = 3
+  const progressToStarter = Math.min(affiliate.paidReferralCount / requiredForStarter * 100, 100)
+  const progressToPro = Math.min(
+    Math.max(0, affiliate.paidReferralCount - requiredForStarter) / (requiredForPro - requiredForStarter) * 100, 
     100
   )
 
@@ -67,10 +67,10 @@ export async function GET(request: NextRequest) {
     referralCount: affiliate.referralCount,
     paidReferralCount: affiliate.paidReferralCount,
     tier: affiliate.tier,
-    requiredForBasic,
-    requiredForAdvanced,
-    progressToBasic,
-    progressToAdvanced,
+    requiredForStarter,
+    requiredForPro,
+    progressToStarter,
+    progressToPro,
     referrals: referrals.map(r => ({
       username: sanitizeUsername(r.referredUsername),
       hasPurchased: r.hasPurchased,

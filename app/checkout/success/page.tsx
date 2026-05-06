@@ -7,7 +7,6 @@ import Link from 'next/link'
 
 function SuccessContent() {
   const searchParams = useSearchParams()
-  const sessionId = searchParams.get('session_id')
   const plan = searchParams.get('plan')
 
   const planName = plan === 'starter' ? 'Starter' : plan === 'pro' ? 'Pro' : null
@@ -18,7 +17,7 @@ function SuccessContent() {
         <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-10 h-10 text-green-500" />
         </div>
-        
+
         <h1 className="text-3xl font-bold text-white mb-3">
           Payment Successful!
         </h1>
@@ -28,21 +27,14 @@ function SuccessContent() {
         </p>
       </div>
 
-      {sessionId && (
-        <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-8">
-          <p className="text-white/30 text-xs uppercase tracking-wider mb-1">Session ID</p>
-          <p className="text-white/60 text-sm font-mono">{sessionId}</p>
-        </div>
-      )}
-
       <div className="space-y-4">
         <Link
-          href="/dashboard"
+          href="/dashboard?refresh=true"
           className="block w-full py-4 rounded-xl bg-primary text-white font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-colors"
         >
           Go to Dashboard
         </Link>
-        
+
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm"

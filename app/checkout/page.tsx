@@ -63,6 +63,8 @@ function CheckoutContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
+  const [userName, setUserName] = useState<string>('')
+  const [userEmail, setUserEmail] = useState<string>('')
 
   const plan = PLAN_DETAILS[planId] || PLAN_DETAILS.starter
   const planPricing = getPlanPricing(planId, region)
@@ -70,12 +72,14 @@ function CheckoutContent() {
   const displayPricePaise = planPricing.price
 
   useEffect(() => {
-    async function fetchUserId() {
+    async function fetchUserData() {
       try {
         const response = await fetch('/api/auth/user')
         if (response.ok) {
           const data = await response.json()
           setUserId(String(data.user.id))
+          setUserName(data.user.name || data.user.username || '')
+          setUserEmail(data.user.email || '')
         } else {
           setUserId('anonymous')
         }
@@ -85,7 +89,7 @@ function CheckoutContent() {
         setIsLoading(false)
       }
     }
-    fetchUserId()
+    fetchUserData()
   }, [])
 
   const handleSuccess = () => {
@@ -163,6 +167,9 @@ function CheckoutContent() {
           amount={displayPricePaise}
           currency={planPricing.currency === 'INR' ? '₹' : planPricing.currency === 'USD' ? '$' : planPricing.currency === 'GBP' ? '£' : '€'}
           userId={userId}
+          region={region}
+          userName={userName}
+          userEmail={userEmail}
           onSuccess={handleSuccess}
           onError={handleError}
           disabled={isLoading}

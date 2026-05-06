@@ -18,14 +18,6 @@ export const metadata: Metadata = {
     publishedTime: '2026-04-28T10:00:00Z',
     modifiedTime: '2026-04-28T10:00:00Z',
     authors: ['Prix Team'],
-    images: [
-      {
-        url: '/blog/security-vulnerabilities-automated-review/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Security Vulnerabilities Automated Code Review',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
