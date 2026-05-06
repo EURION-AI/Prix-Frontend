@@ -149,12 +149,7 @@ function CheckoutContent() {
           ))}
         </ul>
 
-        <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6">
-          <p className="text-green-400 text-xs text-center">
-            7-day free trial • Cancel anytime • No hidden fees
-          </p>
-        </div>
-
+        
         {error && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
