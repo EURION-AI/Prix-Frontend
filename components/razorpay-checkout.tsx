@@ -92,9 +92,21 @@ export function RazorpayCheckoutButton({
     setIsLoading(true)
 
     try {
+      // 1. Get CSRF token first
+      const csrfResponse = await fetch('/api/razorpay/checkout')
+      const { csrfToken } = await csrfResponse.json()
+
+      if (!csrfToken) {
+        throw new Error('Failed to obtain security token')
+      }
+
+      // 2. Create Razorpay order
       const createOrderResponse = await fetch('/api/razorpay/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken
+        },
         body: JSON.stringify({
           plan,
           userId,

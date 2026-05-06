@@ -33,8 +33,8 @@ export function middleware(request: NextRequest) {
   // Production builds never use eval()
   const isDev = process.env.NODE_ENV === 'development'
   const scriptSrc = isDev 
-    ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com"
-    : "'self' 'unsafe-inline' https://checkout.razorpay.com"
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com"
+    : "'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com"
 
   const cspHeader = `
     default-src 'self';
