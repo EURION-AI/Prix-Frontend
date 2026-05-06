@@ -70,6 +70,15 @@ export function RazorpayCheckoutButton({
   const [isLoading, setIsLoading] = useState(false)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
 
+  // Format display price based on currency
+  const formatDisplayPrice = (amount: number, currency: string): string => {
+    if (currency === 'INR') {
+      return `₹${(amount / 100).toFixed(0)}` // Convert paise to rupees
+    } else {
+      return `${currency === 'USD' ? '$' : currency === 'GBP' ? '£' : '€'}${(amount / 100).toFixed(2)}`
+    }
+  }
+
   useEffect(() => {
     const script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
@@ -204,7 +213,7 @@ export function RazorpayCheckoutButton({
           {isScriptLoaded ? 'Processing...' : 'Loading Razorpay...'}
         </>
       ) : (
-        `Pay ${currency} ${(amount / 100).toFixed(2)}`
+        `Pay ${formatDisplayPrice(amount, currency)}`
       )}
     </button>
   )

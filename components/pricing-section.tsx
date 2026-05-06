@@ -5,31 +5,8 @@ import { Check, Zap, Shield, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { PRICING } from '@/lib/pricing'
-
-const regionalPricing = {
-  IN: { currency: '₹', basePrice: '₹699', proPrice: '₹899', baseOriginal: '₹1399', proOriginal: '₹1799' },
-  EU: { currency: '€', basePrice: '€6.99', proPrice: '€9.99', baseOriginal: '€13.99', proOriginal: '€19.99' },
-  GB: { currency: '£', basePrice: '£6.99', proPrice: '£9.99', baseOriginal: '£13.99', proOriginal: '£19.99' },
-  US: { currency: '$', basePrice: '$6.99', proPrice: '$9.99', baseOriginal: '$13.99', proOriginal: '$19.99' }
-}
-
-function detectRegion() {
-  if (typeof window === 'undefined') return 'US'
-
-  try {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const locale = navigator.language || 'en-US'
-
-    if (timezone.includes('Asia/Kolkata') || locale.includes('IN')) return 'IN'
-    if (timezone.includes('Europe') && !timezone.includes('London')) return 'EU'
-    if (timezone.includes('Europe/London') || locale.includes('GB')) return 'GB'
-  } catch (e) {
-    console.error('Error detecting region:', e)
-  }
-
-  return 'US'
-}
+import { useSearchParams } from 'next/navigation'
+import { getUserRegion, formatPrice, getCurrencySymbol, type Region, type Plan } from '@/lib/pricing'
 
 const plans = [
   {
@@ -48,12 +25,12 @@ const plans = [
   {
     id: 'starter',
     name: 'Starter',
-    getPrice: (region: string) => regionalPricing[region as keyof typeof regionalPricing]?.basePrice || '$6.99',
+    getPrice: (region: Region) => formatPrice(region, 'starter'),
     priceValue: 6.99,
     description: 'For individual developers who want reliable automation.',
     features: ['AI-powered PR reviews (generous usage)', 'Automated PR fixes (generous usage)', 'Private repositories', 'Bug detection (logic + common issues)', 'Security issue detection (SQL injection, XSS, etc.)', 'Basic performance analysis', 'Basic AI issue planning & task breakdowns'],
-    getCta: (region: string) => `Subscribe for ${regionalPricing[region as keyof typeof regionalPricing]?.basePrice || '$6.99'}`,
-    getHref: (region: string) => `/checkout?plan=starter&region=${region}`,
+    getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'starter')}`,
+    getHref: (region: Region) => `/checkout?plan=starter&region=${region}`,
     popular: false,
     badge: null,
     guarantee: 'No credit card required'
@@ -61,12 +38,12 @@ const plans = [
   {
     id: 'pro',
     name: 'Pro',
-    getPrice: (region: string) => regionalPricing[region as keyof typeof regionalPricing]?.proPrice || '$9.99',
+    getPrice: (region: Region) => formatPrice(region, 'pro'),
     priceValue: 9.99,
     description: 'For developers who rely on AI daily for fast, high-quality fixes.',
     features: ['Everything in Starter', 'Unlimited PR reviews', 'Unlimited AI issue planning & task breakdowns' , 'high automated fixes', 'Faster processing (priority queue)', 'Better multi-file context understanding', 'Deeper analysis (bugs, performance, security)'],
-    getCta: (region: string) => `Subscribe for ${regionalPricing[region as keyof typeof regionalPricing]?.proPrice || '$9.99'}`,
-    getHref: (region: string) => `/checkout?plan=pro&region=${region}`,
+    getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'pro')}`,
+    getHref: (region: Region) => `/checkout?plan=pro&region=${region}`,
     popular: true,
     badge: 'Most Popular',
     guarantee: 'No credit card required'
@@ -109,11 +86,13 @@ function CountdownTimer() {
 }
 
 export function PricingSection() {
-  const [region, setRegion] = useState('US')
+  const searchParams = useSearchParams()
+  const [region, setRegion] = useState<Region>('US')
 
   useEffect(() => {
-    setRegion(detectRegion())
-  }, [])
+    const forcedRegion = searchParams.get('region')
+    setRegion(getUserRegion(forcedRegion))
+  }, [searchParams])
 
   return (
     <section id="pricing" className="py-20 lg:py-24 bg-background relative border-t border-white/[0.03]">
