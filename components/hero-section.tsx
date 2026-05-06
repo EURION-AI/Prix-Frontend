@@ -5,18 +5,8 @@ import { CodeFixDemo } from './code-fix-demo'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Check, Star } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 
 export function HeroSection() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  useEffect(() => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    setIsLoggedIn(!!userCookie)
-  }, [])
-
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background px-4">
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
@@ -73,9 +63,9 @@ export function HeroSection() {
                 asChild
                 className="h-14 px-8 rounded-xl btn-premium text-base group shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300"
               >
-                <Link href={isLoggedIn ? "/dashboard" : "/login"}>
+                <Link href="/login">
                   <span className="relative z-10 flex items-center gap-3 font-semibold">
-                    {isLoggedIn ? "Go to Dashboard" : "Start Free. No Credit Card."}
+                    Start Free. No Credit Card.
                     <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
