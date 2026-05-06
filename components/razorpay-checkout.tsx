@@ -68,8 +68,14 @@ export function RazorpayCheckoutButton({
     const script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
     script.async = true
-    script.onload = () => setIsScriptLoaded(true)
-    script.onerror = () => onError('Failed to load Razorpay checkout')
+    script.onload = () => {
+      console.log('Razorpay checkout script loaded successfully')
+      setIsScriptLoaded(true)
+    }
+    script.onerror = (e) => {
+      console.error('Razorpay script load error:', e)
+      onError('Failed to load Razorpay checkout')
+    }
     document.body.appendChild(script)
 
     return () => {
