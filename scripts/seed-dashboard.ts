@@ -14,7 +14,7 @@ async function seedDashboardData() {
     const testUsers = [
       { githubId: 1001, username: 'alice_dev', email: 'alice@example.com', plan: 'pro' },
       { githubId: 1002, username: 'bob_coder', email: 'bob@example.com', plan: 'starter' },
-      { githubId: 1003, username: 'charlie_ops', email: 'charlie@example.com', plan: 'enterprise' },
+      { githubId: 1003, username: 'charlie_ops', email: 'charlie@example.com', plan: 'max' },
       { githubId: 1004, username: 'dana_fe', email: 'dana@example.com', plan: 'free' },
       { githubId: 1005, username: 'eve_backend', email: 'eve@example.com', plan: 'pro' },
     ]

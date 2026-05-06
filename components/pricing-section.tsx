@@ -5,6 +5,7 @@ import { Check, Zap, Shield, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { PRICING } from '@/lib/pricing'
 
 const regionalPricing = {
   IN: { currency: '₹', basePrice: '₹699', proPrice: '₹899', baseOriginal: '₹1399', proOriginal: '₹1799' },

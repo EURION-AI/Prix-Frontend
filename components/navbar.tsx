@@ -53,17 +53,31 @@ export function Navbar() {
 
 function NavbarAuthButton() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('github_user='))
-    setIsLoggedIn(!!userCookie)
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/auth/user')
+        setIsLoggedIn(response.ok)
+      } catch {
+        setIsLoggedIn(false)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    checkAuth()
   }, [])
 
+  if (isLoading) {
+    return (
+      <div className="w-[100px] h-[38px] bg-white/5 rounded-lg animate-pulse" />
+    )
+  }
+
   return (
-    <Link 
-      href={isLoggedIn ? "/dashboard" : "/login"} 
+    <Link
+      href={isLoggedIn ? "/dashboard/profile" : "/login"}
       className="text-[11px] font-bold uppercase tracking-wider text-black hover:text-black/80 transition-all duration-200 px-6 py-2.5 bg-white rounded-lg hover:bg-white/90 font-medium"
     >
       {isLoggedIn ? "Profile" : "Start Free"}
