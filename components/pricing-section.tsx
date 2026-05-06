@@ -16,14 +16,18 @@ const regionalPricing = {
 
 function detectRegion() {
   if (typeof window === 'undefined') return 'US'
-  
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const locale = navigator.language || 'en-US'
-  
-  if (timezone.includes('Asia/Kolkata') || locale.includes('IN')) return 'IN'
-  if (timezone.includes('Europe') && !timezone.includes('London')) return 'EU'
-  if (timezone.includes('Europe/London') || locale.includes('GB')) return 'GB'
-  
+
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const locale = navigator.language || 'en-US'
+
+    if (timezone.includes('Asia/Kolkata') || locale.includes('IN')) return 'IN'
+    if (timezone.includes('Europe') && !timezone.includes('London')) return 'EU'
+    if (timezone.includes('Europe/London') || locale.includes('GB')) return 'GB'
+  } catch (e) {
+    console.error('Error detecting region:', e)
+  }
+
   return 'US'
 }
 
@@ -105,7 +109,7 @@ function CountdownTimer() {
 }
 
 export function PricingSection() {
-  const [region, setRegion] = useState(() => detectRegion())
+  const [region, setRegion] = useState('US')
 
   useEffect(() => {
     setRegion(detectRegion())
