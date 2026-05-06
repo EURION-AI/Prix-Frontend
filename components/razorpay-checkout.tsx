@@ -47,6 +47,9 @@ interface RazorpayCheckoutButtonProps {
   amount: number
   currency: string
   userId: string | null
+  region?: string
+  userName?: string
+  userEmail?: string
   onSuccess: () => void
   onError: (error: string) => void
   disabled?: boolean
@@ -56,7 +59,10 @@ export function RazorpayCheckoutButton({
   plan,
   amount,
   currency,
+  region = 'IN',
   userId,
+  userName = '',
+  userEmail = '',
   onSuccess,
   onError,
   disabled
@@ -110,7 +116,7 @@ export function RazorpayCheckoutButton({
         body: JSON.stringify({
           plan,
           userId,
-          region: 'IN'
+          region
         }),
       })
 
@@ -159,8 +165,8 @@ export function RazorpayCheckoutButton({
           }
         },
         prefill: {
-          name: '',
-          email: ''
+          name: userName,
+          email: userEmail
         },
         theme: {
           color: '#ec4899'

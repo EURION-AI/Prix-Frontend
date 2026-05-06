@@ -58,7 +58,7 @@ async function seedDashboardData() {
             ${aff.code},
             ${aff.paidCount * 3},
             ${aff.paidCount},
-            ${aff.paidCount >= 5 ? 'advanced' : aff.paidCount >= 2 ? 'basic' : 'free'},
+            ${aff.paidCount >= 5 ? 'pro' : aff.paidCount >= 2 ? 'starter' : 'free'},
             ${new Date(now.getTime() - Math.random() * 90 * 24 * 60 * 60 * 1000)}
           )
           ON CONFLICT (github_id) DO NOTHING

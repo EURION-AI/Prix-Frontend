@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { Github, Twitter, Linkedin } from 'lucide-react'
 import Link from 'next/link'
+import { Twitter, Linkedin } from 'lucide-react'
 
 const footerLinks = {
   Product: [
@@ -19,12 +19,6 @@ const footerLinks = {
   ],
 }
 
-const socialLinks = [
-  { icon: Github, href: '#', label: 'GitHub' },
-  { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Linkedin, href: '#', label: 'LinkedIn' },
-]
-
 export function Footer() {
   return (
     <footer className="bg-[#0b0b0f] border-t border-white/5 pt-20 pb-10">
@@ -35,20 +29,9 @@ export function Footer() {
               <Image src="/logo.png" alt="Prix" width={56} height={56} className="rounded-xl" />
               <span className="text-xl font-bold tracking-tight text-white">Prix</span>
             </Link>
-            <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-6">
+            <p className="text-white/40 text-sm leading-relaxed max-w-xs">
               Auto-fixes bugs, generates implementation plans, and accelerates your development workflow. No configuration required.
             </p>
-            <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <Link 
-                  key={social.label} 
-                  href={social.href} 
-                  className="w-10 h-10 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center hover:bg-white/10 hover:border-primary/30 transition-all group"
-                >
-                  <social.icon className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
-                </Link>
-              ))}
-            </div>
           </div>
 
           {Object.entries(footerLinks).map(([category, links]) => (
@@ -74,6 +57,26 @@ export function Footer() {
           <p className="text-xs text-white/30 tracking-wide">
             © {new Date().getFullYear()} Prix Technologies Inc. All rights reserved.
           </p>
+          <div className="flex items-center gap-4">
+            <Link
+              href="https://x.com/prix_ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-white transition-colors"
+              aria-label="Follow Prix AI on X (Twitter)"
+            >
+              <Twitter className="w-5 h-5" />
+            </Link>
+            <Link
+              href="https://www.linkedin.com/company/eurion-ai/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-white transition-colors"
+              aria-label="Follow Prix AI on LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
