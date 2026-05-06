@@ -30,7 +30,7 @@
 - **Impact:** Prevents OAuth session hijacking
 
 ### ✅ 4. CSRF Protection Implemented
-**Files:** `lib/csrf.ts`, `app/api/stripe/checkout/route.ts`, `app/api/razorpay/checkout/route.ts`
+**Files:** `lib/csrf.ts`, `app/api/razorpay/checkout/route.ts`
 - **Issue:** No CSRF protection on payment endpoints
 - **Fix:**
   - Created comprehensive CSRF token system

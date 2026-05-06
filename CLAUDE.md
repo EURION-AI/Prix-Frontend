@@ -54,7 +54,7 @@ Forgetting the badge or task report makes your response incomplete. Always inclu
 | `product.json` | Tiers (Free/Pro/Team/Enterprise), prices, features, entitlements |
 | `monorepo.json` | All packages, dependencies, entry points, build commands |
 | `cli-commands.json` | Every CLI command, flags, subcommands, tier gates, exit codes |
-| `integrations.json` | Third-party services (Stripe, GitHub, PostHog, OAuth), SDK versions |
+| `integrations.json` | Third-party services (Razorpay, GitHub, PostHog, OAuth), SDK versions |
 | `copy.json` | Brand name, taglines, CTAs, page titles, descriptions |
 | `error-codes.json` | Error codes, classes, HTTP status codes, exit codes, messages |
 | `ui-pages.json` | Frontend routes, page components, auth requirements, layouts |

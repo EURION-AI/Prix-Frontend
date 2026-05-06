@@ -38,7 +38,7 @@ response.cookies.set('github_user', JSON.stringify({...}), {
 Before:
   script-src 'self' 'unsafe-inline' 'unsafe-eval';
   img-src 'self' data: https: blob:;
-  connect-src 'self' https://github.com https://api.github.com https://stripe.com https://api.stripe.com;
+  connect-src 'self' https://github.com https://api.github.com https://razorpay.com;
 
 After:
   script-src 'self';                           ← Removed unsafe-inline/eval
@@ -80,7 +80,6 @@ if (!expectedSecret) {
 
 | Route | Size Limit | Notes |
 |-------|------------|-------|
-| `app/api/stripe/webhook/route.ts` | `bodyParser: false` | Raw body needed for signature |
 | `app/api/razorpay/webhook/route.ts` | `bodyParser: false` | Raw body needed for signature |
 | `app/api/feedback/route.ts` | `sizeLimit: '1mb'` | User feedback submission |
 

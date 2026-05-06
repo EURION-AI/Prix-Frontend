@@ -49,7 +49,7 @@ This document contains the complete database schema and descriptions for the Pri
 - `id` (SERIAL, PK): Transaction log ID.
 - `event_type` (VARCHAR 50): e.g., `'subscription'`, `'purchase'`, `'refund'`.
 - `amount` (DECIMAL 10,2): Amount in USD (or subunits).
-- `customer_id` (VARCHAR 100): Stripe/Payment provider customer reference.
+- `customer_id` (VARCHAR 100): Razorpay/Payment provider customer reference.
 - `github_id` (BIGINT): Links the payment to a Prix user.
 - `subscription_tier` (VARCHAR 20): The tier purchased (`starter`, `pro`).
 - `created_at` (TIMESTAMP): Date of transaction.
