@@ -28,8 +28,10 @@ function getRazorpayClient(): Razorpay | null {
 
 export async function GET(request: Request) {
   // Provide CSRF token for frontend
-  const response = NextResponse.json({ csrfToken: generateCSRFToken() })
-  return addCSRFTokenToResponse(response)
+  const { response, token } = addCSRFTokenToResponse(NextResponse.json({}))
+  return NextResponse.json({ csrfToken: token }, { 
+    headers: response.headers,
+  })
 }
 
 export async function POST(request: Request) {

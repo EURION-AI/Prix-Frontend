@@ -65,9 +65,10 @@ export async function validateCSRFToken(request: Request): Promise<NextResponse 
   return null
 }
 
-export function addCSRFTokenToResponse(response: NextResponse): NextResponse {
+
+export function addCSRFTokenToResponse(response: NextResponse): { response: NextResponse, token: string } {
   const token = generateCSRFToken()
   setCSRFTokenCookie(response, token)
   response.headers.set('X-CSRF-Token', token)
-  return response
+  return { response, token }
 }
