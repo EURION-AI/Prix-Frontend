@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-  const [loadingRepo, setLoadingRepo] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
   const [selectedRepos, setSelectedRepos] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
@@ -65,16 +65,6 @@ export default function DashboardPage() {
           })
           if (response.ok) {
             setInfoMessage('Successfully mounted repositories! You can now select them below.')
-            // Update the local cookie immediately so subsequent API calls use the new installation ID
-            const existingCookie = document.cookie
-              .split('; ')
-              .find(row => row.startsWith('github_user='))
-            if (existingCookie) {
-              const cookieValue = existingCookie.substring(existingCookie.indexOf('=') + 1)
-              const userData = JSON.parse(decodeURIComponent(cookieValue))
-              userData.githubInstallationId = parseInt(installationId)
-              document.cookie = `github_user=${encodeURIComponent(JSON.stringify(userData))}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
-            }
           }
         } catch (err) {
           console.error('Failed to sync installation:', err)
@@ -133,17 +123,12 @@ export default function DashboardPage() {
   async function fetchRepos() {
     try {
       const response = await fetch('/api/github/repos')
+      if (!response.ok) throw new Error('Failed to fetch repositories')
       const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Failed to fetch repositories')
-      }
-      
       setRepos(data)
       setFilteredRepos(data)
-    } catch (err: any) {
-      console.error('Fetch repos error:', err)
-      setError(`GitHub Error: ${err.message}`)
+    } catch (err) {
+      setError('Could not load repositories from GitHub. Please try logging in again.')
     } finally {
       setIsLoading(false)
     }
@@ -170,7 +155,7 @@ export default function DashboardPage() {
       }
     }
     
-    setLoadingRepo(repoName)
+    setIsSaving(true)
     setError(null)
     try {
       const response = await fetch('/api/github/select-repo', {
@@ -193,7 +178,7 @@ export default function DashboardPage() {
     } catch (err: any) {
       setError(err.message || 'Failed to save your repository selection.')
     } finally {
-      setLoadingRepo(null)
+      setIsSaving(false)
     }
   }
 
@@ -361,7 +346,7 @@ export default function DashboardPage() {
               <button
                 key={repo.id}
                 onClick={() => handleRepoSelect(repo.full_name)}
-                disabled={!!loadingRepo}
+                disabled={isSaving}
                 className={`text-left p-6 rounded-2xl border transition-all relative group card-interactive ${
                   selectedRepos.includes(repo.full_name) 
                     ? 'bg-primary/10 border-primary !opacity-100 shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
@@ -391,7 +376,7 @@ export default function DashboardPage() {
                     Last updated: {new Date(repo.updated_at).toLocaleDateString()}
                   </span>
                   <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                    {loadingRepo === repo.full_name ? (
+                    {isSaving && selectedRepos.includes(repo.full_name) ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : selectedRepos.includes(repo.full_name) ? (
                       <span className="flex items-center gap-2 text-red-400 hover:text-red-300">

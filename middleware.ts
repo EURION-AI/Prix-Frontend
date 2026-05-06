@@ -10,13 +10,13 @@ export function middleware(request: NextRequest) {
   // or if they are already logged in and visiting login.
   // BUT the root homepage should ALWAYS be accessible.
   
-  if ((pathname === '/login' || pathname === '/') && userCookie) {
+  if (pathname === '/login' && userCookie) {
     try {
       // Basic validation to ensure the cookie is valid JSON
       JSON.parse(userCookie.value)
       return NextResponse.redirect(new URL('/dashboard', request.url))
     } catch {
-      // If cookie is malformed, don't redirect
+      // If cookie is malformed, don't redirect to allow user to re-authenticate
     }
   }
 

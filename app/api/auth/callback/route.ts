@@ -189,19 +189,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan, github_installation_id FROM users WHERE github_id = ${userData.id}`
-    const selectedRepos = userRecord[0]?.selected_repos || []
-    const prsReviewed = userRecord[0]?.prs_reviewed || 0
-    const plan = userRecord[0]?.plan || 'free'
-    const githubInstallationId = userRecord[0]?.github_installation_id
-
-    // If they haven't installed the app yet, redirect to the installation page
-    let redirectUrl = `/dashboard${referralMessage}`
-    if (!githubInstallationId) {
-      redirectUrl = `https://github.com/apps/prix-ai-automation/installations/new`
-    }
-
-    const response = NextResponse.redirect(new URL(redirectUrl, request.url))
+    const response = NextResponse.redirect(new URL(`/dashboard${referralMessage}`, request.url))
 
     response.cookies.set('github_token', accessToken, {
       httpOnly: true,
@@ -210,6 +198,11 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
     })
+
+    const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
+    const selectedRepos = userRecord[0]?.selected_repos || []
+    const prsReviewed = userRecord[0]?.prs_reviewed || 0
+    const plan = userRecord[0]?.plan || 'free'
 
     // Store user data in httpOnly cookie (secure from XSS)
     response.cookies.set('github_user', JSON.stringify({
@@ -221,7 +214,6 @@ export async function GET(request: NextRequest) {
       selectedRepos,
       prsReviewed,
       plan,
-      githubInstallationId, // Store this in the cookie too
     }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
