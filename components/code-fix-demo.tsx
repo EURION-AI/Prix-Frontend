@@ -59,7 +59,7 @@ export function CodeFixDemo() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2, duration: 0.3 }}
                 className="text-red-400/80 line-through decoration-red-500/50"
-              &gt;  useEffect(() =&gt; &#123; fetchUser() &#125;, [])</motion.span>
+              >  useEffect(() =&gt; &#123; fetchUser() &#125;, [])</motion.span>
             </motion.div>
             
             {/* Green lines animation */}
