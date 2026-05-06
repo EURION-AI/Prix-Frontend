@@ -122,18 +122,55 @@ export function ComparisonSection() {
               </div>
               
               <div className="p-8 bg-primary/[0.02] flex items-center justify-center flex-col gap-1">
-                <div className="flex items-center gap-2 text-primary font-bold">
-                  <Check className="w-4 h-4" />
-                  <span className="text-sm">{row.prix}</span>
-                </div>
+                {row.feature === 'Monthly Pricing' ? (
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                    className="flex items-center gap-2 text-green-400 font-bold"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span className="text-lg">{row.prix}</span>
+                  </motion.div>
+                ) : (
+                  <div className="flex items-center gap-2 text-primary font-bold">
+                    <Check className="w-4 h-4" />
+                    <span className="text-sm">{row.prix}</span>
+                  </div>
+                )}
               </div>
 
               <div className="p-8 flex items-center justify-center text-center">
-                <span className="text-xs text-white/40 font-medium">{row.codeRabbit}</span>
+                {row.feature === 'Monthly Pricing' ? (
+                  <motion.span
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+                    className="text-lg text-red-400 font-bold"
+                  >
+                    {row.codeRabbit}
+                  </motion.span>
+                ) : (
+                  <span className="text-xs text-white/40 font-medium">{row.codeRabbit}</span>
+                )}
               </div>
 
               <div className="p-8 flex items-center justify-center text-center">
-                <span className="text-xs text-white/40 font-medium">{row.qodo}</span>
+                {row.feature === 'Monthly Pricing' ? (
+                  <motion.span
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+                    className="text-lg text-red-400 font-bold"
+                  >
+                    {row.qodo}
+                  </motion.span>
+                ) : (
+                  <span className="text-xs text-white/40 font-medium">{row.qodo}</span>
+                )}
               </div>
             </motion.div>
           ))}

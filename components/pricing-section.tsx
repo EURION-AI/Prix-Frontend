@@ -52,7 +52,7 @@ const plans = [
     getHref: (region: string) => `/checkout?plan=starter&region=${region}`,
     popular: false,
     badge: null,
-    guarantee: '7-day free trial • Cancel anytime'
+    guarantee: 'No credit card required'
   },
   {
     id: 'pro',
@@ -65,7 +65,7 @@ const plans = [
     getHref: (region: string) => `/checkout?plan=pro&region=${region}`,
     popular: true,
     badge: 'Most Popular',
-    guarantee: '7-day free trial • Cancel anytime'
+    guarantee: 'No credit card required'
   }
 ]
 
@@ -105,7 +105,7 @@ function CountdownTimer() {
 }
 
 export function PricingSection() {
-  const [region, setRegion] = useState('US')
+  const [region, setRegion] = useState(() => detectRegion())
 
   useEffect(() => {
     setRegion(detectRegion())
