@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react'
 import { Loader2, ArrowLeft, CreditCard, Shield, Zap, Crown, ArrowRight, Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Navbar } from '@/components/navbar'
 import type { Plan } from '@/lib/user-store'
+import { getUserRegion, formatPrice, getCurrencySymbol, type Region } from '@/lib/pricing'
 
 interface UserData {
   id: number
@@ -23,33 +25,19 @@ interface UpgradeOption {
   popular?: boolean
 }
 
-const regionalUpgradePricing = {
-  US: { currency: '$', starterPrice: '6.99', proPrice: '9.99', starterProDiff: '+2.00' },
-  EU: { currency: '€', starterPrice: '6.99', proPrice: '9.99', starterProDiff: '+2.00' },
-  GB: { currency: '£', starterPrice: '6.99', proPrice: '9.99', starterProDiff: '+2.00' },
-  IN: { currency: '₹', starterPrice: '₹699', proPrice: '₹899', starterProDiff: '+₹200' },
-}
-
-function detectRegion() {
-  if (typeof window === 'undefined') return 'US'
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const locale = navigator.language || 'en-US'
-  if (timezone.includes('Asia/Kolkata') || locale.includes('IN')) return 'IN'
-  if (timezone.includes('Europe') && !timezone.includes('London')) return 'EU'
-  if (timezone.includes('Europe/London') || locale.includes('GB')) return 'GB'
-  return 'US'
-}
-
 export default function BillingPage() {
+  const searchParams = useSearchParams()
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [region, setRegion] = useState('US')
+  const [region, setRegion] = useState<Region>('US')
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    setRegion(detectRegion())
+    const forcedRegion = searchParams.get('region')
+    setRegion(getUserRegion(forcedRegion))
+
     async function fetchUser() {
       try {
         const response = await fetch('/api/auth/user')
@@ -66,7 +54,7 @@ export default function BillingPage() {
       }
     }
     fetchUser()
-  }, [])
+  }, [searchParams])
 
   const handleUpgrade = (targetPlan: string) => {
     window.location.href = `/checkout?plan=${targetPlan}&region=${region}`
@@ -81,10 +69,10 @@ export default function BillingPage() {
     )
   }
 
-  const regional = regionalUpgradePricing[region as keyof typeof regionalUpgradePricing] || regionalUpgradePricing.US
-  const currentPlanDetails = getPlanDetails(user.plan, regional)
+  const currency = getCurrencySymbol(region)
+  const currentPlanDetails = getPlanDetails(user.plan, region)
 
-  const upgradeOptions = getUpgradeOptions(user.plan, regional)
+  const upgradeOptions = getUpgradeOptions(user.plan, region)
 
   return (
     <main className="min-h-screen bg-[#050508] text-white selection:bg-primary/30">
@@ -226,7 +214,7 @@ export default function BillingPage() {
   )
 }
 
-function getPlanDetails(plan: string, regional: typeof regionalUpgradePricing.US) {
+function getPlanDetails(plan: string, region: Region) {
   switch (plan) {
     case 'max':
       return {
@@ -259,8 +247,10 @@ function getPlanDetails(plan: string, regional: typeof regionalUpgradePricing.US
   }
 }
 
-function getUpgradeOptions(currentPlan: string, regional: typeof regionalUpgradePricing.US): UpgradeOption[] {
-  const { currency, starterPrice, proPrice, starterProDiff } = regional
+function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[] {
+  const currency = getCurrencySymbol(region)
+  const starterPrice = formatPrice(region, 'starter')
+  const proPrice = formatPrice(region, 'pro')
 
   if (currentPlan === 'max') return []
 
@@ -269,7 +259,7 @@ function getUpgradeOptions(currentPlan: string, regional: typeof regionalUpgrade
       {
         id: 'pro',
         name: 'Pro Plan',
-        price: `${currency}${parseFloat(proPrice.replace(/[^0-9.]/g, '')).toFixed(2)}`,
+        price: proPrice,
         description: 'Everything in Starter, plus unlimited PRs and deeper analysis.',
         features: [
           'Everything in Starter',
@@ -292,7 +282,7 @@ function getUpgradeOptions(currentPlan: string, regional: typeof regionalUpgrade
     {
       id: 'starter',
       name: 'Starter Plan',
-      price: `${currency}${parseFloat(starterPrice.replace(/[^0-9.]/g, '')).toFixed(2)}`,
+      price: starterPrice,
       description: 'Perfect for individual developers wanting reliable automation.',
       features: [
         '5 repositories',
@@ -308,7 +298,7 @@ function getUpgradeOptions(currentPlan: string, regional: typeof regionalUpgrade
     {
       id: 'pro',
       name: 'Pro Plan',
-      price: `${currency}${parseFloat(proPrice.replace(/[^0-9.]/g, '')).toFixed(2)}`,
+      price: proPrice,
       description: 'For developers who rely on AI daily for fast, high-quality fixes.',
       features: [
         'Everything in Starter',

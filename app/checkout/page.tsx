@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { Loader2, Check, ArrowLeft, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
-import { PRICING } from '@/lib/pricing'
+import { PRICING, getPricing, formatPrice, getUserRegion, type Region, type Plan } from '@/lib/pricing'
 
 interface PlanInfo {
   id: string
@@ -20,7 +20,7 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
   starter: {
     id: 'starter',
     name: 'Starter',
-    price: '₹699/mo',
+    price: '', // Will be set dynamically based on region
     pricePaise: 69900,
     features: [
       'AI-powered PR reviews (generous usage)',
@@ -35,7 +35,7 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
   pro: {
     id: 'pro',
     name: 'Pro',
-    price: '₹899/mo',
+    price: '', // Will be set dynamically based on region
     pricePaise: 89900,
     features: [
       'Everything in Starter',
@@ -49,16 +49,13 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
   }
 }
 
-function getPlanPricing(plan: string, region: string) {
-  const pricing = PRICING[region as keyof typeof PRICING] || PRICING.IN
-  return pricing[plan as keyof typeof pricing] || pricing.starter
-}
 
 function CheckoutContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const planId = (searchParams.get('plan') || 'starter') as 'starter' | 'pro'
-  const region = searchParams.get('region') || 'IN'
+  const planId = (searchParams.get('plan') || 'starter') as Plan
+  const regionParam = searchParams.get('region')
+  const region = getUserRegion(regionParam) as Region
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -67,9 +64,12 @@ function CheckoutContent() {
   const [userEmail, setUserEmail] = useState<string>('')
 
   const plan = PLAN_DETAILS[planId] || PLAN_DETAILS.starter
-  const planPricing = getPlanPricing(planId, region)
-  const displayPrice = `${planPricing.currency === 'INR' ? '₹' : planPricing.currency === 'USD' ? '$' : planPricing.currency === 'GBP' ? '£' : '€'}${(planPricing.price / (planPricing.currency === 'INR' ? 100 : 100)).toFixed(2)}/mo`
-  const displayPricePaise = planPricing.price
+  const pricing = getPricing(region, planId)
+  const displayPrice = formatPrice(region, planId) + '/mo'
+  const displayPricePaise = pricing.price
+
+  // Update plan price dynamically
+  plan.price = displayPrice
 
   useEffect(() => {
     async function fetchUserData() {
@@ -160,7 +160,7 @@ function CheckoutContent() {
         <RazorpayCheckoutButton
           plan={planId}
           amount={displayPricePaise}
-          currency={planPricing.currency === 'INR' ? '₹' : planPricing.currency === 'USD' ? '$' : planPricing.currency === 'GBP' ? '£' : '€'}
+          currency={pricing.currency}
           userId={userId}
           region={region}
           userName={userName}
