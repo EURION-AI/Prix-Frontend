@@ -59,7 +59,7 @@ export function CodeFixDemo() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2, duration: 0.3 }}
                 className="text-red-400/80 line-through decoration-red-500/50"
-              >  useEffect(() => &#123; fetchUser() &#125;, [])</motion.span>
+              &gt;  useEffect(() =&gt; &#123; fetchUser() &#125;, [])</motion.span>
             </motion.div>
             
             {/* Green lines animation */}
@@ -73,10 +73,10 @@ export function CodeFixDemo() {
               >
                 <span className="w-4 text-green-500/40 select-none">{lineNum}</span>
                 <span className="text-green-400/90 font-semibold">
-                  {lineNum === 15 && "  useEffect(() => &#123;"}
+                  {lineNum === 15 && "  useEffect(() =&gt; &#123;"}
                   {lineNum === 16 && "    const controller = new AbortController();"}
                   {lineNum === 17 && "    fetchUser(&#123; signal: controller.signal &#125;);"}
-                  {lineNum === 18 && "    return () => controller.abort();"}
+                  {lineNum === 18 && "    return () =&gt; controller.abort();"}
                   {lineNum === 19 && "  &#125;, [])"}
                 </span>
               </motion.div>
