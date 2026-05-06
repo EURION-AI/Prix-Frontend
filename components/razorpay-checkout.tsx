@@ -137,11 +137,13 @@ export function RazorpayCheckoutButton({
       const orderData = await createOrderResponse.json()
 
       if (!orderData.id) {
-        throw new Error('No order ID received')
+        throw new Error('No order ID received from server')
       }
 
+      console.log('Razorpay order created:', orderData.id)
+
       const options: RazorpayOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+        key: orderData.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
         amount: String(orderData.amount),
         currency: orderData.currency,
         name: 'Prix AI',
@@ -149,6 +151,7 @@ export function RazorpayCheckoutButton({
         image: '/logo.png',
         order_id: orderData.id,
         handler: async (response: RazorpayResponse) => {
+          console.log('Payment authorized by user, verifying...')
           try {
             const verifyResponse = await fetch('/api/razorpay/verify-payment', {
               method: 'POST',
@@ -168,8 +171,10 @@ export function RazorpayCheckoutButton({
               throw new Error(verifyData.error || 'Payment verification failed')
             }
 
+            console.log('Payment verified successfully')
             onSuccess()
           } catch (error) {
+            console.error('Verification error:', error)
             onError(error instanceof Error ? error.message : 'Payment verification failed')
           }
         },
@@ -187,15 +192,24 @@ export function RazorpayCheckoutButton({
         }
       }
 
+      console.log('Opening Razorpay with options:', {
+        amount: options.amount,
+        currency: options.currency,
+        order_id: options.order_id,
+        hasKey: !!options.key
+      })
+
       const razorpay = new window.Razorpay(options)
 
-      razorpay.on('payment.failed', (response: { error: { description: string } }) => {
+      razorpay.on('payment.failed', (response: any) => {
+        console.error('Razorpay payment failed event:', response.error)
         onError(response.error?.description || 'Payment failed')
         setIsLoading(false)
       })
 
       razorpay.open()
     } catch (error) {
+      console.error('Catch block error in handlePayment:', error)
       onError(error instanceof Error ? error.message : 'Failed to initiate payment')
       setIsLoading(false)
     }

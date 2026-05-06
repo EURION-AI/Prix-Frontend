@@ -94,12 +94,12 @@ export async function POST(request: Request) {
       id: order.id,
       amount: order.amount,
       currency: order.currency,
-      key: process.env.RAZORPAY_KEY_ID,
+      key: process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
     })
   } catch (error) {
     console.error('Razorpay checkout error:', error)
     return NextResponse.json(
-      { error: 'Failed to create Razorpay order' },
+      { error: error instanceof Error ? error.message : 'Failed to create Razorpay order' },
       { status: 500 }
     )
   }
