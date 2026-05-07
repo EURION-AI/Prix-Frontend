@@ -11,6 +11,7 @@ export interface User {
   plan: Plan
   selectedRepos: string[]
   githubInstallationId: number | null
+  installationStatus: string
   prsReviewed: number
   createdAt: string
   updatedAt: string
@@ -40,6 +41,7 @@ export async function getOrCreateUser(githubId: number, username: string, email?
     plan: row.plan,
     selectedRepos: row.selected_repos || [],
     githubInstallationId: row.github_installation_id,
+    installationStatus: row.installation_status || 'disconnected',
     prsReviewed: row.prs_reviewed || 0,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
@@ -63,6 +65,7 @@ export async function getUserByGithubId(githubId: number): Promise<User | null> 
     plan: row.plan,
     selectedRepos: row.selected_repos || [],
     githubInstallationId: row.github_installation_id,
+    installationStatus: row.installation_status || 'disconnected',
     prsReviewed: row.prs_reviewed || 0,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),

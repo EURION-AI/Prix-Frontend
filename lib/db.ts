@@ -23,6 +23,8 @@ export async function initializeDatabase() {
         plan VARCHAR(20) DEFAULT 'free',
         selected_repos JSONB DEFAULT '[]'::jsonb,
         prs_reviewed INTEGER DEFAULT 0,
+        github_installation_id BIGINT,
+        installation_status VARCHAR(20) DEFAULT 'disconnected',
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
@@ -124,6 +126,40 @@ export async function initializeDatabase() {
     await sql`
       CREATE INDEX IF NOT EXISTS idx_users_selected_repos ON users USING gin(selected_repos)
     `
+
+    // Add github_installation_id column if it doesn't exist
+    try {
+      const hasInstallationId = await sql`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'users' AND column_name = 'github_installation_id'
+      `
+      if (hasInstallationId.length === 0) {
+        await sql`
+          ALTER TABLE users ADD COLUMN github_installation_id BIGINT
+        `
+        console.log('Added github_installation_id column to users table')
+      }
+    } catch (e) {
+      console.log('Migration info: github_installation_id column may already exist', e)
+    }
+
+    // Add installation_status column if it doesn't exist
+    try {
+      const hasInstallationStatus = await sql`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'users' AND column_name = 'installation_status'
+      `
+      if (hasInstallationStatus.length === 0) {
+        await sql`
+          ALTER TABLE users ADD COLUMN installation_status VARCHAR(20) DEFAULT 'disconnected'
+        `
+        console.log('Added installation_status column to users table')
+      }
+    } catch (e) {
+      console.log('Migration info: installation_status column may already exist', e)
+    }
 
     // Migrate existing selected_repo to selected_repos if empty
     try {

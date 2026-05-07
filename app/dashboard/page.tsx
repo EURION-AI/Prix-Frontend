@@ -33,6 +33,7 @@ interface UserData {
   plan: Plan
   selectedRepos: string[]
   githubInstallationId: number | null
+  installationStatus: string
   prsReviewed: number
 }
 
@@ -46,6 +47,8 @@ export default function DashboardPage() {
   const [selectedRepos, setSelectedRepos] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
+  const [installationValid, setInstallationValid] = useState<boolean | null>(null)
+  const [isValidating, setIsValidating] = useState(false)
 
   useEffect(() => {
     async function initializeDashboard() {
@@ -82,6 +85,10 @@ export default function DashboardPage() {
         if (data.user.selectedRepos) {
           setSelectedRepos(data.user.selectedRepos)
         }
+        
+        // Validate GitHub installation
+        await validateInstallation()
+        
         await fetchRepos()
       } catch {
         window.location.href = '/login'
@@ -142,6 +149,25 @@ export default function DashboardPage() {
       window.location.href = '/'
     } catch (err) {
       console.error('Failed to logout:', err)
+    }
+  }
+
+  async function validateInstallation() {
+    setIsValidating(true)
+    try {
+      const response = await fetch('/api/github/validate-installation')
+      if (response.ok) {
+        const data = await response.json()
+        setInstallationValid(data.valid)
+        if (!data.valid && data.reason) {
+          setError(`GitHub App disconnected: ${data.reason}`)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to validate installation:', err)
+      setInstallationValid(false)
+    } finally {
+      setIsValidating(false)
     }
   }
 
@@ -302,6 +328,27 @@ export default function DashboardPage() {
           <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400">
             <AlertCircle className="w-5 h-5" />
             <p>{error}</p>
+          </div>
+        )}
+
+        {installationValid === false && (
+          <div className="mb-8 p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-orange-400" />
+              <div>
+                <p className="text-orange-400 font-medium">Prix AI GitHub App is disconnected</p>
+                <p className="text-orange-400/70 text-sm">Reconnect to continue reviewing PRs</p>
+              </div>
+            </div>
+            <a
+              href="https://github.com/apps/prix-ai-automation/installations/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <Github className="w-4 h-4" />
+              Reconnect App
+            </a>
           </div>
         )}
 

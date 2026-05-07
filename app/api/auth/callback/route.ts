@@ -199,10 +199,12 @@ export async function GET(request: NextRequest) {
       path: '/',
     })
 
-    const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
+    const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan, github_installation_id, installation_status FROM users WHERE github_id = ${userData.id}`
     const selectedRepos = userRecord[0]?.selected_repos || []
     const prsReviewed = userRecord[0]?.prs_reviewed || 0
     const plan = userRecord[0]?.plan || 'free'
+    const githubInstallationId = userRecord[0]?.github_installation_id
+    const installationStatus = userRecord[0]?.installation_status || 'disconnected'
 
     // Store user data in httpOnly cookie (secure from XSS)
     response.cookies.set('github_user', JSON.stringify({
@@ -214,6 +216,8 @@ export async function GET(request: NextRequest) {
       selectedRepos,
       prsReviewed,
       plan,
+      githubInstallationId,
+      installationStatus,
     }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
