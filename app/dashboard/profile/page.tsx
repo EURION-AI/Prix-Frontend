@@ -64,10 +64,18 @@ export default function ProfilePage() {
 
       <div className="max-w-4xl mx-auto px-4 pt-32 pb-20">
         <Link 
-          href="/dashboard"
-          className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-8"
+          href="/"
+          className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
+          Go back to home page
+        </Link>
+
+        <Link 
+          href="/dashboard"
+          className="inline-flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-white/90 transition-colors mb-8"
+        >
+          <LayoutDashboard className="w-5 h-5" />
           Back to Dashboard
         </Link>
 
