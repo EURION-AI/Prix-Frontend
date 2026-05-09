@@ -17,10 +17,10 @@ const securityFeatures = [
     highlight: "E2E Protected"
   },
   {
-    title: "SOC 2 Type II Certified",
-    description: "Our security controls and operational processes are independently audited annually to meet the highest industry standards for data protection.",
+    title: "Secure Infrastructure",
+    description: "Built with security best practices and regular monitoring to ensure your code remains protected throughout the review process.",
     icon: FileCheck,
-    highlight: "Enterprise Ready"
+    highlight: "Security First"
   }
 ]
 
@@ -106,8 +106,8 @@ export function SecuritySection() {
               <ShieldCheck className="w-8 h-8 text-white/40" />
             </div>
             <div>
-              <h4 className="text-white font-bold mb-1">Enterprise-Grade Compliance</h4>
-              <p className="text-sm text-muted-foreground">Certified for SOC 2 Type II and GDPR compliance standards.</p>
+              <h4 className="text-white font-bold mb-1">Enterprise-Grade Security</h4>
+              <p className="text-sm text-muted-foreground">Built with security best practices and encryption standards.</p>
             </div>
           </div>
           <div className="flex items-center gap-12">

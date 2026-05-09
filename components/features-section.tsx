@@ -6,39 +6,39 @@ import { Brain, Cpu, Zap, Shield, LayoutGrid, MessageSquare, Check, Search } fro
 const features = [
   {
     icon: Search,
-    title: 'Autonomous Repo Intelligence',
-    description: 'Prix visualizes and maps your entire codebase in real-time. It understands how a change in your Auth layer affects your Database schema, ensuring every fix is architecturally sound.',
-    spec: 'Full AST Mapping'
+    title: 'AST-Powered Analysis',
+    description: 'Prix uses tree-sitter and ts-morph to parse your codebase structure, understanding dependencies and architectural context for accurate reviews.',
+    spec: 'Multi-Language Support'
   },
   {
     icon: Cpu,
-    title: 'Context-Aware Agentic Fixes',
-    description: 'Powered by LangGraph and agentic workflows, Prix doesn\'t just suggest code—it executes deep reasoning loops to verify fixes before they ever hit your PR.',
-    spec: 'LangGraph Powered'
+    title: 'Context-Aware Fixes',
+    description: 'Powered by advanced LLM reasoning, Prix generates fixes that understand your codebase structure and architectural patterns.',
+    spec: 'Intelligent Reasoning'
   },
   {
     icon: Shield,
-    title: 'Security',
-    description: 'OWASP Top 10, secrets in code, SQL injection, XSS. Prix catches and fixes what other scanners miss.',
-    spec: 'Enterprise security'
+    title: 'Security Scanning',
+    description: 'Detects common security issues, vulnerabilities, and code smells in your pull requests with automated fix suggestions.',
+    spec: 'Proactive Security'
   },
   {
     icon: MessageSquare,
-    title: 'Chat With Codebase',
-    description: 'Ask Prix to explain complex modules or generate implementation plans. Natural language meets deep code analysis.',
-    spec: 'Contextual understanding'
+    title: 'Issue Planning',
+    description: 'Use !prix plan to generate detailed implementation plans for complex features and architectural changes.',
+    spec: 'Command-Driven'
   },
   {
     icon: LayoutGrid,
-    title: 'Works Everywhere',
-    description: 'GitHub, GitLab, Bitbucket, VS Code, JetBrains. Prix integrates seamlessly with your existing stack.',
-    spec: 'Universal integrations'
+    title: 'GitHub Integration',
+    description: 'Seamless GitHub App integration with native comment commands and automatic PR analysis.',
+    spec: 'Native GitHub'
   },
   {
     icon: Zap,
-    title: 'Performance',
-    description: 'Detect N+1 queries, memory leaks, and inefficient algorithms. Prix suggests optimizations with benchmarks.',
-    spec: '40+ checks'
+    title: 'Auto-Fix Generation',
+    description: 'Automatically creates fix PRs with !prix fix command, complete with confidence scoring and validation.',
+    spec: 'Automated Remedies'
   }
 ]
 

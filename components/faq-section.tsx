@@ -15,11 +15,11 @@ const faqs = [
   },
   {
     question: "Is my code stored on your servers?",
-    answer: "No. Prix is architected for privacy. We analyze your code in real-time and purge all review data immediately after the analysis is complete. We are SOC 2 Type II certified."
+    answer: "No. Prix is architected for privacy. We analyze your code in real-time and purge all review data immediately after analysis is complete."
   },
   {
     question: "Does it support private repositories?",
-    answer: "Yes. Our Pro and Team plans provide full support for private organizations, with native integrations for GitHub, GitLab, and Bitbucket."
+    answer: "Yes. Our Pro and Team plans provide full support for private GitHub repositories."
   },
   {
     question: "Can I customize the review guidelines?",
