@@ -199,12 +199,36 @@ export async function GET(request: NextRequest) {
       path: '/',
     })
 
-    const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan, github_installation_id, installation_status FROM users WHERE github_id = ${userData.id}`
-    const selectedRepos = userRecord[0]?.selected_repos || []
-    const prsReviewed = userRecord[0]?.prs_reviewed || 0
-    const plan = userRecord[0]?.plan || 'free'
-    const githubInstallationId = userRecord[0]?.github_installation_id
-    const installationStatus = userRecord[0]?.installation_status || 'disconnected'
+    let selectedRepos: string[] = []
+    let prsReviewed: number = 0
+    let plan: string = 'free'
+    let githubInstallationId: number | null = null
+    let installationStatus: string = 'disconnected'
+    
+    try {
+      const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan, github_installation_id, installation_status FROM users WHERE github_id = ${userData.id}`
+      selectedRepos = userRecord[0]?.selected_repos || []
+      prsReviewed = userRecord[0]?.prs_reviewed || 0
+      plan = userRecord[0]?.plan || 'free'
+      githubInstallationId = userRecord[0]?.github_installation_id
+      installationStatus = userRecord[0]?.installation_status || 'disconnected'
+    } catch (error: any) {
+      // Handle missing columns gracefully
+      if (error.message?.includes('column') || error.message?.includes('does not exist')) {
+        console.log('[AUTH] Database schema missing columns, using fallback values')
+        try {
+          // Try to get basic user data without the missing columns
+          const basicRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
+          selectedRepos = basicRecord[0]?.selected_repos || []
+          prsReviewed = basicRecord[0]?.prs_reviewed || 0
+          plan = basicRecord[0]?.plan || 'free'
+        } catch (basicError) {
+          console.log('[AUTH] Using default values - no user data found')
+        }
+      } else {
+        throw error // Re-throw if it's not a column error
+      }
+    }
 
     // Store user data in httpOnly cookie (secure from XSS)
     response.cookies.set('github_user', JSON.stringify({
