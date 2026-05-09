@@ -53,6 +53,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function initializeDashboard() {
+      // Clear any legacy client-side cookies that might conflict with httpOnly session
+      if (document.cookie.includes('github_user=')) {
+        document.cookie = 'github_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+        console.log('[AUTH] Cleared legacy client-side user cookie')
+      }
+
       const params = new URLSearchParams(window.location.search)
       const installationId = params.get('installation_id')
 
@@ -208,7 +214,6 @@ export default function DashboardPage() {
       
       if (user) {
         const updatedUser = { ...user, selectedRepos: data.selectedRepos }
-        document.cookie = `github_user=${encodeURIComponent(JSON.stringify(updatedUser))}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
         setUser(updatedUser)
       }
       

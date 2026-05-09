@@ -45,7 +45,23 @@ export async function POST(request: Request) {
 
     await updateSelectedRepos(user.githubId, currentRepos)
 
-    return NextResponse.json({ success: true, selectedRepos: currentRepos })
+    const response = NextResponse.json({ success: true, selectedRepos: currentRepos })
+
+    // Update the httpOnly cookie with fresh data
+    const updatedUser = {
+      ...userDataCookie,
+      selectedRepos: currentRepos
+    }
+
+    response.cookies.set('github_user', JSON.stringify(updatedUser), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     console.error('Error saving selected repo:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -12,18 +12,24 @@ export async function GET(request: Request) {
 
   try {
     const cookieStore = await cookies()
-    const userCookie = cookieStore.get('github_user')?.value
+    let userCookie = cookieStore.get('github_user')?.value
     
     if (!userCookie) {
+      console.error('[AUTH] No github_user cookie found')
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
     // Parse and validate user data
     let userData
     try {
-      userData = JSON.parse(userCookie)
+      // Handle potential URI encoding from legacy client-side cookie setting
+      const decodedCookie = userCookie.includes('%') ? decodeURIComponent(userCookie) : userCookie
+      userData = JSON.parse(decodedCookie)
     } catch (parseError) {
-      console.error('[AUTH] Failed to parse user cookie:', parseError)
+      console.error('[AUTH] Failed to parse user cookie:', parseError, { 
+        cookieLength: userCookie?.length,
+        isEncoded: userCookie?.includes('%')
+      })
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
     }
 
