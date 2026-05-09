@@ -40,8 +40,10 @@ export function validateString(value: unknown, fieldName: string, maxLength = 25
 }
 
 export function validateAffiliateCode(code: string): boolean {
-  const regex = /^[a-z0-9]{1,15}_[a-z0-9]+_[a-z0-9]+$/i
-  return regex.test(code) && code.length <= 50
+  // Support both old format (with underscores) and new short format
+  const oldFormat = /^[a-z0-9]{1,15}_[a-z0-9]+_[a-z0-9]+$/i
+  const newFormat = /^[a-z0-9]{6,12}$/i
+  return (oldFormat.test(code) || newFormat.test(code)) && code.length <= 12
 }
 
 export function validatePlan(plan: unknown): plan is 'free' | 'starter' | 'pro' | 'max' {

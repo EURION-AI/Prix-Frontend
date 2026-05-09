@@ -26,11 +26,19 @@ export const AFFILIATE_TIERS = {
 } as const
 
 export function generateAffiliateCode(username: string): string {
-  const cleanUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 15)
-  const timestamp = Date.now().toString(36)
-  const randomPart = Array.from(crypto.getRandomValues(new Uint8Array(8)))
-    .reduce((acc, byte) => acc + byte.toString(36).padStart(2, '0'), '')
-  return `${cleanUsername}_${timestamp}_${randomPart}`.substring(0, 50)
+  // Take first 4-6 chars of username, make it clean
+  const cleanUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 6)
+  
+  // Generate a short random string (4 chars)
+  const randomPart = Array.from(crypto.getRandomValues(new Uint8Array(3)))
+    .reduce((acc, byte) => acc + byte.toString(36), '')
+    .substring(0, 4)
+  
+  // Combine for a short, clean code like "prixabc", "warsx7", etc.
+  const code = cleanUsername + randomPart
+  
+  // Ensure it's at least 6 chars, pad with random if needed
+  return code.length >= 6 ? code : code + randomPart.repeat(2).substring(0, 6 - code.length)
 }
 
 export async function hashIP(ip: string): Promise<string> {

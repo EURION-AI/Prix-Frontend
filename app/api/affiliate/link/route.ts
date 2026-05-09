@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing code parameter' }, { status: 400 })
   }
 
-  if (typeof code !== 'string' || code.length < 3 || code.length > 50) {
+  if (typeof code !== 'string' || code.length < 6 || code.length > 12) {
     return NextResponse.json({ error: 'Invalid code format' }, { status: 400 })
   }
 

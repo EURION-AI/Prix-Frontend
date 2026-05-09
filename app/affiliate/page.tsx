@@ -37,7 +37,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   const [error, setError] = useState<string | null>(null)
 
   const affiliateLink = stats?.affiliateCode && typeof window !== 'undefined'
-    ? `${window.location.origin}/api/affiliate/click?code=${stats.affiliateCode}`
+    ? `${window.location.origin}/ref/${stats.affiliateCode}`
     : ''
 
   useEffect(() => {
