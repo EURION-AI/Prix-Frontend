@@ -111,7 +111,7 @@ export function PricingSection() {
           <CountdownTimer />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 xl:gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 xl:gap-12 max-w-7xl mx-auto">
           {plans.map((plan, index) => {
             const displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
             const displayCta = plan.getCta ? plan.getCta(region) : plan.cta
@@ -124,62 +124,91 @@ export function PricingSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 1 }}
-                className={`relative flex flex-col p-6 lg:p-8 rounded-2xl border transition-all duration-300 hover:border-white/20 hover:-translate-y-1 will-change-transform ${plan.popular ? 'border-primary/50 bg-primary/5 shadow-[0_0_40px_rgba(236,72,153,0.08)]' : 'border-white/[0.08] bg-white/[0.02]'}`}
+                className={`relative flex flex-col p-8 lg:p-10 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
+                  plan.popular 
+                    ? 'border-primary/40 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 shadow-[0_20_60px_rgba(236,72,153,0.15)] ring-2 ring-primary/30' 
+                    : 'border-white/[0.12] bg-white/[0.03] hover:border-white/[0.20] hover:bg-white/[0.05]'
+                }`}
               >
                 {plan.badge && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/30">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/40">
                     {plan.badge}
                   </div>
                 )}
 
-                <div className="mb-10">
-                  <h3 className="text-xl lg:text-2xl font-bold text-white mb-3">{plan.name}</h3>
-                  <div className="flex items-baseline gap-3 mb-5">
-                    <span className="text-4xl lg:text-5xl font-bold text-white tracking-tighter">{displayPrice}</span>
-                    {plan.price !== 'Free' && (
-                      <span className="text-white/40 text-sm">/month</span>
-                    )}
-                    {plan.price === 'Free' && (
-                      <span className="text-white/40 text-sm">forever</span>
-                    )}
-                  </div>
-                  <p className="text-white/50 text-base leading-relaxed">{plan.description}</p>
+                {/* Plan Name & Tagline */}
+                <div className="mb-6">
+                  <h3 className={`text-2xl lg:text-3xl font-bold mb-2 ${plan.popular ? 'text-primary' : 'text-white'}`}>
+                    {plan.name}
+                  </h3>
+                  <p className="text-base lg:text-lg text-white/70 font-light leading-relaxed">
+                    {plan.description}
+                  </p>
                 </div>
 
-                <div className="space-y-5 mb-10 flex-grow">
+                {/* Price */}
+                <div className="mb-8">
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className={`text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular ? 'text-primary' : 'text-white'}`}>
+                      {displayPrice}
+                    </span>
+                    {plan.price !== 'Free' && (
+                      <span className="text-white/50 text-base font-light">/month</span>
+                    )}
+                  </div>
+                  {plan.price === 'Free' && (
+                    <span className="text-white/50 text-base font-light">Forever</span>
+                  )}
+                </div>
+
+                {/* Features - Simplified */}
+                <div className="space-y-2 mb-6 flex-grow">
                   {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-4">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${plan.popular ? 'bg-primary/20 text-primary' : 'bg-white/10 text-white/60'}`}>
-                        <Check className="w-4 h-4" />
+                    <div key={i} className="flex items-start gap-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                        plan.popular 
+                          ? 'bg-primary/20 text-primary' 
+                          : 'bg-white/10 text-white/60'
+                      }`}>
+                        <Check className="w-3 h-3" strokeWidth={2.5} />
                       </div>
-                      <span className="text-base text-white/70">{feature}</span>
+                      <span className={`text-xs lg:text-sm ${plan.popular ? 'text-white/90' : 'text-white/60'} font-light leading-tight`}>
+                        {feature}
+                      </span>
                     </div>
                   ))}
                 </div>
 
-                <Button 
-                  size="lg" 
-                  asChild
-                  className={`w-full h-12 lg:h-14 rounded-xl font-bold text-base lg:text-lg transition-all duration-300 ${plan.popular ? 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20' : 'bg-white text-black hover:bg-white/90 shadow-lg'}`}
-                >
-                  <Link href={displayHref}>{displayCta}</Link>
-                </Button>
-                
-                <div className="mt-4 flex flex-col items-center gap-2">
-                  {plan.price !== 'Free' ? (
-                    <Link 
-                      href="/affiliate" 
-                      className="px-4 py-1.5 rounded-lg border border-green-500/20 bg-green-500/5 text-[10px] font-bold text-green-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 uppercase tracking-widest"
-                    >
-                      Earn Free via Affiliate
-                    </Link>
-                  ) : (
-                    <div className="h-[14px]" /> // Spacer to keep buttons aligned
-                  )}
+                {/* CTA Button */}
+                <div className="mt-auto">
+                  <Button 
+                    size="lg" 
+                    asChild
+                    className={`w-full h-12 lg:h-14 rounded-xl font-bold text-base lg:text-lg transition-all duration-300 ${
+                      plan.popular 
+                        ? 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20' 
+                        : 'bg-white text-black hover:bg-white/90 shadow-lg'
+                    }`}
+                  >
+                    <Link href={displayHref}>{displayCta}</Link>
+                  </Button>
                   
-                  <p className="text-center text-white/30 text-xs">
-                    {plan.guarantee}
-                  </p>
+                  <div className="mt-4 flex flex-col items-center gap-2">
+                    {plan.price !== 'Free' ? (
+                      <Link 
+                        href="/affiliate" 
+                      className="px-4 py-1.5 rounded-lg border border-green-500/20 bg-green-500/5 text-[10px] font-bold text-green-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 uppercase tracking-widest"
+                      >
+                        Earn Free via Affiliate
+                      </Link>
+                    ) : (
+                      <div className="h-[14px]" /> // Spacer to keep buttons aligned
+                    )}
+                    
+                    <p className="text-center text-white/30 text-xs">
+                      {plan.guarantee}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             )
