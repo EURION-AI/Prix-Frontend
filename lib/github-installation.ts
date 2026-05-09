@@ -4,6 +4,7 @@ import { sql } from './db'
 export interface InstallationValidationResult {
   valid: boolean
   reason?: string
+  status?: 'not_found' | 'access_revoked' | 'empty' | 'error' | 'connected'
   installationId?: number | null
 }
 
@@ -16,11 +17,11 @@ export async function validateGitHubInstallation(
   token: string | null
 ): Promise<InstallationValidationResult> {
   if (!installationId) {
-    return { valid: false, reason: 'No installation ID provided' }
+    return { valid: false, reason: 'No installation ID provided', status: 'error' }
   }
 
   if (!token) {
-    return { valid: false, reason: 'No GitHub token available' }
+    return { valid: false, reason: 'No GitHub token available', status: 'error' }
   }
 
   try {
@@ -35,29 +36,47 @@ export async function validateGitHubInstallation(
     )
 
     if (response.status === 404) {
-      return { valid: false, reason: 'Installation not found (app was uninstalled)' }
+      return { 
+        valid: false, 
+        reason: 'Installation not found (app was uninstalled)',
+        status: 'not_found'
+      }
     }
 
     if (response.status === 403) {
-      return { valid: false, reason: 'Installation access revoked' }
+      return { 
+        valid: false, 
+        reason: 'Installation access revoked',
+        status: 'access_revoked'
+      }
     }
 
     if (!response.ok) {
       const errorText = await response.text()
-      return { valid: false, reason: `GitHub API error: ${response.status} - ${errorText}` }
+      return { 
+        valid: false, 
+        reason: `GitHub API error: ${response.status} - ${errorText}`,
+        status: 'error'
+      }
     }
 
     const data = await response.json()
     
-    // Verify the installation has repositories
+    // If the installation exists but has no repositories, it's still "valid"
+    // but we should flag it so the UI can prompt the user to add repositories.
     if (!data.repositories || data.repositories.length === 0) {
-      return { valid: false, reason: 'Installation exists but has no accessible repositories' }
+      return { 
+        valid: true, 
+        installationId,
+        status: 'empty',
+        reason: 'Installation exists but has no accessible repositories'
+      }
     }
 
-    return { valid: true, installationId }
+    return { valid: true, installationId, status: 'connected' }
   } catch (error) {
     console.error('Error validating GitHub installation:', error)
-    return { valid: false, reason: 'Failed to validate installation' }
+    return { valid: false, reason: 'Failed to validate installation', status: 'error' }
   }
 }
 

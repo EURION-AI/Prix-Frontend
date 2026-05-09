@@ -48,6 +48,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
   const [installationValid, setInstallationValid] = useState<boolean | null>(null)
+  const [installationStatus, setInstallationStatus] = useState<string | null>(null)
   const [isValidating, setIsValidating] = useState(false)
 
   useEffect(() => {
@@ -159,13 +160,22 @@ export default function DashboardPage() {
       if (response.ok) {
         const data = await response.json()
         setInstallationValid(data.valid)
+        setInstallationStatus(data.installationStatus)
+        
         if (!data.valid && data.reason) {
-          setError(`GitHub App disconnected: ${data.reason}`)
+          // Only show as critical error if it's truly disconnected
+          if (data.installationStatus === 'disconnected') {
+            setError(`GitHub App disconnected: ${data.reason}`)
+          } else {
+            // Otherwise just a warning
+            console.warn(`GitHub App warning: ${data.reason}`)
+          }
         }
       }
     } catch (err) {
       console.error('Failed to validate installation:', err)
       setInstallationValid(false)
+      setInstallationStatus('error')
     } finally {
       setIsValidating(false)
     }
@@ -331,23 +341,44 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {installationValid === false && (
-          <div className="mb-8 p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-between gap-4">
+        {(installationValid === false || installationStatus === 'empty') && (
+          <div className={`mb-8 p-4 border rounded-2xl flex items-center justify-between gap-4 ${
+            installationStatus === 'empty' 
+              ? 'bg-blue-500/10 border-blue-500/20' 
+              : 'bg-orange-500/10 border-orange-500/20'
+          }`}>
             <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-orange-400" />
+              <AlertCircle className={`w-5 h-5 ${
+                installationStatus === 'empty' ? 'text-blue-400' : 'text-orange-400'
+              }`} />
               <div>
-                <p className="text-orange-400 font-medium">Prix AI GitHub App is disconnected</p>
-                <p className="text-orange-400/70 text-sm">Reconnect to continue reviewing PRs</p>
+                <p className={`font-medium ${
+                  installationStatus === 'empty' ? 'text-blue-400' : 'text-orange-400'
+                }`}>
+                  {installationStatus === 'empty' 
+                    ? 'GitHub App has no repository access' 
+                    : 'Prix AI GitHub App is disconnected'}
+                </p>
+                <p className={`${
+                  installationStatus === 'empty' ? 'text-blue-400/70' : 'text-orange-400/70'
+                } text-sm`}>
+                  {installationStatus === 'empty'
+                    ? 'Please grant access to at least one repository to enable automated reviews.'
+                    : 'Reconnect to continue reviewing PRs'}
+                </p>
               </div>
             </div>
             <a
-              href="https://github.com/apps/prix-ai-automation/installations/new"
+              href={user?.githubInstallationId 
+                ? `https://github.com/settings/installations/${user.githubInstallationId}`
+                : "https://github.com/apps/prix-ai-automation/installations/new"
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
             >
               <Github className="w-4 h-4" />
-              Reconnect App
+              {installationStatus === 'empty' ? 'Manage Access' : 'Reconnect App'}
             </a>
           </div>
         )}

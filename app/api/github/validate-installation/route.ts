@@ -31,12 +31,25 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // If no installation ID, return disconnected
+    // If no installation ID, check if user previously had one (disconnected) or never had one (oauth-only)
     if (!user.githubInstallationId) {
+      // Only show disconnected warning if user previously had an installation
+      // OAuth-only users without App installation are not "disconnected" - they're using OAuth
+      if (user.installationStatus === 'connected') {
+        // This is a recovery case - installation was somehow cleared but status says connected
+        return NextResponse.json({
+          valid: false,
+          reason: 'Installation not found (may have been uninstalled)',
+          installationStatus: 'disconnected'
+        })
+      }
+      // User never had an App installation - this is fine for OAuth users
+      // Don't show the "disconnected" warning, just return valid: true with no installationId
       return NextResponse.json({
-        valid: false,
-        reason: 'No installation found',
-        installationStatus: 'disconnected'
+        valid: true,
+        reason: 'OAuth login only - GitHub App not installed',
+        installationStatus: 'oauth_only',
+        installationId: null
       })
     }
 
@@ -47,23 +60,29 @@ export async function GET() {
     )
 
     if (!validation.valid) {
-      // Mark as disconnected if validation fails
-      await markInstallationDisconnected(githubId)
+      // ONLY mark as disconnected if we are sure the installation is gone or revoked
+      // Don't disconnect on transient errors or API failures
+      if (validation.status === 'not_found' || validation.status === 'access_revoked') {
+        await markInstallationDisconnected(githubId)
+      }
       
       return NextResponse.json({
         valid: false,
         reason: validation.reason,
-        installationStatus: 'disconnected'
+        installationStatus: validation.status === 'not_found' ? 'disconnected' : 'error'
       })
     }
 
-    // Clean up invalid repos
-    await cleanupInvalidRepos(githubId, user.githubInstallationId, token || null)
+    // Clean up invalid repos only if we are fully connected
+    if (validation.status === 'connected') {
+      await cleanupInvalidRepos(githubId, user.githubInstallationId, token || null)
+    }
 
     return NextResponse.json({
       valid: true,
       installationId: user.githubInstallationId,
-      installationStatus: 'connected'
+      installationStatus: validation.status || 'connected',
+      reason: validation.reason
     })
   } catch (error) {
     console.error('Error validating installation:', error)
