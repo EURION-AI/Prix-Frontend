@@ -7,7 +7,7 @@ const steps = [
   {
     icon: Github,
     title: 'Connect your repository',
-    description: 'Link your GitHub, GitLab, or Bitbucket account in one click. Select the repos you want Prix to monitor.',
+    description: 'Link your GitHub account in one click. Select the repos you want Prix to monitor.',
     step: '01',
     metrics: ['2-minute setup', 'Universal support']
   },

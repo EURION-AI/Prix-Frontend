@@ -4,10 +4,8 @@ import { motion } from 'framer-motion'
 import { Terminal, Command, ChevronRight } from 'lucide-react'
 
 const commands = [
-  { cmd: 'prix auth login', desc: 'Authenticate with your GitHub/GitLab account' },
-  { cmd: 'prix init', desc: 'Initialize project-wide architecture rules' },
-  { cmd: 'prix review --deep', desc: 'Run deep semantic analysis on current branch' },
-  { cmd: 'prix fix', desc: 'Apply recommended architectural fixes' },
+  { cmd: '!prix fix', desc: 'Apply recommended architectural fixes directly in your PR' },
+  { cmd: '!prix plan', desc: 'Generate a detailed plan for architectural improvements' },
 ]
 
 export function CLISection() {
@@ -21,10 +19,10 @@ export function CLISection() {
             </span>
             <h2 className="text-editorial text-5xl md:text-6xl font-semibold text-white mb-8">
               Engineered for <br />
-              <span className="text-gradient-vibrant">terminal-first</span> workflows.
+              <span className="text-gradient-vibrant">GitHub-first</span> workflows.
             </h2>
             <p className="text-xl text-white/60 leading-relaxed mb-12 max-w-lg">
-              Prix isn't just a dashboard. It's a powerful CLI that lives where you do. Integrate it into your pre-commit hooks or run it locally for instant feedback.
+              Prix works directly in your GitHub pull requests. Simply comment with commands to get instant architectural analysis and fixes, right where you need them.
             </p>
             
             <div className="space-y-6">
@@ -54,12 +52,12 @@ export function CLISection() {
                   <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20" />
                   <div className="w-2.5 h-2.5 rounded-full bg-green-500/20" />
                 </div>
-                <span className="text-[10px] text-white/20 uppercase tracking-widest">prix_cli_v1.4</span>
+                <span className="text-[10px] text-white/20 uppercase tracking-widest">prix_github_bot_v1.4</span>
               </div>
               <div className="p-8 space-y-4">
                 <div className="flex gap-3">
-                  <span className="text-primary">$</span>
-                  <span className="text-white/80">prix review --deep</span>
+                  <span className="text-white/60">#</span>
+                  <span className="text-white/80">!prix fix</span>
                 </div>
                 <div className="text-white/40 animate-pulse">Running semantic analysis across 42 modules...</div>
                 <div className="space-y-2">
@@ -78,10 +76,10 @@ export function CLISection() {
                 </div>
                 <div className="mt-6 p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
                   <p className="text-white/80 font-bold mb-2">Recommendation [REF_042]:</p>
-                  <p className="text-white/40 leading-relaxed">Circular dependency detected between <span className="text-primary">/auth</span> and <span className="text-primary">/user</span>. Use <span className="text-secondary">prix fix --ref-042</span> to inject an interface bridge.</p>
+                  <p className="text-white/40 leading-relaxed">Circular dependency detected between <span className="text-primary">/auth</span> and <span className="text-primary">/user</span>. Prix has automatically generated a fix in the comments above.</p>
                 </div>
                 <div className="flex gap-3">
-                  <span className="text-primary">$</span>
+                  <span className="text-white/60">#</span>
                   <span className="w-1.5 h-4 bg-primary animate-blink" />
                 </div>
               </div>

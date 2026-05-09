@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Check, X, Zap, Cpu, Search, Brain, Shield, DollarSign, Infinity } from 'lucide-react'
+import { Check, X, Zap, Cpu, Search, Brain, Shield, DollarSign, Command } from 'lucide-react'
 
 const comparisonData = [
   {
@@ -13,46 +13,46 @@ const comparisonData = [
     icon: DollarSign
   },
   {
-    feature: 'PR Fixes / Month',
-    prix: 'Unlimited',
-    codeRabbit: 'Limited',
-    qodo: 'Limited',
-    icon: Infinity
-  },
-  {
-    feature: 'Auto PR Fixing',
-    prix: 'Yes (Context-Aware)',
-    codeRabbit: 'Partial (Basic)',
-    qodo: 'No',
+    feature: 'Auto-Fix PR Creation',
+    prix: 'Yes (!prix fix)',
+    codeRabbit: 'Suggestions Only',
+    qodo: 'No Auto-Fix',
     icon: Zap
   },
   {
-    feature: 'Speed / Latency',
-    prix: 'Sub-second',
-    codeRabbit: 'Standard',
-    qodo: 'Standard',
-    icon: Cpu
-  },
-  {
-    feature: 'Full Repo Scanning',
-    prix: 'Integrated (AST-based)',
-    codeRabbit: 'File-based',
+    feature: 'AST Analysis',
+    prix: 'Multi-Language (TS/JS)',
+    codeRabbit: 'Basic Pattern',
     qodo: 'File-based',
     icon: Search
   },
   {
-    feature: 'SEO Optimization',
-    prix: 'Integrated',
-    codeRabbit: 'No',
-    qodo: 'No',
+    feature: 'Semantic Confidence',
+    prix: 'Confidence Scoring',
+    codeRabbit: 'Static Rules',
+    qodo: 'Basic Checks',
     icon: Brain
   },
   {
-    feature: 'Autonomous Logic',
-    prix: 'Agentic Workflows',
-    codeRabbit: 'Scripted',
-    qodo: 'Static Analysis',
+    feature: 'Deduplication',
+    prix: 'Semantic Hashing',
+    codeRabbit: 'Text-based',
+    qodo: 'No Dedup',
     icon: Shield
+  },
+  {
+    feature: 'GitHub Commands',
+    prix: '!prix fix/plan',
+    codeRabbit: 'Dashboard Only',
+    qodo: 'No Commands',
+    icon: Command
+  },
+  {
+    feature: 'Context Memory',
+    prix: 'File-level Cache',
+    codeRabbit: 'Session Only',
+    qodo: 'No Memory',
+    icon: Cpu
   }
 ]
 
