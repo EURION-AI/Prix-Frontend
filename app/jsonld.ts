@@ -43,12 +43,9 @@ export const softwareApplicationLd = {
     'Automated PR review',
     'Security vulnerability scanning',
     'Bug detection',
-    'Performance optimization',
     'Fix generation',
     'GitHub integration',
-    'GitLab integration',
-    'Bitbucket integration',
-    'GPT-4 powered reasoning',
+    'Advanced LLM reasoning',
     'Zero-configuration setup',
   ],
   provider: {
@@ -86,7 +83,7 @@ export const faqLd = {
       name: 'Which platforms does Prix AI support?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Prix AI currently supports GitHub, with GitLab and Bitbucket integrations coming soon. It works with any programming language and framework.',
+        text: 'Prix AI currently supports GitHub, with additional platform integrations planned for the future. It works with TypeScript and JavaScript projects.',
       },
     },
     {
@@ -94,7 +91,7 @@ export const faqLd = {
       name: 'How accurate is AI code review?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Prix AI achieves 95% accuracy in bug detection and security vulnerability identification. It uses GPT-4 powered reasoning and AST analysis to provide reliable, actionable feedback.',
+        text: 'Prix AI achieves high accuracy in bug detection and security vulnerability identification using advanced LLM reasoning and AST analysis to provide reliable, actionable feedback.',
       },
     },
   ],
