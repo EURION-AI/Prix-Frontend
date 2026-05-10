@@ -175,6 +175,13 @@ export default function DashboardPage() {
         setInstallationStatus(data.installationStatus)
         
         if (!data.valid && data.reason) {
+          // If installation is invalid (e.g. uninstalled), refetch user to sync the now-null installationId
+          const userRes = await fetch('/api/auth/user')
+          if (userRes.ok) {
+            const userData = await userRes.json()
+            setUser(userData.user)
+          }
+
           // Only show as critical error if it's truly disconnected
           if (data.installationStatus === 'disconnected') {
             setError(`GitHub App disconnected: ${data.reason}`)
