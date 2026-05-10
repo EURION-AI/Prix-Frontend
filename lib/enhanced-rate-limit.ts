@@ -117,7 +117,7 @@ export const rateLimiters = {
   // Strict for authentication
   auth: createEnhancedRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 20
+    maxRequests: 100
   }),
   
   // Moderate for payments
@@ -129,7 +129,7 @@ export const rateLimiters = {
   // Standard for general API
   standard: createEnhancedRateLimit({
     windowMs: 60 * 1000, // 1 minute
-    maxRequests: 30
+    maxRequests: 100
   }),
   
   // Very strict for webhooks
