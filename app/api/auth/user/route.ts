@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { rateLimiters } from '@/lib/enhanced-rate-limit'
+import { getUserByGithubId } from '@/lib/user-store'
 
 export async function GET(request: Request) {
   // Apply rate limiting
@@ -20,37 +21,38 @@ export async function GET(request: Request) {
     }
 
     // Parse and validate user data
-    let userData
+    let cookieData
     try {
-      // Handle potential URI encoding from legacy client-side cookie setting
       const decodedCookie = userCookie.includes('%') ? decodeURIComponent(userCookie) : userCookie
-      userData = JSON.parse(decodedCookie)
+      cookieData = JSON.parse(decodedCookie)
     } catch (parseError) {
-      console.error('[AUTH] Failed to parse user cookie:', parseError, { 
-        cookieLength: userCookie?.length,
-        isEncoded: userCookie?.includes('%')
-      })
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
     }
 
-    // Validate required fields
-    if (!userData.id || !userData.username) {
-      console.error('[AUTH] Invalid user data structure:', { id: userData.id, username: userData.username })
+    const githubId = cookieData.id || cookieData.githubId
+    if (!githubId) {
       return NextResponse.json({ error: 'Invalid session data' }, { status: 401 })
     }
 
-    // Return only safe user data (exclude sensitive info if any)
+    // Fetch FRESH data from database
+    const dbUser = await getUserByGithubId(githubId)
+    
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Return only safe user data
     const safeUserData = {
-      id: userData.id,
-      username: userData.username,
-      name: userData.name || null,
-      email: userData.email || null,
-      avatarUrl: userData.avatarUrl || null,
-      selectedRepos: userData.selectedRepos || [],
-      prsReviewed: userData.prsReviewed || 0,
-      plan: userData.plan || 'free',
-      githubInstallationId: userData.githubInstallationId || null,
-      installationStatus: userData.installationStatus || 'disconnected'
+      id: dbUser.githubId,
+      username: dbUser.username,
+      name: dbUser.username, // Fallback if name is missing in store
+      email: dbUser.email,
+      avatarUrl: dbUser.avatarUrl,
+      selectedRepos: dbUser.selectedRepos || [],
+      prsReviewed: dbUser.prsReviewed || 0,
+      plan: dbUser.plan || 'free',
+      githubInstallationId: dbUser.githubInstallationId || null,
+      installationStatus: dbUser.installationStatus || 'disconnected'
     }
 
     return NextResponse.json({ user: safeUserData })

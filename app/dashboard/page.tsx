@@ -75,6 +75,12 @@ export default function DashboardPage() {
           })
           if (response.ok) {
             setInfoMessage('Successfully mounted repositories! You can now select them below.')
+            // Refresh user data immediately to update UI state (Mount -> Manage)
+            const userResponse = await fetch('/api/auth/user')
+            if (userResponse.ok) {
+              const data = await userResponse.json()
+              setUser(data.user)
+            }
           }
         } catch (err) {
           console.error('Failed to sync installation:', err)
