@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { getUserByGithubId } from '@/lib/user-store'
 
 export async function GET() {
   const cookieStore = await cookies()
@@ -13,15 +12,7 @@ export async function GET() {
 
   const userCookie = cookieStore.get('github_user')?.value
   const userData = userCookie ? JSON.parse(userCookie) : null
-  const githubId = userData?.githubId || userData?.id
-
-  if (!githubId) {
-    return NextResponse.json({ error: 'Invalid user session' }, { status: 401 })
-  }
-
-  // Fetch fresh user data from database to get the latest installationId
-  const user = await getUserByGithubId(githubId)
-  const installationId = user?.githubInstallationId
+  const installationId = userData?.githubInstallationId
 
   try {
     console.log('Repos API: Fetching repos from GitHub...')

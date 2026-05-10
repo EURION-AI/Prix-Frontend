@@ -66,12 +66,10 @@ export async function GET() {
         await markInstallationDisconnected(githubId)
       }
       
-      const isDisconnected = validation.status === 'not_found' || validation.status === 'access_revoked'
-      
       return NextResponse.json({
         valid: false,
         reason: validation.reason,
-        installationStatus: isDisconnected ? 'disconnected' : 'error'
+        installationStatus: validation.status === 'not_found' ? 'disconnected' : 'error'
       })
     }
 
