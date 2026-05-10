@@ -40,6 +40,18 @@ function CancelContent() {
           <ArrowLeft className="w-4 h-4" />
           Back to home
         </Link>
+        
+        <div className="text-center pt-4 border-t border-white/10">
+          <p className="text-white/30 text-xs mb-2">
+            Need help with payment?
+          </p>
+          <a
+            href="mailto:support@prixai.xyz"
+            className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+          >
+            support@prixai.xyz
+          </a>
+        </div>
       </div>
     </div>
   )

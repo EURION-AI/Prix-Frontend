@@ -57,7 +57,12 @@ export default function BillingPage() {
   }, [searchParams])
 
   const handleUpgrade = (targetPlan: string) => {
-    window.location.href = `/checkout?plan=${targetPlan}&region=${region}`
+    if (targetPlan === 'pro-upgrade') {
+      // Special $2 upgrade for Starter users to Pro
+      window.location.href = `/checkout?plan=pro&region=${region}&upgrade=starter_to_pro&discount=2`
+    } else {
+      window.location.href = `/checkout?plan=${targetPlan}&region=${region}`
+    }
   }
 
   if (isLoading || !user) {
@@ -257,6 +262,23 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
   if (currentPlan === 'starter') {
     return [
       {
+        id: 'pro-upgrade',
+        name: 'Upgrade to Pro',
+        price: region === 'IN' ? '₹170' : '$2.00',
+        description: 'Special upgrade price for existing Starter users.',
+        features: [
+          'Everything in Starter',
+          'Unlimited PR reviews',
+          'Unlimited AI issue planning',
+          'Priority processing queue',
+          'Better multi-file context',
+          'Deeper bug & security analysis'
+        ],
+        icon: <Crown className="w-6 h-6 text-yellow-400" />,
+        color: 'border-yellow-400/30 bg-yellow-400/5 hover:border-yellow-400/50',
+        popular: true
+      },
+      {
         id: 'pro',
         name: 'Pro Plan',
         price: proPrice,
@@ -271,7 +293,7 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
         ],
         icon: <Zap className="w-6 h-6 text-blue-400" />,
         color: 'border-blue-400/30 bg-blue-400/5 hover:border-blue-400/50',
-        popular: true
+        popular: false
       }
     ]
   }

@@ -41,28 +41,52 @@ export function getUserRegion(forcedRegion?: string | null): Region {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const locale = navigator.language || 'en-US'
     const languages = navigator.languages || []
+    
+    // Normalize locale for proper detection
+    const normalizedLocale = locale.toUpperCase()
+    const normalizedLanguages = languages.map(l => l.toUpperCase())
 
-    const debugInfo = { timezone, locale, languages, detectedRegion: 'US' }
+    const debugInfo = { timezone, locale, normalizedLocale, normalizedLanguages, detectedRegion: 'US' }
 
-    // Detect India
-    if (timezone.includes('Asia/Kolkata') || locale.includes('IN') || languages.some(l => l.includes('IN'))) {
+    // Detect India (more reliable detection)
+    if (
+      timezone === 'Asia/Kolkata' ||
+      timezone === 'Asia/Calcutta' ||
+      normalizedLocale.endsWith('-IN') ||
+      normalizedLanguages.some(l => l.endsWith('-IN'))
+    ) {
       debugInfo.detectedRegion = 'IN'
       console.log('REGION_DEBUG', debugInfo)
+      console.log('REGION_DEBUG: Locale detected as India - timezone:', timezone, 'locale:', locale, 'normalizedLocale:', normalizedLocale, 'languages:', normalizedLanguages)
       return 'IN'
     }
 
     // Detect UK
-    if (timezone.includes('Europe/London') || locale.includes('GB') || languages.some(l => l.includes('GB'))) {
+    if (
+      timezone.includes('Europe/London') ||
+      normalizedLocale.includes('GB') ||
+      normalizedLocale.includes('-GB') ||
+      normalizedLanguages.some(l => l.includes('GB')) ||
+      normalizedLanguages.some(l => l.includes('-GB'))
+    ) {
       debugInfo.detectedRegion = 'GB'
-      console.log('REGION_DEBUG', debugInfo)
+      console.log('REGION_DEBUG: Locale detected as UK - timezone:', timezone, 'locale:', locale, 'normalizedLocale:', normalizedLocale, 'languages:', normalizedLanguages)
       return 'GB'
     }
 
     // Detect EU (common European locales)
-    const euLocales = ['de', 'fr', 'es', 'it', 'nl', 'pt', 'pl', 'sv', 'no', 'da', 'fi']
-    if (timezone.includes('Europe') && !timezone.includes('London') || euLocales.some(l => locale.includes(l))) {
+    const euLocales = ['DE', 'FR', 'ES', 'IT', 'NL', 'PT', 'PL', 'SV', 'NO', 'DA', 'FI']
+    if (
+      (timezone.includes('Europe') && !timezone.includes('London')) ||
+      euLocales.some(eu => 
+        normalizedLocale.includes(eu) || 
+        normalizedLocale.includes(`-${eu}`) ||
+        normalizedLanguages.some(l => l.includes(eu)) ||
+        normalizedLanguages.some(l => l.includes(`-${eu}`))
+      )
+    ) {
       debugInfo.detectedRegion = 'EU'
-      console.log('REGION_DEBUG', debugInfo)
+      console.log('REGION_DEBUG: Locale detected as EU - timezone:', timezone, 'locale:', locale, 'normalizedLocale:', normalizedLocale, 'languages:', normalizedLanguages)
       return 'EU'
     }
 
@@ -95,3 +119,4 @@ export function getPricing(region: Region, plan: Plan) {
 export function getCurrencySymbol(region: Region): string {
   return PRICING[region].starter.symbol
 }
+
