@@ -139,12 +139,25 @@ export default function DashboardPage() {
   async function fetchRepos() {
     try {
       const response = await fetch('/api/github/repos')
+      
+      if (response.status === 403 || response.status === 401) {
+        // If we get a 403/401, the installation is likely dead or session expired.
+        // Re-validate to show the proper "Disconnected" UI instead of a red error.
+        await validateInstallation()
+        return
+      }
+
       if (!response.ok) throw new Error('Failed to fetch repositories')
+      
       const data = await response.json()
       setRepos(data)
       setFilteredRepos(data)
     } catch (err) {
-      setError('Could not load repositories from GitHub. Please try logging in again.')
+      console.error('Repos fetch error:', err)
+      // Only show error if we haven't already detected a disconnected status
+      if (installationStatus !== 'disconnected') {
+        setError('Could not load repositories from GitHub. Please try logging in again.')
+      }
     } finally {
       setIsLoading(false)
     }
