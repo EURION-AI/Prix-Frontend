@@ -30,6 +30,82 @@ interface AffiliateStats {
   }[]
 }
 
+function AffiliateDashboard({ user }: { user: UserData }) {
+  const [stats, setStats] = useState<AffiliateStats | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const affiliateLink = stats?.affiliateCode && typeof window !== 'undefined'
+    ? `${window.location.origin}/ref/${stats.affiliateCode}`
+    : ''
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch(`/api/affiliate/stats?githubId=${user.id}&username=${user.username}`)
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}))
+          setError(errData.error || `Failed to load affiliate stats (${response.status})`)
+          return
+        }
+        const data = await response.json()
+        if (data.error) {
+          setError(data.error)
+          return
+        }
+        setStats(data)
+      } catch {
+        setError('Failed to load affiliate stats. Please try again later.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchStats()
+  }, [user.id, user.username])
+
+  const copyToClipboard = async () => {
+    if (affiliateLink) {
+      await navigator.clipboard.writeText(affiliateLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4">
+        <AffiliateStatsSkeleton />
+      </div>
+    )
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-red-400">{error || 'Failed to load stats'}</p>
+      </div>
+    )
+  }
+
+  const tierColors = {
+    free: 'text-white/40',
+    starter: 'text-blue-400',
+    pro: 'text-primary',
+  }
+
+  const tierLabels = {
+    free: 'Free Tier',
+    starter: 'Starter Plan',
+    pro: 'Pro Plan',
+  }
+
+  const tierBgColors = {
+    free: 'bg-white/5',
+    starter: 'bg-blue-500/10',
+    pro: 'bg-primary/10',
+  }
+
   const [isClaiming, setIsClaiming] = useState<string | null>(null)
 
   const handleClaim = async (plan: 'starter' | 'pro') => {
