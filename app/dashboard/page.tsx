@@ -346,7 +346,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {(installationValid === false || installationStatus === 'empty') && (
+        {(installationStatus === 'disconnected' || installationStatus === 'empty') && (
           <div className={`mb-8 p-4 border rounded-2xl flex items-center justify-between gap-4 ${
             installationStatus === 'empty' 
               ? 'bg-blue-500/10 border-blue-500/20' 
