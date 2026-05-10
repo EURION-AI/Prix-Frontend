@@ -30,81 +30,31 @@ interface AffiliateStats {
   }[]
 }
 
-function AffiliateDashboard({ user }: { user: UserData }) {
-  const [stats, setStats] = useState<AffiliateStats | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [copied, setCopied] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [isClaiming, setIsClaiming] = useState<string | null>(null)
 
-  const affiliateLink = stats?.affiliateCode && typeof window !== 'undefined'
-    ? `${window.location.origin}/ref/${stats.affiliateCode}`
-    : ''
-
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const response = await fetch(`/api/affiliate/stats?githubId=${user.id}&username=${user.username}`)
-        if (!response.ok) {
-          const errData = await response.json().catch(() => ({}))
-          setError(errData.error || `Failed to load affiliate stats (${response.status})`)
-          return
-        }
-        const data = await response.json()
-        if (data.error) {
-          setError(data.error)
-          return
-        }
-        setStats(data)
-      } catch {
-        setError('Failed to load affiliate stats. Please try again later.')
-      } finally {
-        setIsLoading(false)
+  const handleClaim = async (plan: 'starter' | 'pro') => {
+    setIsClaiming(plan)
+    try {
+      const response = await fetch('/api/affiliate/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan, githubId: user.id }),
+      })
+      const data = await response.json()
+      if (data.error) {
+        alert(data.error)
+      } else {
+        alert(`Successfully claimed ${plan} plan!`)
+        window.location.reload()
       }
-    }
-    fetchStats()
-  }, [user.id, user.username])
-
-  const copyToClipboard = async () => {
-    if (affiliateLink) {
-      await navigator.clipboard.writeText(affiliateLink)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      alert('Failed to claim reward')
+    } finally {
+      setIsClaiming(null)
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4">
-        <AffiliateStatsSkeleton />
-      </div>
-    )
-  }
-
-  if (error || !stats) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-red-400">{error || 'Failed to load stats'}</p>
-      </div>
-    )
-  }
-
-  const tierColors = {
-    free: 'text-white/40',
-    starter: 'text-blue-400',
-    pro: 'text-primary',
-  }
-
-  const tierLabels = {
-    free: 'Free Tier',
-    starter: 'Starter Plan',
-    pro: 'Pro Plan',
-  }
-
-  const tierBgColors = {
-    free: 'bg-white/5',
-    starter: 'bg-blue-500/10',
-    pro: 'bg-primary/10',
-  }
+  const formatCredit = (cents: number) => `$${(cents / 100).toFixed(2)}`
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -116,52 +66,100 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         </div>
         <p className="text-white/50 text-sm max-w-lg mx-auto">
           {stats.tier === 'pro'
-            ? '🎉 You have lifetime Team access!'
+            ? '🎉 You have Pro access!'
             : stats.tier === 'starter'
-            ? '✨ You have lifetime Pro access!'
-            : `Earn free access! Get ${stats.requiredForStarter - stats.paidReferralCount} more paid referrals for Pro.`}
+            ? '✨ You have Starter access! Earn more to upgrade to Pro.'
+            : `Earn free access! Share your link and get rewards when people join.`}
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/5">
           <Users className="w-8 h-8 text-white/40 mx-auto mb-3" />
-          <div className="text-4xl font-bold text-white mb-1">{stats.referralCount}</div>
-          <div className="text-white/40 text-xs uppercase tracking-wider">Total Referrals</div>
+          <div className="text-3xl font-bold text-white mb-1">{stats.referralCount}</div>
+          <div className="text-white/40 text-[10px] uppercase tracking-wider">Joined</div>
         </div>
         <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/5">
           <Gift className="w-8 h-8 text-green-400 mx-auto mb-3" />
-          <div className="text-4xl font-bold text-white mb-1">{stats.paidReferralCount}</div>
-          <div className="text-white/40 text-xs uppercase tracking-wider">Paid Referrals</div>
+          <div className="text-3xl font-bold text-white mb-1">{stats.paidReferralCount}</div>
+          <div className="text-white/40 text-[10px] uppercase tracking-wider">Paid</div>
         </div>
-        <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/5">
-          <Star className={`w-8 h-8 mx-auto mb-3 ${tierColors[stats.tier]}`} />
-          <div className={`text-4xl font-bold mb-1 ${tierColors[stats.tier]}`}>
-            {stats.tier === 'free' ? '0' : stats.tier === 'starter' ? '1' : '2'}
+        <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/5 col-span-2">
+          <div className="flex items-center justify-center gap-3 mb-3">
+             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+               <span className="text-primary font-bold text-lg">$</span>
+             </div>
+             <div className="text-3xl font-bold text-white">{formatCredit(stats.accumulatedCredit || 0)}</div>
           </div>
-          <div className="text-white/40 text-xs uppercase tracking-wider">Unlocks</div>
+          <div className="text-white/40 text-[10px] uppercase tracking-wider">Total Credit Earned</div>
         </div>
       </div>
 
-      {stats.tier !== 'pro' && (
-        <div className="bg-white/5 rounded-2xl p-6 border border-white/5 space-y-6">
-          <h3 className="text-lg font-bold text-white text-center">Progress to Next Tier</h3>
+      <div className="bg-white/5 rounded-2xl p-8 border border-white/5 space-y-10">
+        <h3 className="text-lg font-bold text-white text-center">Reward Progress</h3>
+        
+        <div className="space-y-8">
+          {/* Starter Progress */}
           <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-white/60">Pro Plan ({stats.requiredForStarter} paid)</span>
-                <span className="text-white font-medium">{stats.paidReferralCount}/{stats.requiredForStarter}</span>
+            <div className="flex justify-between items-end">
+              <div>
+                <h4 className="text-white font-bold flex items-center gap-2">
+                  Starter Reward <span className="text-xs font-normal text-white/40">(Value: $7)</span>
+                </h4>
+                <p className="text-white/40 text-xs">Unlock by earning {formatCredit(stats.starterCost || 2100)} credit</p>
               </div>
-              <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-blue-400 transition-all duration-700 ease-out rounded-full"
-                  style={{ width: `${stats.progressToStarter}%` }}
-                />
+              <div className="text-right">
+                <span className="text-white font-mono text-sm">{formatCredit(stats.accumulatedCredit || 0)} / {formatCredit(stats.starterCost || 2100)}</span>
               </div>
             </div>
+            <div className="h-4 bg-white/5 rounded-full overflow-hidden p-1 border border-white/10">
+              <div 
+                className="h-full bg-blue-500 transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                style={{ width: `${stats.progressToStarter}%` }}
+              />
+            </div>
+            <button 
+              disabled={stats.accumulatedCredit < (stats.starterCost || 2100) || isClaiming !== null || stats.tier === 'starter' || stats.tier === 'pro'}
+              onClick={() => handleClaim('starter')}
+              className="w-full py-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold hover:bg-blue-500/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isClaiming === 'starter' ? <Loader2 className="w-4 h-4 animate-spin" /> : stats.tier === 'starter' || stats.tier === 'pro' ? <Check className="w-4 h-4" /> : null}
+              {stats.tier === 'starter' || stats.tier === 'pro' ? 'Already Unlocked' : 'Claim Starter Plan'}
+            </button>
+          </div>
+
+          <div className="h-px bg-white/5" />
+
+          {/* Pro Progress */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <h4 className="text-white font-bold flex items-center gap-2">
+                  Pro Reward <span className="text-xs font-normal text-white/40">(Value: $10)</span>
+                </h4>
+                <p className="text-white/40 text-xs">Unlock by earning {formatCredit(stats.proCost || 3000)} credit</p>
+              </div>
+              <div className="text-right">
+                <span className="text-white font-mono text-sm">{formatCredit(stats.accumulatedCredit || 0)} / {formatCredit(stats.proCost || 3000)}</span>
+              </div>
+            </div>
+            <div className="h-4 bg-white/5 rounded-full overflow-hidden p-1 border border-white/10">
+              <div 
+                className="h-full bg-primary transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(236,72,153,0.5)]"
+                style={{ width: `${stats.progressToPro}%` }}
+              />
+            </div>
+            <button 
+              disabled={stats.accumulatedCredit < (stats.proCost || 3000) || isClaiming !== null || stats.tier === 'pro'}
+              onClick={() => handleClaim('pro')}
+              className="w-full py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isClaiming === 'pro' ? <Loader2 className="w-4 h-4 animate-spin" /> : stats.tier === 'pro' ? <Check className="w-4 h-4" /> : null}
+              {stats.tier === 'pro' ? 'Already Unlocked' : 'Claim Pro Plan'}
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
       <div className="bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl p-8 border border-primary/20">
         <h3 className="text-xl font-bold text-white mb-2">Your Referral Link</h3>

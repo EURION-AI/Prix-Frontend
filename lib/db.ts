@@ -38,6 +38,7 @@ export async function initializeDatabase() {
         affiliate_code VARCHAR(50) UNIQUE NOT NULL,
         referral_count INTEGER DEFAULT 0,
         paid_referral_count INTEGER DEFAULT 0,
+        accumulated_credit INTEGER DEFAULT 0, -- Store in cents/paise
         tier VARCHAR(20) DEFAULT 'free',
         created_at TIMESTAMP DEFAULT NOW(),
         CONSTRAINT fk_affiliate_users_github
@@ -54,6 +55,8 @@ export async function initializeDatabase() {
         referred_username VARCHAR(50) NOT NULL,
         referred_ip_hash VARCHAR(64) NOT NULL,
         has_purchased BOOLEAN DEFAULT FALSE,
+        purchased_plan VARCHAR(20),
+        purchased_amount INTEGER,
         created_at TIMESTAMP DEFAULT NOW(),
         UNIQUE(referred_github_id),
         CONSTRAINT fk_referrals_affiliate
@@ -83,6 +86,8 @@ export async function initializeDatabase() {
         id SERIAL PRIMARY KEY,
         event_type VARCHAR(50) NOT NULL,
         amount INTEGER NOT NULL,
+        currency VARCHAR(10) NOT NULL DEFAULT 'INR',
+        github_id BIGINT,
         customer_id VARCHAR(100),
         subscription_tier VARCHAR(50),
         metadata JSONB DEFAULT '{}',

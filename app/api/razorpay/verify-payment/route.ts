@@ -61,11 +61,11 @@ export async function POST(request: Request) {
       const githubId = parseInt(userId, 10)
 
       if (!isNaN(githubId) && githubId > 0) {
-        await updateUserPlan(githubId, plan)
-        await markReferralAsPurchased(githubId)
-
         // Get regional pricing from shared config (default to IN for revenue tracking)
         const pricing = PRICING.IN[plan as keyof typeof PRICING.IN]
+
+        await updateUserPlan(githubId, plan)
+        await markReferralAsPurchased(githubId, plan, pricing.price)
 
         await sql`
           INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
