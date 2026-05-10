@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { getUserRegion, formatPrice, getCurrencySymbol, type Region, type Plan } from '@/lib/pricing'
+import { getUserRegion, formatPrice, type Region, type Plan } from '@/lib/pricing'
 
 const plans = [
   {
@@ -22,10 +22,16 @@ const plans = [
     badge: null,
     guarantee: 'No credit card required'
   },
-  {
+    {
     id: 'starter',
     name: 'Starter',
     getPrice: (region: Region) => formatPrice(region, 'starter'),
+    getOriginalPrice: (region: Region) => {
+      if (region === 'IN') return '₹1,499'
+      if (region === 'GB') return '£14'
+      if (region === 'EU') return '€14'
+      return '$14'
+    },
     priceValue: 6.99,
     description: 'For individual developers who want reliable automation.',
     features: ['AI-powered PR reviews (generous usage)', 'Automated PR fixes (generous usage)', 'Private repositories', 'Bug detection (logic + common issues)', 'Security issue detection (SQL injection, XSS, etc.)', 'Basic performance analysis', 'Basic AI issue planning & task breakdowns'],
@@ -39,6 +45,12 @@ const plans = [
     id: 'pro',
     name: 'Pro',
     getPrice: (region: Region) => formatPrice(region, 'pro'),
+    getOriginalPrice: (region: Region) => {
+      if (region === 'IN') return '₹1,999'
+      if (region === 'GB') return '£19'
+      if (region === 'EU') return '€19'
+      return '$19'
+    },
     priceValue: 9.99,
     description: 'For developers who rely on AI daily for fast, high-quality fixes.',
     features: ['Everything in Starter', 'Unlimited PR reviews', 'Unlimited AI issue planning & task breakdowns' , 'high automated fixes', 'Faster processing (priority queue)', 'Better multi-file context understanding', 'Deeper analysis (bugs, performance, security)'],
@@ -85,14 +97,30 @@ function CountdownTimer() {
   )
 }
 
-export function PricingSection() {
+export function PricingSection({ region: initialRegion = 'US' }: { region?: Region }) {
   const searchParams = useSearchParams()
-  const [region, setRegion] = useState<Region>('US')
+  const [region, setRegion] = useState<Region>(initialRegion)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const forcedRegion = searchParams.get('region')
-    setRegion(getUserRegion(forcedRegion))
-  }, [searchParams])
+    setRegion(getUserRegion(forcedRegion) || initialRegion)
+  }, [searchParams, initialRegion])
+
+  if (!mounted) {
+    return (
+      <section id="pricing" className="py-20 lg:py-24 bg-background relative border-t border-white/[0.03]">
+        <div className="w-full max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="flex flex-col items-center mb-12 lg:mb-16 text-center">
+            <div className="animate-pulse">
+              <div className="h-8 w-8 bg-white/10 rounded-full mb-8"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section id="pricing" className="py-20 lg:py-24 bg-background relative border-t border-white/[0.03]">
@@ -149,8 +177,15 @@ export function PricingSection() {
                 {/* Price */}
                 <div className="mb-8">
                   <div className="flex items-baseline gap-2 mb-2">
+                    {plan.originalPrice && (
+                      <span className="text-xl lg:text-2xl font-light text-white/30 line-through">
+                        {plan.getOriginalPrice ? plan.getOriginalPrice(region) : plan.originalPrice}
+                      </span>
+                    )}
                     <span className={`text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular ? 'text-primary' : 'text-white'}`}>
-                      {displayPrice}
+                      {plan.price === 'Free' ? displayPrice : (
+                        formatPrice(region, plan.id as Plan)
+                      )}
                     </span>
                     {plan.price !== 'Free' && (
                       <span className="text-white/50 text-base font-light">/month</span>
@@ -235,6 +270,13 @@ export function PricingSection() {
           </div>
           <span>•</span>
           <span>Founded in 2026</span>
+          <span>•</span>
+          <a
+            href="mailto:support@prixai.xyz"
+            className="text-primary hover:text-primary/80 transition-colors"
+          >
+            support@prixai.xyz
+          </a>
         </motion.div>
       </div>
     </section>
