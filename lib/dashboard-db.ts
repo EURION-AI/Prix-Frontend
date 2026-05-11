@@ -28,35 +28,7 @@ export async function initializeDashboardDatabase() {
       )
     `
 
-
-
-    await sql`
-      CREATE TABLE IF NOT EXISTS revenue_events (
-        id SERIAL PRIMARY KEY,
-        event_type VARCHAR(50) NOT NULL,
-        amount DECIMAL(10, 2) NOT NULL,
-        currency VARCHAR(3) DEFAULT 'USD',
-        customer_id VARCHAR(100),
-        github_id INTEGER,
-        subscription_tier VARCHAR(20),
-        metadata JSONB,
-        created_at TIMESTAMP DEFAULT NOW()
-      )
-    `
-
-    await sql`
-      CREATE TABLE IF NOT EXISTS affiliate_events (
-        id SERIAL PRIMARY KEY,
-        event_type VARCHAR(50) NOT NULL,
-        affiliate_id VARCHAR(100) NOT NULL,
-        affiliate_code VARCHAR(50),
-        referrer_id VARCHAR(100),
-        commission_amount DECIMAL(10, 2) DEFAULT 0,
-        conversion_status VARCHAR(20) DEFAULT 'pending',
-        metadata JSONB,
-        created_at TIMESTAMP DEFAULT NOW()
-      )
-    `
+    // Table revenue_events and affiliate_events are now managed in lib/db.ts
 
     await sql`
       CREATE INDEX IF NOT EXISTS idx_metrics_type_name ON dashboard_metrics(metric_type, metric_name)
@@ -71,50 +43,13 @@ export async function initializeDashboardDatabase() {
     await sql`
       CREATE INDEX IF NOT EXISTS idx_daily_aggregates_date_cat ON daily_aggregates(date, metric_category)
     `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_revenue_events_type ON revenue_events(event_type)
-    `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_revenue_events_type_created ON revenue_events(event_type, created_at)
-    `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_affiliate_events_type_created ON affiliate_events(event_type, created_at)
-    `
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_affiliate_events_affiliate ON affiliate_events(affiliate_id)
-    `
 
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_revenue_events_github ON revenue_events(github_id)
-    `
-
-
-    console.log('Dashboard database initialized successfully')
+    console.log('Dashboard metrics tables initialized successfully')
   } catch (error) {
-    console.error('Failed to initialize dashboard database:', error)
+    console.error('Failed to initialize dashboard metrics database:', error)
     throw error
   }
 }
-
-export async function addRevenueGithubIdColumn() {
-  try {
-    const result = await sql`
-      SELECT column_name FROM information_schema.columns
-      WHERE table_name = 'revenue_events'
-      AND column_name = 'github_id'
-    `
-    if (result.length === 0) {
-      await sql`
-        ALTER TABLE revenue_events ADD COLUMN github_id INTEGER
-      `
-      console.log('Added github_id column to revenue_events')
-    }
-  } catch (error) {
-    console.error('Failed to add github_id column:', error)
-  }
-}
-
-
 
 export async function recordMetric(
   metricType: string,
@@ -125,7 +60,7 @@ export async function recordMetric(
   try {
     await sql`
       INSERT INTO dashboard_metrics (metric_type, metric_name, metric_value, metadata)
-      VALUES (${metricType}, ${metricName}, ${value}, ${JSON.stringify(metadata || {})})
+      VALUES (${metricType}, ${metricName}, ${value}, ${sql.json(metadata || {})})
     `
   } catch (error) {
     console.error('Failed to record metric:', error)
@@ -163,9 +98,6 @@ export async function getDailyAggregates(
 }
 
 export async function archiveOldEvents(daysToKeep: number = 90) {
-  const deletedUserEventsCount = 0; // Removed user_events tracking
-
-
   const deletedAffiliateEvents = await sql`
     DELETE FROM affiliate_events
     WHERE created_at < NOW() - INTERVAL '${daysToKeep} days'
@@ -175,15 +107,15 @@ export async function archiveOldEvents(daysToKeep: number = 90) {
   console.log(`Archived ${deletedAffiliateEvents.length} old click events`)
 
   return {
-    userEventsArchived: deletedUserEventsCount,
     affiliateEventsArchived: deletedAffiliateEvents.length
   }
 }
 
 export async function backfillRevenueGithubId() {
+  // Uses BIGINT now from lib/db.ts
   const result = await sql`
     UPDATE revenue_events
-    SET github_id = NULLIF(SUBSTRING(customer_id FROM 5), '')::INTEGER
+    SET github_id = NULLIF(SUBSTRING(customer_id FROM 5), '')::BIGINT
     WHERE customer_id LIKE 'user_%'
     AND github_id IS NULL
     RETURNING id

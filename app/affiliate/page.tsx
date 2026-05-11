@@ -18,9 +18,12 @@ interface AffiliateStats {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
+  accumulatedCredit: number
   tier: 'free' | 'starter' | 'pro'
   requiredForStarter: number
   requiredForPro: number
+  starterCost: number
+  proCost: number
   progressToStarter: number
   progressToPro: number
   referrals: {

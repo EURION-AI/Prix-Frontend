@@ -73,9 +73,9 @@ export async function GET(request: NextRequest) {
     progressToStarter,
     progressToPro,
     referrals: referrals.map(r => ({
-      username: sanitizeUsername(r.referredUsername),
+      username: sanitizeUsername(r.referredUsername || 'Anonymous'),
       hasPurchased: r.hasPurchased,
-      purchasedPlan: r.purchasedPlan,
+      purchasedPlan: r.purchasedPlan || null,
       createdAt: r.createdAt,
     })),
   })

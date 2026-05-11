@@ -21,8 +21,9 @@ export async function POST(request: NextRequest) {
     }
 
     const cost = COSTS[plan as keyof typeof COSTS]
+    const razorpaySubscriptionId = `reward_${plan}_${Date.now()}`
 
-    const result = await sql.begin(async (tx) => {
+    const result = await sql.begin(async (tx: any) => {
       // 1. Check if user has enough credit
       const affiliateResult = await tx`
         SELECT id, accumulated_credit FROM affiliate_users 
@@ -47,10 +48,14 @@ export async function POST(request: NextRequest) {
         WHERE id = ${affiliateResult[0].id}
       `
 
-      // 3. Update user plan
+      // 3. Update user plan with subscription dates
       await tx`
         UPDATE users
-        SET plan = ${plan}, updated_at = NOW()
+        SET plan = ${plan},
+            razorpay_subscription_id = ${razorpaySubscriptionId},
+            plan_started_at = NOW(),
+            plan_expires_at = NOW() + INTERVAL '30 days',
+            updated_at = NOW()
         WHERE github_id = ${githubId}
       `
 
@@ -63,7 +68,7 @@ export async function POST(request: NextRequest) {
           'USD',
           ${githubId},
           ${plan},
-          ${JSON.stringify({ method: 'affiliate_claim', creditUsed: cost })}
+          ${sql.json({ method: 'affiliate_claim', creditUsed: cost, rewardSubscriptionId: razorpaySubscriptionId })}
         )
       `
 

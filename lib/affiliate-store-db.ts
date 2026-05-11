@@ -1,27 +1,5 @@
 import { sql } from './db'
-import { generateAffiliateCode, getAffiliateTier } from './affiliate'
-
-export interface AffiliateUser {
-  id: string
-  githubId: number
-  username: string
-  affiliateCode: string
-  referralCount: number
-  paidReferralCount: number
-  accumulatedCredit: number
-  tier: 'free' | 'starter' | 'pro'
-  createdAt: string
-}
-
-export interface Referral {
-  id: string
-  affiliateId: string
-  referredGithubId: number
-  referredUsername: string
-  referredIpHash: string
-  hasPurchased: boolean
-  createdAt: string
-}
+import { generateAffiliateCode, getAffiliateTier, AffiliateUser, Referral } from './affiliate'
 
 export async function getOrCreateAffiliateUser(githubId: number, username: string): Promise<AffiliateUser> {
   const affiliateCode = generateAffiliateCode(username)
@@ -98,7 +76,7 @@ export async function addReferral(
   referredIpHash: string
 ): Promise<Referral | null> {
   try {
-    const result = await sql.begin(async (tx) => {
+    const result = await sql.begin(async (tx: any) => {
       const existingByGithub = await tx`
         SELECT id FROM referrals WHERE referred_github_id = ${referredGithubId}
       `
@@ -141,7 +119,7 @@ export async function addReferral(
     })
 
     return result || null
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === '23505') {
       return null
     }
@@ -151,7 +129,7 @@ export async function addReferral(
 
 export async function markReferralAsPurchased(referredGithubId: number, plan: string, amount: number): Promise<void> {
   try {
-    await sql.begin(async (tx) => {
+    await sql.begin(async (tx: any) => {
       const referralResult = await tx`
         SELECT * FROM referrals
         WHERE referred_github_id = ${referredGithubId} AND has_purchased = FALSE
@@ -171,10 +149,6 @@ export async function markReferralAsPurchased(referredGithubId: number, plan: st
           purchased_amount = ${amount}
         WHERE id = ${referral.id}
       `
-
-      // Calculate credit (approx 1/3rd of the 3x requirement, or just pass through the amount)
-      // The user said: 3x starter = 1 starter free. Price is $7. 3x is $21.
-      // So if we just add the 'amount' to accumulatedCredit, when they reach $21 they claim Starter.
       
       const affiliateResult = await tx`
         SELECT paid_referral_count, accumulated_credit FROM affiliate_users WHERE id = ${referral.affiliate_id}
@@ -212,6 +186,8 @@ export async function getReferralsForAffiliate(affiliateId: string): Promise<Ref
     referredUsername: row.referred_username,
     referredIpHash: row.referred_ip_hash,
     hasPurchased: row.has_purchased,
+    purchasedPlan: row.purchased_plan,
+    purchasedAmount: row.purchased_amount,
     createdAt: row.created_at.toISOString(),
   }))
 }

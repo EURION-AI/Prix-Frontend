@@ -76,7 +76,8 @@ export async function initializeDatabase() {
         id SERIAL PRIMARY KEY,
         event_type VARCHAR(50) NOT NULL,
         affiliate_id VARCHAR(50) NOT NULL,
-        affiliate_code VARCHAR(50) NOT NULL,
+        affiliate_code VARCHAR(50),
+        referrer_id VARCHAR(100),
         commission_amount INTEGER DEFAULT 0,
         conversion_status VARCHAR(50) DEFAULT 'pending',
         metadata JSONB DEFAULT '{}',
@@ -200,20 +201,26 @@ export async function initializeDatabase() {
       console.log('Migration info: Skipping legacy data migration.', e)
     }
 
-    // Migrate github_id to BIGINT if it was previously INTEGER
-    await sql`
-      ALTER TABLE users ALTER COLUMN github_id TYPE BIGINT
-    `
-    await sql`
-      ALTER TABLE affiliate_users ALTER COLUMN github_id TYPE BIGINT
-    `
-    await sql`
-      ALTER TABLE referrals ALTER COLUMN referred_github_id TYPE BIGINT
-    `
-
     await sql`
       CREATE INDEX IF NOT EXISTS idx_daily_aggregates_date_cat ON daily_aggregates(date, metric_category)
     `
+
+    // Migrate all github_id columns to BIGINT if they were previously INTEGER
+    const tablesToMigrate = [
+      { table: 'users', col: 'github_id' },
+      { table: 'affiliate_users', col: 'github_id' },
+      { table: 'referrals', col: 'referred_github_id' },
+      { table: 'revenue_events', col: 'github_id' }
+    ]
+
+    for (const item of tablesToMigrate) {
+      try {
+        await sql.unsafe(`ALTER TABLE ${item.table} ALTER COLUMN ${item.col} TYPE BIGINT`)
+        console.log(`Migrated ${item.table}.${item.col} to BIGINT`)
+      } catch (e) {
+        // Ignore if already BIGINT or table doesn't exist yet
+      }
+    }
 
     // Add subscription columns if they don't exist
     for (const colDef of [

@@ -5,8 +5,10 @@ export interface AffiliateUser {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
+  accumulatedCredit: number
   tier: 'free' | 'starter' | 'pro'
   createdAt: string
+  updatedAt?: string
 }
 
 export interface Referral {
@@ -16,6 +18,8 @@ export interface Referral {
   referredUsername: string
   referredIpHash: string
   hasPurchased: boolean
+  purchasedPlan?: string | null
+  purchasedAmount?: number | null
   createdAt: string
 }
 
@@ -30,20 +34,18 @@ export function generateAffiliateCode(username: string): string {
   const cleanUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 6)
   
   // Generate a short random string (4 chars)
-  const randomPart = Array.from(crypto.getRandomValues(new Uint8Array(3)))
-    .reduce((acc, byte) => acc + byte.toString(36), '')
-    .substring(0, 4)
+  const randomPart = Math.random().toString(36).substring(2, 6)
   
   // Combine for a short, clean code like "prixabc", "warsx7", etc.
   const code = cleanUsername + randomPart
   
   // Ensure it's at least 6 chars, pad with random if needed
-  return code.length >= 6 ? code : code + randomPart.repeat(2).substring(0, 6 - code.length)
+  return code.length >= 6 ? code : code + Math.random().toString(36).substring(2, 8 - code.length)
 }
 
 export async function hashIP(ip: string): Promise<string> {
   const encoder = new TextEncoder()
-  const data = encoder.encode(ip + 'prix_salt_v1')
+  const data = encoder.encode(ip + (process.env.IP_SALT || 'prix_salt_v1'))
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
   return Array.from(new Uint8Array(hashBuffer))
     .map(b => b.toString(16).padStart(2, '0'))
