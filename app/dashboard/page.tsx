@@ -35,6 +35,9 @@ interface UserData {
   githubInstallationId: number | null
   installationStatus: string
   prsReviewed: number
+  planExpiresAt: string | null
+  planStartedAt: string | null
+  hasActiveSubscription: boolean
 }
 
 export default function DashboardPage() {
@@ -288,6 +291,19 @@ export default function DashboardPage() {
             <p className="text-white/50 text-lg max-w-2xl">
               Select a GitHub repository to enable Prix's automated intelligence and performance monitoring.
             </p>
+            {user && user.plan !== 'free' && user.planExpiresAt && (
+              <div className="mt-3 flex items-center gap-2 text-sm">
+                <CreditCard className="w-4 h-4 text-primary" />
+                <span className="text-white/40">
+                  {user.plan.charAt(0).toUpperCase() + user.plan.slice(1)} Plan —{' '}
+                  {user.hasActiveSubscription ? (
+                    <span className="text-green-400">Renews {new Date(user.planExpiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  ) : (
+                    <span className="text-orange-400">Expires {new Date(user.planExpiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  )}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3">

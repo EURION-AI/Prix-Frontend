@@ -1,20 +1,11 @@
 import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
-import { validatePlan } from '@/lib/validation'
 import { rateLimit } from '@/lib/security'
-import { validateCSRFToken, addCSRFTokenToResponse, generateCSRFToken } from '@/lib/csrf'
+import { validateCSRFToken, addCSRFTokenToResponse } from '@/lib/csrf'
 import { PRICING } from '@/lib/pricing'
+import { sql } from '@/lib/db'
 
-const PLANS = {
-  starter: {
-    name: 'Base',
-  },
-  pro: {
-    name: 'Pro',
-  },
-} as const
-
-type PlanKey = keyof typeof PLANS
+type PlanKey = 'starter' | 'pro'
 
 function getRazorpayClient(): Razorpay | null {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
@@ -24,6 +15,53 @@ function getRazorpayClient(): Razorpay | null {
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
   })
+}
+
+/**
+ * Get or create a Razorpay Plan for a given region+tier combo.
+ * Plans are cached in the razorpay_plans table to avoid re-creation.
+ */
+async function getOrCreateRazorpayPlan(
+  razorpay: Razorpay,
+  plan: PlanKey,
+  region: string,
+  amount: number,
+  currency: string
+): Promise<string> {
+  const planKey = `${plan}_${region}`
+
+  // Check cache first
+  const cached = await sql`
+    SELECT razorpay_plan_id FROM razorpay_plans WHERE plan_key = ${planKey}
+  `
+
+  if (cached.length > 0) {
+    return cached[0].razorpay_plan_id
+  }
+
+  // Create on Razorpay
+  const planDisplayName = plan === 'starter' ? 'Starter' : 'Pro'
+  const razorpayPlan = await (razorpay as any).plans.create({
+    period: 'monthly',
+    interval: 1,
+    item: {
+      name: `Prix AI ${planDisplayName} (${region})`,
+      amount: amount,
+      currency: currency,
+      description: `Monthly subscription for Prix AI ${planDisplayName} plan`,
+    },
+  })
+
+  // Cache it
+  await sql`
+    INSERT INTO razorpay_plans (plan_key, razorpay_plan_id, amount, currency)
+    VALUES (${planKey}, ${razorpayPlan.id}, ${amount}, ${currency})
+    ON CONFLICT (plan_key) DO UPDATE SET
+      razorpay_plan_id = EXCLUDED.razorpay_plan_id
+  `
+
+  console.log(`Created Razorpay plan: ${planKey} -> ${razorpayPlan.id}`)
+  return razorpayPlan.id
 }
 
 export async function GET(request: Request) {
@@ -49,10 +87,8 @@ export async function POST(request: Request) {
     const plan = body.plan
     const userId = body.userId
     const region = body.region || 'US'
-    const upgrade = body.upgrade
-    const discount = body.discount
 
-    if (!plan || !validatePlan(plan)) {
+    if (!plan || (plan !== 'starter' && plan !== 'pro')) {
       return NextResponse.json(
         { error: 'Invalid plan. Must be "starter" or "pro"' },
         { status: 400 }
@@ -70,27 +106,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // Calculate amount with upgrade/discount logic
-    let finalAmount = planPricing.price
-
-    if (upgrade === 'starter_to_pro' && plan === 'pro') {
-      // Special upgrade price
-      if (region === 'IN') {
-        finalAmount = 500 // ₹5 for testing
-      } else {
-        finalAmount = 200 // $2.00 for US/others
-      }
-    } else if (discount) {
-      // Generic discount (in cents/paise)
-      const discountValue = parseInt(String(discount), 10)
-      if (!isNaN(discountValue)) {
-        // If discount is '2', it might mean '$2' (200 cents)
-        // For simplicity, if it's a small number like '2', treat it as the major currency unit
-        const actualDiscount = discountValue < 100 ? discountValue * 100 : discountValue
-        finalAmount = Math.max(0, finalAmount - actualDiscount)
-      }
-    }
-
     const razorpay = getRazorpayClient()
 
     if (!razorpay) {
@@ -100,30 +115,35 @@ export async function POST(request: Request) {
       )
     }
 
-    const options = {
-      amount: finalAmount,
-      currency: planPricing.currency,
-      receipt: `receipt_${Date.now()}`,
+    // Step 1: Get or create Razorpay Plan for this region+tier
+    const razorpayPlanId = await getOrCreateRazorpayPlan(
+      razorpay,
+      plan,
+      region,
+      planPricing.price,
+      planPricing.currency
+    )
+
+    // Step 2: Create a Subscription
+    const subscription = await (razorpay as any).subscriptions.create({
+      plan_id: razorpayPlanId,
+      total_count: 120, // Max 10 years
+      customer_notify: 1,
       notes: {
         plan,
         userId: userId || 'anonymous',
         region,
-        upgrade: upgrade || 'none',
       },
-    }
-
-    const order = await razorpay.orders.create(options)
+    })
 
     return NextResponse.json({
-      id: order.id,
-      amount: order.amount,
-      currency: order.currency,
+      subscriptionId: subscription.id,
       key: process.env.RAZORPAY_KEY_ID,
     })
   } catch (error) {
-    console.error('Razorpay checkout error:', error)
+    console.error('Razorpay subscription checkout error:', error)
     return NextResponse.json(
-      { error: 'Failed to create Razorpay order' },
+      { error: 'Failed to create subscription' },
       { status: 500 }
     )
   }

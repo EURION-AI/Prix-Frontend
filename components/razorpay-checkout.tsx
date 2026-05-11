@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Check, X } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 declare global {
   interface Window {
@@ -11,13 +11,11 @@ declare global {
 
 interface RazorpayOptions {
   key: string
-  amount: string
-  currency: string
+  subscription_id: string
   name: string
   description: string
   image?: string
-  order_id: string
-  handler: (response: RazorpayResponse) => void
+  handler: (response: RazorpaySubscriptionResponse) => void
   prefill?: {
     name?: string
     email?: string
@@ -31,14 +29,14 @@ interface RazorpayOptions {
   }
 }
 
-interface RazorpayResponse {
+interface RazorpaySubscriptionResponse {
   razorpay_payment_id: string
-  razorpay_order_id: string
+  razorpay_subscription_id: string
   razorpay_signature: string
 }
 
 interface RazorpayInstance {
-  on: (event: string, handler: () => void) => void
+  on: (event: string, handler: (response: any) => void) => void
   open: () => void
 }
 
@@ -65,8 +63,6 @@ export function RazorpayCheckoutButton({
   userId,
   userName = '',
   userEmail = '',
-  upgrade = null,
-  discount = null,
   onSuccess,
   onError,
   disabled
@@ -119,8 +115,8 @@ export function RazorpayCheckoutButton({
         throw new Error('Failed to obtain security token')
       }
 
-      // 2. Create Razorpay order
-      const createOrderResponse = await fetch('/api/razorpay/checkout', {
+      // 2. Create Razorpay subscription
+      const createSubResponse = await fetch('/api/razorpay/checkout', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -130,38 +126,34 @@ export function RazorpayCheckoutButton({
           plan,
           userId,
           region,
-          upgrade,
-          discount
         }),
       })
 
-      if (!createOrderResponse.ok) {
-        const errorData = await createOrderResponse.json()
-        throw new Error(errorData.error || 'Failed to create order')
+      if (!createSubResponse.ok) {
+        const errorData = await createSubResponse.json()
+        throw new Error(errorData.error || 'Failed to create subscription')
       }
 
-      const orderData = await createOrderResponse.json()
+      const subData = await createSubResponse.json()
 
-      if (!orderData.id) {
-        throw new Error('No order ID received')
+      if (!subData.subscriptionId) {
+        throw new Error('No subscription ID received')
       }
 
       const options: RazorpayOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
-        amount: String(orderData.amount),
-        currency: orderData.currency,
+        key: subData.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+        subscription_id: subData.subscriptionId,
         name: 'Prix AI',
-        description: `Prix ${plan === 'starter' ? 'Starter' : 'Pro'} Plan`,
+        description: `Prix ${plan === 'starter' ? 'Starter' : 'Pro'} Plan — Monthly`,
         image: '/logo.png',
-        order_id: orderData.id,
-        handler: async (response: RazorpayResponse) => {
+        handler: async (response: RazorpaySubscriptionResponse) => {
           try {
             const verifyResponse = await fetch('/api/razorpay/verify-payment', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_subscription_id: response.razorpay_subscription_id,
                 razorpay_signature: response.razorpay_signature,
                 plan,
                 userId
@@ -219,7 +211,7 @@ export function RazorpayCheckoutButton({
           {isScriptLoaded ? 'Processing...' : 'Loading Razorpay...'}
         </>
       ) : (
-        `Pay ${formatDisplayPrice(amount, currency)}`
+        `Subscribe ${formatDisplayPrice(amount, currency)}/mo`
       )}
     </button>
   )

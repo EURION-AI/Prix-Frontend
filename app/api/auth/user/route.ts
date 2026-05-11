@@ -52,7 +52,10 @@ export async function GET(request: Request) {
       prsReviewed: dbUser.prsReviewed || 0,
       plan: dbUser.plan || 'free',
       githubInstallationId: dbUser.githubInstallationId || null,
-      installationStatus: dbUser.installationStatus || 'disconnected'
+      installationStatus: dbUser.installationStatus || 'disconnected',
+      planExpiresAt: dbUser.planExpiresAt || null,
+      planStartedAt: dbUser.planStartedAt || null,
+      hasActiveSubscription: !!dbUser.razorpaySubscriptionId,
     }
 
     return NextResponse.json({ user: safeUserData })

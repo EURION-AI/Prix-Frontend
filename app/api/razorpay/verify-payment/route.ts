@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { cookies } from 'next/headers'
-import { updateUserPlan, getUserByGithubId } from '@/lib/user-store'
+import { activateSubscription } from '@/lib/user-store'
 import { sql } from '@/lib/db'
 import { markReferralAsPurchased } from '@/lib/affiliate-store-db'
 import { PRICING } from '@/lib/pricing'
@@ -10,14 +9,14 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const {
-      razorpay_order_id,
       razorpay_payment_id,
+      razorpay_subscription_id,
       razorpay_signature,
       plan,
       userId
     } = body
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    if (!razorpay_payment_id || !razorpay_subscription_id || !razorpay_signature) {
       return NextResponse.json(
         { error: 'Missing required payment verification fields' },
         { status: 400 }
@@ -41,9 +40,11 @@ export async function POST(request: Request) {
       )
     }
 
+    // For subscriptions, signature is generated using:
+    // razorpay_payment_id | razorpay_subscription_id
     const generatedSignature = crypto
       .createHmac('sha256', keySecret)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .update(`${razorpay_payment_id}|${razorpay_subscription_id}`)
       .digest('hex')
 
     if (generatedSignature !== razorpay_signature) {
@@ -64,8 +65,8 @@ export async function POST(request: Request) {
         // Get regional pricing from shared config
         const pricing = PRICING.IN[plan as keyof typeof PRICING.IN]
 
-        // CRITICAL: Update user plan and affiliate status
-        await updateUserPlan(githubId, plan)
+        // CRITICAL: Activate subscription with expiration tracking
+        await activateSubscription(githubId, plan, razorpay_subscription_id)
         await markReferralAsPurchased(githubId, plan, pricing.price)
 
         // NON-CRITICAL: Log revenue event for analytics
@@ -73,16 +74,16 @@ export async function POST(request: Request) {
           await sql`
             INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
             VALUES (
-              'purchase',
+              'subscription_started',
               ${pricing.price},
               ${pricing.currency},
               ${githubId},
               ${plan},
-              ${{
-                orderId: razorpay_order_id,
+              ${sql.json({
+                subscriptionId: razorpay_subscription_id,
                 paymentId: razorpay_payment_id,
-                method: 'razorpay'
-              }},
+                method: 'razorpay_subscription'
+              })},
               NOW()
             )
           `
@@ -95,11 +96,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Payment verified successfully',
+      message: 'Subscription activated successfully',
       plan
     })
   } catch (error) {
-    console.error('Razorpay payment verification error (CRITICAL):', error)
+    console.error('Razorpay subscription verification error (CRITICAL):', error)
     return NextResponse.json(
       { 
         error: 'Payment verification failed',

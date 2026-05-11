@@ -25,6 +25,9 @@ export async function initializeDatabase() {
         prs_reviewed INTEGER DEFAULT 0,
         github_installation_id BIGINT,
         installation_status VARCHAR(20) DEFAULT 'disconnected',
+        razorpay_subscription_id VARCHAR(50),
+        plan_started_at TIMESTAMP,
+        plan_expires_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
@@ -91,6 +94,17 @@ export async function initializeDatabase() {
         customer_id VARCHAR(100),
         subscription_tier VARCHAR(50),
         metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS razorpay_plans (
+        id SERIAL PRIMARY KEY,
+        plan_key VARCHAR(50) UNIQUE NOT NULL,
+        razorpay_plan_id VARCHAR(50) NOT NULL,
+        amount INTEGER NOT NULL,
+        currency VARCHAR(10) NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()
       )
     `
@@ -201,6 +215,40 @@ export async function initializeDatabase() {
       CREATE INDEX IF NOT EXISTS idx_daily_aggregates_date_cat ON daily_aggregates(date, metric_category)
     `
 
+    // Add subscription columns if they don't exist
+    for (const colDef of [
+      { name: 'razorpay_subscription_id', ddl: 'ALTER TABLE users ADD COLUMN razorpay_subscription_id VARCHAR(50)' },
+      { name: 'plan_started_at', ddl: 'ALTER TABLE users ADD COLUMN plan_started_at TIMESTAMP' },
+      { name: 'plan_expires_at', ddl: 'ALTER TABLE users ADD COLUMN plan_expires_at TIMESTAMP' },
+    ]) {
+      try {
+        const hasCol = await sql`
+          SELECT column_name FROM information_schema.columns
+          WHERE table_name = 'users' AND column_name = ${colDef.name}
+        `
+        if (hasCol.length === 0) {
+          await sql.unsafe(colDef.ddl)
+          console.log(`Added ${colDef.name} column to users table`)
+        }
+      } catch (e) {
+        console.log(`Migration info: ${colDef.name} column may already exist`, e)
+      }
+    }
+
+    // Migrate existing paid users: give them 30 days from now
+    try {
+      await sql`
+        UPDATE users
+        SET plan_expires_at = NOW() + INTERVAL '30 days',
+            plan_started_at = NOW()
+        WHERE plan IN ('starter', 'pro')
+          AND plan_expires_at IS NULL
+      `
+      console.log('Migrated existing paid users with 30-day grace period')
+    } catch (e) {
+      console.log('Migration info: paid user migration may have already run', e)
+    }
+
     console.log('Database initialized successfully')
   } catch (error) {
     console.error('Failed to initialize database:', error)
@@ -225,7 +273,7 @@ export async function addForeignKeyConstraints() {
       `
       console.log('Added FK: affiliate_users -> users')
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error.code !== '42P07') {
       console.error('Failed to add FK constraint:', error)
     }
@@ -239,7 +287,7 @@ export async function addForeignKeyConstraints() {
       ON DELETE SET NULL
     `
     console.log('Added FK: affiliate_events -> affiliate_users')
-  } catch (error) {
+  } catch (error: any) {
     if (error.code !== '42P07') {
       console.error('Failed to add FK constraint:', error)
     }
