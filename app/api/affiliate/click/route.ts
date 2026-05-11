@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         ${code},
         0,
         'pending',
-        ${JSON.stringify({
+        ${sql.json({
           userAgent,
           referer,
           timestamp: new Date().toISOString(),

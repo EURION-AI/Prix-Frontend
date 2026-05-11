@@ -32,7 +32,7 @@ async function getOrCreateRazorpayPlan(
 
   // Check cache first
   const cached = await sql`
-    SELECT razorpay_plan_id FROM razorpay_plans WHERE plan_key = ${planKey}
+    SELECT razorpay_plan_id FROM razorpay_plans WHERE internal_plan_id = ${planKey}
   `
 
   if (cached.length > 0) {
@@ -54,9 +54,9 @@ async function getOrCreateRazorpayPlan(
 
   // Cache it
   await sql`
-    INSERT INTO razorpay_plans (plan_key, razorpay_plan_id, amount, currency)
+    INSERT INTO razorpay_plans (internal_plan_id, razorpay_plan_id, amount, currency)
     VALUES (${planKey}, ${razorpayPlan.id}, ${amount}, ${currency})
-    ON CONFLICT (plan_key) DO UPDATE SET
+    ON CONFLICT (internal_plan_id) DO UPDATE SET
       razorpay_plan_id = EXCLUDED.razorpay_plan_id
   `
 

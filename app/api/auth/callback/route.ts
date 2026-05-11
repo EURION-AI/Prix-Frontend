@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
                 ${affiliateCode},
                 0,
                 'completed',
-                ${JSON.stringify({
+                ${sql.json({
                   newUserId: userData.id,
                   newUsername: userData.login,
                   referredAt: new Date().toISOString(),

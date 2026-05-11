@@ -102,7 +102,7 @@ export async function initializeDatabase() {
     await sql`
       CREATE TABLE IF NOT EXISTS razorpay_plans (
         id SERIAL PRIMARY KEY,
-        plan_key VARCHAR(50) UNIQUE NOT NULL,
+        internal_plan_id VARCHAR(50) UNIQUE NOT NULL,
         razorpay_plan_id VARCHAR(50) NOT NULL,
         amount INTEGER NOT NULL,
         currency VARCHAR(10) NOT NULL,
