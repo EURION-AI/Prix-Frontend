@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     const revenueResult = await sql`
       SELECT COALESCE(SUM(amount), 0)::int as mrr
       FROM revenue_events
-      WHERE event_type IN ('subscription', 'subscription_renewed', 'subscription_started', 'purchase')
+      WHERE event_type IN ('subscription_started', 'subscription_renewed', 'purchase')
       AND created_at > NOW() - INTERVAL '${days} days'
     `
 
@@ -126,7 +126,7 @@ async function getRevenueChartData(days: number) {
         DATE(created_at) as date,
         SUM(amount)::int as revenue
       FROM revenue_events
-      WHERE event_type IN ('subscription', 'subscription_renewed', 'subscription_started', 'purchase')
+      WHERE event_type IN ('subscription_started', 'subscription_renewed', 'purchase')
       AND created_at > NOW() - INTERVAL '${days} days'
       GROUP BY DATE(created_at)
       ORDER BY date

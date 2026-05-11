@@ -24,6 +24,7 @@ export async function GET(request: Request) {
   try {
     const affiliatesResult = await sql`
       SELECT
+        id,
         username,
         referral_count,
         paid_referral_count,
