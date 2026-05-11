@@ -61,28 +61,35 @@ export async function POST(request: Request) {
       const githubId = parseInt(userId, 10)
 
       if (!isNaN(githubId) && githubId > 0) {
-        // Get regional pricing from shared config (default to IN for revenue tracking)
+        // Get regional pricing from shared config
         const pricing = PRICING.IN[plan as keyof typeof PRICING.IN]
 
+        // CRITICAL: Update user plan and affiliate status
         await updateUserPlan(githubId, plan)
         await markReferralAsPurchased(githubId, plan, pricing.price)
 
-        await sql`
-          INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
-          VALUES (
-            'purchase',
-            ${pricing.price},
-            ${pricing.currency},
-            ${githubId},
-            ${plan},
-            ${{
-              orderId: razorpay_order_id,
-              paymentId: razorpay_payment_id,
-              method: 'razorpay'
-            }},
-            NOW()
-          )
-        `
+        // NON-CRITICAL: Log revenue event for analytics
+        try {
+          await sql`
+            INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
+            VALUES (
+              'purchase',
+              ${pricing.price},
+              ${pricing.currency},
+              ${githubId},
+              ${plan},
+              ${{
+                orderId: razorpay_order_id,
+                paymentId: razorpay_payment_id,
+                method: 'razorpay'
+              }},
+              NOW()
+            )
+          `
+        } catch (analyticsError) {
+          console.error('Failed to log revenue event (non-critical):', analyticsError)
+          // We don't throw here so the user still gets a success response
+        }
       }
     }
 
@@ -92,7 +99,7 @@ export async function POST(request: Request) {
       plan
     })
   } catch (error) {
-    console.error('Razorpay payment verification error:', error)
+    console.error('Razorpay payment verification error (CRITICAL):', error)
     return NextResponse.json(
       { 
         error: 'Payment verification failed',
