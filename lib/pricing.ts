@@ -1,7 +1,7 @@
 export const PRICING = {
   IN: {
-    starter: { price: 69900, currency: 'INR', symbol: '₹', display: '₹699' }, // ₹699 (in paise for Razorpay)
-    pro: { price: 89900, currency: 'INR', symbol: '₹', display: '₹899' }, // ₹899
+    starter: { price: 500, currency: 'INR', symbol: '₹', display: '₹5' }, // ₹5 (in paise for Razorpay)
+    pro: { price: 1000, currency: 'INR', symbol: '₹', display: '₹10' }, // ₹10
   },
   GB: {
     starter: { price: 699, currency: 'GBP', symbol: '£', display: '£6.99' }, // £6.99

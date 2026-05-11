@@ -264,7 +264,7 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
       {
         id: 'pro-upgrade',
         name: 'Upgrade to Pro',
-        price: region === 'IN' ? '₹170' : '$2.00',
+        price: region === 'IN' ? '₹5' : '$2.00',
         description: 'Special upgrade price for existing Starter users.',
         features: [
           'Everything in Starter',

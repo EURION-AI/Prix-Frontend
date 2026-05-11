@@ -6,7 +6,7 @@ import { Footer } from '@/components/footer'
 
 export const metadata: Metadata = {
   title: 'Pricing | Prix AI - Plans for Every Team',
-  description: 'Start free with 5 PR reviews per month. Upgrade to Starter ($6.99/month) or Pro ($9.99/month) for unlimited AI-powered code review and automated PR fixes.',
+  description: 'Start free with 5 PR reviews per month. Upgrade to Starter (₹5/month) or Pro (₹10/month) for unlimited AI-powered code review and automated PR fixes.',
   alternates: {
     canonical: './',
   },

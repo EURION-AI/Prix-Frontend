@@ -27,12 +27,12 @@ const plans = [
     name: 'Starter',
     getPrice: (region: Region) => formatPrice(region, 'starter'),
     getOriginalPrice: (region: Region) => {
-      if (region === 'IN') return '₹1,499'
+      if (region === 'IN') return '₹10'
       if (region === 'GB') return '£14'
       if (region === 'EU') return '€14'
       return '$14'
     },
-    priceValue: 6.99,
+    priceValue: 5,
     description: 'For individual developers who want reliable automation.',
     features: ['AI-powered PR reviews (generous usage)', 'Automated PR fixes (generous usage)', 'Private repositories', 'Bug detection (logic + common issues)', 'Security issue detection (SQL injection, XSS, etc.)', 'Basic performance analysis', 'Basic AI issue planning & task breakdowns'],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'starter')}`,
@@ -46,12 +46,12 @@ const plans = [
     name: 'Pro',
     getPrice: (region: Region) => formatPrice(region, 'pro'),
     getOriginalPrice: (region: Region) => {
-      if (region === 'IN') return '₹1,999'
+      if (region === 'IN') return '₹20'
       if (region === 'GB') return '£19'
       if (region === 'EU') return '€19'
       return '$19'
     },
-    priceValue: 9.99,
+    priceValue: 10,
     description: 'For developers who rely on AI daily for fast, high-quality fixes.',
     features: ['Everything in Starter', 'Unlimited PR reviews', 'Unlimited AI issue planning & task breakdowns' , 'high automated fixes', 'Faster processing (priority queue)', 'Better multi-file context understanding', 'Deeper analysis (bugs, performance, security)'],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'pro')}`,
