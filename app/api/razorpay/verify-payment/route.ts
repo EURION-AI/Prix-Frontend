@@ -75,11 +75,11 @@ export async function POST(request: Request) {
             ${pricing.currency},
             ${githubId},
             ${plan},
-            ${JSON.stringify({
+            ${{
               orderId: razorpay_order_id,
               paymentId: razorpay_payment_id,
               method: 'razorpay'
-            })},
+            }},
             NOW()
           )
         `
@@ -94,7 +94,10 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Razorpay payment verification error:', error)
     return NextResponse.json(
-      { error: 'Payment verification failed' },
+      { 
+        error: 'Payment verification failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
