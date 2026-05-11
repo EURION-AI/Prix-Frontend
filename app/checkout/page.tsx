@@ -56,6 +56,8 @@ function CheckoutContent() {
   const planId = (searchParams.get('plan') || 'starter') as Plan
   const regionParam = searchParams.get('region')
   const region = getUserRegion(regionParam) as Region
+  const upgrade = searchParams.get('upgrade')
+  const discount = searchParams.get('discount')
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -65,10 +67,22 @@ function CheckoutContent() {
 
   const plan = PLAN_DETAILS[planId] || PLAN_DETAILS.starter
   const pricing = getPricing(region, planId)
-  const displayPrice = formatPrice(region, planId) + '/mo'
-  const displayPricePaise = pricing.price
+  
+  // Calculate display price with upgrade logic
+  let displayPrice = formatPrice(region, planId) + '/mo'
+  let displayPricePaise = pricing.price
 
-  // Update plan price dynamically
+  if (upgrade === 'starter_to_pro' && planId === 'pro') {
+    if (region === 'IN') {
+      displayPrice = '₹5 (Upgrade)'
+      displayPricePaise = 500
+    } else {
+      displayPrice = '$2.00 (Upgrade)'
+      displayPricePaise = 200
+    }
+  }
+
+  // Update plan price dynamically for UI display
   plan.price = displayPrice
 
   useEffect(() => {
@@ -165,6 +179,8 @@ function CheckoutContent() {
           region={region}
           userName={userName}
           userEmail={userEmail}
+          upgrade={upgrade}
+          discount={discount}
           onSuccess={handleSuccess}
           onError={handleError}
           disabled={isLoading}

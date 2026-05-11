@@ -50,6 +50,8 @@ interface RazorpayCheckoutButtonProps {
   region?: string
   userName?: string
   userEmail?: string
+  upgrade?: string | null
+  discount?: string | null
   onSuccess: () => void
   onError: (error: string) => void
   disabled?: boolean
@@ -63,6 +65,8 @@ export function RazorpayCheckoutButton({
   userId,
   userName = '',
   userEmail = '',
+  upgrade = null,
+  discount = null,
   onSuccess,
   onError,
   disabled
@@ -125,7 +129,9 @@ export function RazorpayCheckoutButton({
         body: JSON.stringify({
           plan,
           userId,
-          region
+          region,
+          upgrade,
+          discount
         }),
       })
 

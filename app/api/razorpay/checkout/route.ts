@@ -48,7 +48,9 @@ export async function POST(request: Request) {
     const body = await request.json()
     const plan = body.plan
     const userId = body.userId
-    const region = body.region || 'US' // Default to US if no region provided
+    const region = body.region || 'US'
+    const upgrade = body.upgrade
+    const discount = body.discount
 
     if (!plan || !validatePlan(plan)) {
       return NextResponse.json(
@@ -68,6 +70,27 @@ export async function POST(request: Request) {
       )
     }
 
+    // Calculate amount with upgrade/discount logic
+    let finalAmount = planPricing.price
+
+    if (upgrade === 'starter_to_pro' && plan === 'pro') {
+      // Special upgrade price
+      if (region === 'IN') {
+        finalAmount = 500 // ₹5 for testing
+      } else {
+        finalAmount = 200 // $2.00 for US/others
+      }
+    } else if (discount) {
+      // Generic discount (in cents/paise)
+      const discountValue = parseInt(String(discount), 10)
+      if (!isNaN(discountValue)) {
+        // If discount is '2', it might mean '$2' (200 cents)
+        // For simplicity, if it's a small number like '2', treat it as the major currency unit
+        const actualDiscount = discountValue < 100 ? discountValue * 100 : discountValue
+        finalAmount = Math.max(0, finalAmount - actualDiscount)
+      }
+    }
+
     const razorpay = getRazorpayClient()
 
     if (!razorpay) {
@@ -78,13 +101,14 @@ export async function POST(request: Request) {
     }
 
     const options = {
-      amount: planPricing.price,
+      amount: finalAmount,
       currency: planPricing.currency,
       receipt: `receipt_${Date.now()}`,
       notes: {
         plan,
         userId: userId || 'anonymous',
         region,
+        upgrade: upgrade || 'none',
       },
     }
 
