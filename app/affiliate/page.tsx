@@ -38,6 +38,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   const [isLoading, setIsLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isClaiming, setIsClaiming] = useState<string | null>(null)
 
   const affiliateLink = stats?.affiliateCode && typeof window !== 'undefined'
     ? `${window.location.origin}/ref/${stats.affiliateCode}`
@@ -109,7 +110,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
     pro: 'bg-primary/10',
   }
 
-  const [isClaiming, setIsClaiming] = useState<string | null>(null)
+
 
   const handleClaim = async (plan: 'starter' | 'pro') => {
     setIsClaiming(plan)
