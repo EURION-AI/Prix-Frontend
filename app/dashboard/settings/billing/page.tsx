@@ -90,7 +90,7 @@ export default function BillingPage() {
           className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Dashboard
+          Go to Dashboard
         </Link>
 
         <div className="mb-12">

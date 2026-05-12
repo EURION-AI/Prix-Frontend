@@ -4,6 +4,7 @@ import { rateLimit } from '@/lib/security'
 import { validateCSRFToken, addCSRFTokenToResponse } from '@/lib/csrf'
 import { PRICING } from '@/lib/pricing'
 import { sql } from '@/lib/db'
+import { getUserSubscriptionId, activateSubscription } from '@/lib/user-store'
 
 type PlanKey = 'starter' | 'pro'
 
@@ -124,7 +125,38 @@ export async function POST(request: Request) {
       planPricing.currency
     )
 
-    // Step 2: Create a Subscription
+    // Step 2: Check for existing subscription
+    let currentSubId: string | null = null;
+    if (userId && userId !== 'anonymous') {
+      const githubId = parseInt(userId, 10);
+      if (!isNaN(githubId)) {
+        currentSubId = await getUserSubscriptionId(githubId);
+      }
+    }
+
+    // Step 3: Update existing or Create new
+    if (currentSubId && !currentSubId.startsWith('legacy_')) {
+      // Attempt to update the existing subscription
+      console.log(`[CHECKOUT] Upgrading existing subscription ${currentSubId} to plan ${plan}`);
+      
+      const updatedSub = await (razorpay as any).subscriptions.update(currentSubId, {
+        plan_id: razorpayPlanId,
+        schedule_change_at: 'now',
+        customer_notify: 1
+      });
+
+      if (userId && userId !== 'anonymous') {
+        await activateSubscription(parseInt(userId, 10), plan, currentSubId);
+      }
+
+      return NextResponse.json({
+        upgraded: true,
+        subscriptionId: updatedSub.id,
+        key: process.env.RAZORPAY_KEY_ID,
+      });
+    }
+
+    // Otherwise, create a new Subscription
     const subscription = await (razorpay as any).subscriptions.create({
       plan_id: razorpayPlanId,
       total_count: 120, // Max 10 years

@@ -136,6 +136,12 @@ export function RazorpayCheckoutButton({
 
       const subData = await createSubResponse.json()
 
+      // If the subscription was instantly upgraded via API without needing the modal
+      if (subData.upgraded) {
+        onSuccess()
+        return
+      }
+
       if (!subData.subscriptionId) {
         throw new Error('No subscription ID received')
       }
