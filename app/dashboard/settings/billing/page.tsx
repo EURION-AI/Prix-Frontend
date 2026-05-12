@@ -225,14 +225,14 @@ function getPlanDetails(plan: string, region: Region) {
       return {
         name: 'Pro Plan',
         icon: <Crown className="w-10 h-10 text-yellow-400" />,
-        description: 'You are on the Pro plan for active developers. Includes up to 15 repositories, advanced AST analysis, and priority support.',
+        description: 'You are on the Pro plan for active developers. Includes unlimited repositories, advanced AST analysis, and priority support.',
         color: 'bg-yellow-400/10 border-yellow-400/20'
       }
     case 'starter':
       return {
         name: 'Starter Plan',
         icon: <Zap className="w-10 h-10 text-green-400" />,
-        description: 'You are on the Starter plan. Includes up to 5 repositories, AI-powered PR reviews, and automated fixes.',
+        description: 'You are on the Starter plan. Includes unlimited repositories, AI-powered PR reviews, and automated fixes.',
         color: 'bg-green-400/10 border-green-400/20'
       }
     default:
@@ -300,7 +300,7 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
       price: starterPrice,
       description: 'Perfect for individual developers wanting reliable automation.',
       features: [
-        '5 repositories',
+        'Unlimited repositories',
         'AI-powered PR reviews',
         'Automated PR fixes',
         'Private repositories',

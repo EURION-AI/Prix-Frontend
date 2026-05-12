@@ -30,13 +30,15 @@ export async function POST(request: Request) {
       currentRepos = currentRepos.filter(r => r !== repo)
     } else if (action === 'add') {
       if (!currentRepos.includes(repo)) {
-        // Check limits before adding
-        const limit = user.plan === 'pro' ? 15 : 5
-        
-        if (currentRepos.length >= limit) {
-          return NextResponse.json({ 
-            error: `Your ${user.plan.toUpperCase()} plan limits you to ${limit} repositories. Please upgrade to add more.` 
-          }, { status: 403 })
+        // Check limits before adding - Only for free plan
+        if (user.plan === 'free') {
+          const limit = 5
+          
+          if (currentRepos.length >= limit) {
+            return NextResponse.json({ 
+              error: `Your FREE plan limits you to ${limit} repositories. Please upgrade to unlock unlimited repositories.` 
+            }, { status: 403 })
+          }
         }
         
         currentRepos.push(repo)
