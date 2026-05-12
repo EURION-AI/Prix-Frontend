@@ -54,22 +54,22 @@ export async function GET(request: NextRequest) {
 
   const referrals = await getReferralsForAffiliate(affiliate.id)
     
-  // New pricing thresholds ($21 for Starter, $30 for Pro)
-  const STARTER_COST = 2100 // in cents/paise
-  const PRO_COST = 3000 // in cents/paise
+  // Milestone requirements
+  const STARTER_REQUIRED = 2
+  const PRO_REQUIRED = 3
   
-  const accumulatedCredit = affiliate.accumulatedCredit || 0
-  const progressToStarter = Math.min((accumulatedCredit / STARTER_COST) * 100, 100)
-  const progressToPro = Math.min((accumulatedCredit / PRO_COST) * 100, 100)
+  const paidReferralCount = affiliate.paidReferralCount || 0
+  const progressToStarter = Math.min((paidReferralCount / STARTER_REQUIRED) * 100, 100)
+  const progressToPro = Math.min((paidReferralCount / PRO_REQUIRED) * 100, 100)
 
   return NextResponse.json({
     affiliateCode: affiliate.affiliateCode,
     referralCount: affiliate.referralCount,
-    paidReferralCount: affiliate.paidReferralCount,
-    accumulatedCredit: accumulatedCredit,
+    paidReferralCount: paidReferralCount,
+    accumulatedCredit: affiliate.accumulatedCredit || 0,
     tier: affiliate.tier,
-    starterCost: STARTER_COST,
-    proCost: PRO_COST,
+    starterRequired: STARTER_REQUIRED,
+    proRequired: PRO_REQUIRED,
     progressToStarter,
     progressToPro,
     referrals: referrals.map(r => ({

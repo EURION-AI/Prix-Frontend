@@ -14,19 +14,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 })
     }
 
-    // New pricing thresholds ($21 for Starter, $30 for Pro)
-    const COSTS = {
-      starter: 2100, // $21 in cents
-      pro: 3000,    // $30 in cents
-    }
-
-    const cost = COSTS[plan as keyof typeof COSTS]
     const razorpaySubscriptionId = `reward_${plan}_${Date.now()}`
+    const cost = plan === 'starter' ? 2100 : 3000 // Keeping for logging metadata
 
     const result = await sql.begin(async (tx: any) => {
-      // 1. Check if user has enough credit
+      // 1. Check if user has enough paid referrals
       const affiliateResult = await tx`
-        SELECT id, accumulated_credit FROM affiliate_users 
+        SELECT id, paid_referral_count, tier FROM affiliate_users 
         WHERE github_id = ${githubId}
         FOR UPDATE
       `
@@ -35,18 +29,19 @@ export async function POST(request: NextRequest) {
         throw new Error('Affiliate profile not found')
       }
 
-      const currentCredit = affiliateResult[0].accumulated_credit || 0
+      const currentPaidCount = affiliateResult[0].paid_referral_count || 0
 
-      if (currentCredit < cost) {
-        throw new Error(`Insufficient credit. You need $${(cost / 100).toFixed(0)} to claim this plan.`)
+      // Milestone validation
+      if (plan === 'starter' && currentPaidCount < 2) {
+        throw new Error('Insufficient referrals. You need at least 2 paid referrals to claim the Starter plan.')
       }
 
-      // 2. Subtract credit
-      await tx`
-        UPDATE affiliate_users
-        SET accumulated_credit = accumulated_credit - ${cost}
-        WHERE id = ${affiliateResult[0].id}
-      `
+      if (plan === 'pro' && currentPaidCount < 3) {
+        throw new Error('Insufficient referrals. You need at least 3 paid referrals to claim the Pro plan.')
+      }
+
+      // 2. Note: We don't subtract count because milestones are permanent achievements
+      // Log the event instead of subtracting credit
 
       // 3. Update user plan with subscription dates
       await tx`

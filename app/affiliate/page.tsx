@@ -20,10 +20,8 @@ interface AffiliateStats {
   paidReferralCount: number
   accumulatedCredit: number
   tier: 'free' | 'starter' | 'pro'
-  requiredForStarter: number
-  requiredForPro: number
-  starterCost: number
-  proCost: number
+  starterRequired: number
+  proRequired: number
   progressToStarter: number
   progressToPro: number
   referrals: {
@@ -167,11 +165,11 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/5 col-span-2">
           <div className="flex items-center justify-center gap-3 mb-3">
              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-               <span className="text-primary font-bold text-lg">$</span>
+               <Star className="w-5 h-5 text-primary" />
              </div>
-             <div className="text-3xl font-bold text-white">{formatCredit(stats.accumulatedCredit || 0)}</div>
+             <div className="text-3xl font-bold text-white">{stats.paidReferralCount}</div>
           </div>
-          <div className="text-white/40 text-[10px] uppercase tracking-wider">Total Credit Earned</div>
+          <div className="text-white/40 text-[10px] uppercase tracking-wider">Total Upgrades Referred</div>
         </div>
       </div>
 
@@ -184,12 +182,12 @@ function AffiliateDashboard({ user }: { user: UserData }) {
             <div className="flex justify-between items-end">
               <div>
                 <h4 className="text-white font-bold flex items-center gap-2">
-                  Starter Reward <span className="text-xs font-normal text-white/40">(Value: $7)</span>
+                  Starter Reward <span className="text-xs font-normal text-white/40">(Value: 30 Days)</span>
                 </h4>
-                <p className="text-white/40 text-xs">Unlock by earning {formatCredit(stats.starterCost || 2100)} credit</p>
+                <p className="text-white/40 text-xs">Unlock with {stats.starterRequired || 2} paid referrals</p>
               </div>
               <div className="text-right">
-                <span className="text-white font-mono text-sm">{formatCredit(stats.accumulatedCredit || 0)} / {formatCredit(stats.starterCost || 2100)}</span>
+                <span className="text-white font-mono text-sm">{stats.paidReferralCount} / {stats.starterRequired || 2}</span>
               </div>
             </div>
             <div className="h-4 bg-white/5 rounded-full overflow-hidden p-1 border border-white/10">
@@ -199,7 +197,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
               />
             </div>
             <button 
-              disabled={stats.accumulatedCredit < (stats.starterCost || 2100) || isClaiming !== null || stats.tier === 'starter' || stats.tier === 'pro'}
+              disabled={stats.paidReferralCount < (stats.starterRequired || 2) || isClaiming !== null || stats.tier === 'starter' || stats.tier === 'pro'}
               onClick={() => handleClaim('starter')}
               className="w-full py-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold hover:bg-blue-500/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
@@ -215,12 +213,12 @@ function AffiliateDashboard({ user }: { user: UserData }) {
             <div className="flex justify-between items-end">
               <div>
                 <h4 className="text-white font-bold flex items-center gap-2">
-                  Pro Reward <span className="text-xs font-normal text-white/40">(Value: $10)</span>
+                  Pro Reward <span className="text-xs font-normal text-white/40">(Value: 30 Days)</span>
                 </h4>
-                <p className="text-white/40 text-xs">Unlock by earning {formatCredit(stats.proCost || 3000)} credit</p>
+                <p className="text-white/40 text-xs">Unlock with {stats.proRequired || 3} paid referrals</p>
               </div>
               <div className="text-right">
-                <span className="text-white font-mono text-sm">{formatCredit(stats.accumulatedCredit || 0)} / {formatCredit(stats.proCost || 3000)}</span>
+                <span className="text-white font-mono text-sm">{stats.paidReferralCount} / {stats.proRequired || 3}</span>
               </div>
             </div>
             <div className="h-4 bg-white/5 rounded-full overflow-hidden p-1 border border-white/10">
@@ -230,7 +228,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
               />
             </div>
             <button 
-              disabled={stats.accumulatedCredit < (stats.proCost || 3000) || isClaiming !== null || stats.tier === 'pro'}
+              disabled={stats.paidReferralCount < (stats.proRequired || 3) || isClaiming !== null || stats.tier === 'pro'}
               onClick={() => handleClaim('pro')}
               className="w-full py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
