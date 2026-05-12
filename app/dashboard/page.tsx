@@ -208,7 +208,7 @@ export default function DashboardPage() {
     
     // Frontend limit check
     if (user && action === 'add') {
-      const limit = user.plan === 'max' ? Infinity : (user.plan === 'pro' ? 15 : 5)
+      const limit = user.plan === 'pro' ? 15 : 5
       if (selectedRepos.length >= limit) {
         setError(`Your ${user.plan.toUpperCase()} plan limits you to ${limit} repositories. Please upgrade to add more.`)
         return
@@ -444,7 +444,7 @@ export default function DashboardPage() {
                 <span className="text-2xl font-black text-primary">{selectedRepos.length}</span>
                 <span className="text-white/20">/</span>
                 <span className="text-lg font-bold text-white/60">
-                  {user.plan === 'max' ? '∞' : (user.plan === 'pro' ? '15' : '5')}
+                  {user.plan === 'pro' ? '15' : '5'}
                 </span>
               </div>
             </div>

@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     } else if (action === 'add') {
       if (!currentRepos.includes(repo)) {
         // Check limits before adding
-        const limit = user.plan === 'max' ? Infinity : (user.plan === 'pro' ? 15 : 5)
+        const limit = user.plan === 'pro' ? 15 : 5
         
         if (currentRepos.length >= limit) {
           return NextResponse.json({ 

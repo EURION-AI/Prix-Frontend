@@ -1,6 +1,6 @@
 import { sql } from './db'
 
-export type Plan = 'free' | 'starter' | 'pro' | 'max'
+export type Plan = 'free' | 'starter' | 'pro'
 
 export interface User {
   id: string
@@ -18,6 +18,18 @@ export interface User {
   planExpiresAt: string | null
   createdAt: string
   updatedAt: string
+  billingDay: number
+  usageLimitCap: number
+}
+
+const PLAN_LIMITS: Record<string, number> = {
+  free: 15,
+  starter: 150,
+  pro: 600,
+}
+
+function getLimitForPlan(plan: string): number {
+  return PLAN_LIMITS[plan.toLowerCase()] || 15
 }
 
 function rowToUser(row: any): User {
@@ -37,6 +49,8 @@ function rowToUser(row: any): User {
     planExpiresAt: row.plan_expires_at ? row.plan_expires_at.toISOString() : null,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
+    billingDay: row.billing_day || 1,
+    usageLimitCap: row.usage_limit_cap || 15,
   }
 }
 
@@ -81,6 +95,8 @@ export async function activateSubscription(
         razorpay_subscription_id = ${razorpaySubscriptionId},
         plan_started_at = NOW(),
         plan_expires_at = NOW() + INTERVAL '30 days',
+        billing_day = EXTRACT(DAY FROM NOW()),
+        usage_limit_cap = ${getLimitForPlan(plan)},
         updated_at = NOW()
     WHERE github_id = ${githubId}
   `
@@ -88,12 +104,15 @@ export async function activateSubscription(
 
 /**
  * Extend a subscription by 30 days from the current expiration date.
- * Called when a recurring charge succeeds (webhook: subscription.charged).
  */
 export async function extendSubscription(githubId: number): Promise<void> {
+  const user = await getUserByGithubId(githubId)
+  const cap = user ? getLimitForPlan(user.plan) : 15
+
   await sql`
     UPDATE users
     SET plan_expires_at = GREATEST(plan_expires_at, NOW()) + INTERVAL '30 days',
+        usage_limit_cap = ${cap},
         updated_at = NOW()
     WHERE github_id = ${githubId}
   `
@@ -139,8 +158,9 @@ export async function expireOverduePlans(): Promise<number> {
         razorpay_subscription_id = NULL,
         plan_started_at = NULL,
         plan_expires_at = NULL,
+        usage_limit_cap = 15,
         updated_at = NOW()
-    WHERE plan IN ('starter', 'pro')
+    WHERE plan IN ('starter', 'pro', 'max')
       AND plan_expires_at IS NOT NULL
       AND plan_expires_at < NOW()
     RETURNING github_id

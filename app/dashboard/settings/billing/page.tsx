@@ -192,11 +192,11 @@ export default function BillingPage() {
               ))}
             </div>
           </div>
-        ) : (
+        {user.plan === 'pro' && (
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
             <Crown className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">You're on the Max Plan!</h3>
-            <p className="text-white/50">You have unlimited access to all features.</p>
+            <h3 className="text-2xl font-bold mb-2">You're on the Pro Plan!</h3>
+            <p className="text-white/50">You have full access to all PRIX features and unlimited consumption.</p>
           </div>
         )}
 
@@ -221,19 +221,12 @@ export default function BillingPage() {
 
 function getPlanDetails(plan: string, region: Region) {
   switch (plan) {
-    case 'max':
-      return {
-        name: 'Max Plan',
-        icon: <Crown className="w-10 h-10 text-yellow-400" />,
-        description: 'You have unlimited power for enterprise scale. Includes unlimited repositories, custom rule engines, and dedicated support.',
-        color: 'bg-yellow-400/10 border-yellow-400/20'
-      }
     case 'pro':
       return {
         name: 'Pro Plan',
-        icon: <Zap className="w-10 h-10 text-blue-400" />,
+        icon: <Crown className="w-10 h-10 text-yellow-400" />,
         description: 'You are on the Pro plan for active developers. Includes up to 15 repositories, advanced AST analysis, and priority support.',
-        color: 'bg-blue-400/10 border-blue-400/20'
+        color: 'bg-yellow-400/10 border-yellow-400/20'
       }
     case 'starter':
       return {
@@ -257,7 +250,7 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
   const starterPrice = formatPrice(region, 'starter')
   const proPrice = formatPrice(region, 'pro')
 
-  if (currentPlan === 'max') return []
+  if (currentPlan === 'pro') return []
 
   if (currentPlan === 'starter') {
     return [

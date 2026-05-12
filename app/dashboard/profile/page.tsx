@@ -51,8 +51,8 @@ export default function ProfilePage() {
 
   const getPlanIcon = (plan: string) => {
     switch (plan) {
-      case 'max': return <Crown className="w-5 h-5 text-yellow-400" />
-      case 'pro': return <Shield className="w-5 h-5 text-blue-400" />
+      case 'pro': return <Crown className="w-5 h-5 text-yellow-400" />
+      case 'starter': return <Shield className="w-5 h-5 text-blue-400" />
       default: return <Shield className="w-5 h-5 text-white/40" />
     }
   }
@@ -123,7 +123,7 @@ export default function ProfilePage() {
               <div className="flex items-end gap-2">
                 <span className="text-5xl font-black">{user.selectedRepos?.length || 0}</span>
                 <span className="text-white/40 mb-1">
-                  / {user.plan === 'max' ? '∞' : (user.plan === 'pro' ? '15' : '5')}
+                  / {user.plan === 'pro' ? '15' : '5'}
                 </span>
               </div>
               <p className="text-white/40 text-sm mt-2">Active monitored repositories</p>
