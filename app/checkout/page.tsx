@@ -83,10 +83,11 @@ function CheckoutContent() {
           setUserName(data.user.name || data.user.username || '')
           setUserEmail(data.user.email || '')
         } else {
-          setUserId('anonymous')
+          // Redirect to login with a specific message for unauthenticated checkout attempts
+          router.push('/login?message=auth_required_purchase')
         }
       } catch {
-        setUserId('anonymous')
+        router.push('/login?message=auth_required_purchase')
       } finally {
         setIsLoading(false)
       }

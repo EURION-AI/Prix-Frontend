@@ -33,6 +33,7 @@ interface AffiliateStats {
 function GitHubOAuthButton() {
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
+  const [infoMessage, setInfoMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const refCode = searchParams.get('ref')
@@ -64,10 +65,16 @@ function GitHubOAuthButton() {
 
   useEffect(() => {
     const errorParam = searchParams.get('error')
+    const messageParam = searchParams.get('message')
+
     if (errorParam) {
       setError(errorParam === 'access_denied' 
         ? 'GitHub authorization was denied. Please try again.' 
         : 'An error occurred during GitHub login.')
+    }
+
+    if (messageParam === 'auth_required_purchase') {
+      setInfoMessage('Please sign up with GitHub to purchase a plan and unlock Prix AI.')
     }
   }, [searchParams])
 
@@ -92,7 +99,16 @@ function GitHubOAuthButton() {
       </button>
       
       {error && (
-        <p className="text-red-400 text-sm text-center max-w-md">{error}</p>
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center max-w-md">
+          {error}
+        </div>
+      )}
+      
+      {infoMessage && (
+        <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl text-primary text-sm text-center max-w-md flex items-center gap-2">
+          <CreditCard className="w-4 h-4 shrink-0" />
+          <span>{infoMessage}</span>
+        </div>
       )}
       
       <p className="text-white/30 text-xs text-center max-w-md">
