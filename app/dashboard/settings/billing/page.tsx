@@ -192,12 +192,14 @@ export default function BillingPage() {
               ))}
             </div>
           </div>
-        {user.plan === 'pro' && (
+        ) : (
+          user.plan === 'pro' && (
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
             <Crown className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">You're on the Pro Plan!</h3>
             <p className="text-white/50">You have full access to all PRIX features and unlimited consumption.</p>
           </div>
+          )
         )}
 
         <div className="mt-8 pt-8 border-t border-white/10">

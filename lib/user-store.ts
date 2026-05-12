@@ -160,7 +160,7 @@ export async function expireOverduePlans(): Promise<number> {
         plan_expires_at = NULL,
         usage_limit_cap = 15,
         updated_at = NOW()
-    WHERE plan IN ('starter', 'pro', 'max')
+    WHERE plan IN ('starter', 'pro')
       AND plan_expires_at IS NOT NULL
       AND plan_expires_at < NOW()
     RETURNING github_id
