@@ -212,6 +212,62 @@ export async function POST(request: Request) {
         break
       }
 
+      // ── Subscription updated (Upgrade/Downgrade) ──
+      case 'subscription.updated': {
+        const subscription = event.payload.subscription?.entity
+        if (!subscription) break
+
+        // 1. Identify which internal plan this Razorpay plan maps to
+        const planMapping = await sql`
+          SELECT internal_plan_id FROM razorpay_plans 
+          WHERE razorpay_plan_id = ${subscription.plan_id}
+        `
+        
+        if (planMapping.length === 0) {
+          console.error(`[WEBHOOK] Unknown Razorpay plan ID: ${subscription.plan_id}`)
+          break
+        }
+
+        // Map 'pro_US' -> 'pro'
+        const internalPlan = planMapping[0].internal_plan_id.split('_')[0]
+        
+        // 2. Identify user from notes or by subscription ID
+        let githubId: number | null = null
+        if (subscription.notes?.userId && subscription.notes.userId !== 'anonymous') {
+          githubId = parseInt(subscription.notes.userId, 10)
+        } else {
+          // Fallback: look up by subscription ID
+          const userLookup = await sql`
+            SELECT github_id FROM users WHERE razorpay_subscription_id = ${subscription.id}
+          `
+          if (userLookup.length > 0) {
+            githubId = userLookup[0].github_id
+          }
+        }
+
+        if (githubId) {
+          console.log(`[WEBHOOK] Finalizing upgrade for user ${githubId} to plan: ${internalPlan}`)
+          
+          // Update database (Placeholder for Prisma/Drizzle equivalent)
+          /*
+             Prisma: await prisma.user.update({ 
+               where: { githubId }, 
+               data: { plan: internalPlan, updatedAt: new Date() } 
+             })
+             
+             Drizzle: await db.update(users).set({ plan: internalPlan }).where(eq(users.githubId, githubId))
+          */
+          await sql`
+            UPDATE users
+            SET plan = ${internalPlan},
+                plan_expires_at = TO_TIMESTAMP(${subscription.current_end}),
+                updated_at = NOW()
+            WHERE github_id = ${githubId}
+          `
+        }
+        break
+      }
+
       default:
         console.log(`[WEBHOOK] Unhandled event type: ${eventType}`)
     }
