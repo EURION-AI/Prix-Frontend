@@ -18,18 +18,37 @@ export async function POST(request: NextRequest) {
     const cost = plan === 'starter' ? 2100 : 3000 // Keeping for logging metadata
 
     const result = await sql.begin(async (tx: any) => {
-      // 1. Check if user has enough paid referrals
+      // 1. Fetch current user state and affiliate stats
+      const userResult = await tx`
+        SELECT plan FROM users WHERE github_id = ${githubId} FOR UPDATE
+      `
+      
       const affiliateResult = await tx`
-        SELECT id, paid_referral_count, tier FROM affiliate_users 
+        SELECT id, paid_referral_count, reward_claimed FROM affiliate_users 
         WHERE github_id = ${githubId}
         FOR UPDATE
       `
 
-      if (affiliateResult.length === 0) {
-        throw new Error('Affiliate profile not found')
+      if (userResult.length === 0) throw new Error('User not found')
+      if (affiliateResult.length === 0) throw new Error('Affiliate profile not found')
+
+      // One-time claim check
+      if (affiliateResult[0].reward_claimed) {
+        throw new Error('You have already claimed your one-time affiliate reward. This benefit can only be used once per account.')
       }
 
+      const currentPlan = userResult[0].plan || 'free'
       const currentPaidCount = affiliateResult[0].paid_referral_count || 0
+
+      // Plan Hierarchy Weights
+      const weights: Record<string, number> = { 'free': 0, 'starter': 1, 'pro': 2 }
+      const currentWeight = weights[currentPlan] ?? 0
+      const newWeight = weights[plan]
+
+      // Downgrade/Same-tier Protection
+      if (newWeight <= currentWeight) {
+        throw new Error(`You are already on the ${currentPlan} plan or a higher tier. You cannot switch to ${plan}.`)
+      }
 
       // Milestone validation
       if (plan === 'starter' && currentPaidCount < 2) {
@@ -40,10 +59,7 @@ export async function POST(request: NextRequest) {
         throw new Error('Insufficient referrals. You need at least 3 paid referrals to claim the Pro plan.')
       }
 
-      // 2. Note: We don't subtract count because milestones are permanent achievements
-      // Log the event instead of subtracting credit
-
-      // 3. Update user plan with subscription dates
+      // 3. Update user plan directly
       await tx`
         UPDATE users
         SET plan = ${plan},
@@ -51,6 +67,14 @@ export async function POST(request: NextRequest) {
             plan_started_at = NOW(),
             plan_expires_at = NOW() + INTERVAL '30 days',
             updated_at = NOW()
+        WHERE github_id = ${githubId}
+      `
+
+      // 4. Mark reward as claimed
+      await tx`
+        UPDATE affiliate_users
+        SET reward_claimed = TRUE,
+            reward_claimed_at = NOW()
         WHERE github_id = ${githubId}
       `
 
@@ -67,7 +91,7 @@ export async function POST(request: NextRequest) {
         )
       `
 
-      return { success: true, newCredit: currentCredit - cost }
+      return { success: true, plan }
     })
 
     return NextResponse.json(result)

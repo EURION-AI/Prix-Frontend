@@ -6,6 +6,17 @@ import Link from 'next/link'
 import { AffiliateStatsSkeleton } from '@/components/skeleton'
 import { Navbar } from '@/components/navbar'
 
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from '@/components/ui/alert-dialog'
+
 interface UserData {
   id: number
   username: string
@@ -19,6 +30,8 @@ interface AffiliateStats {
   referralCount: number
   paidReferralCount: number
   accumulatedCredit: number
+  rewardClaimed: boolean
+  rewardClaimedAt: string | null
   tier: 'free' | 'starter' | 'pro'
   starterRequired: number
   proRequired: number
@@ -37,6 +50,8 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isClaiming, setIsClaiming] = useState<string | null>(null)
+  const [showHype, setShowHype] = useState(false)
+  const [pendingPlan, setPendingPlan] = useState<'starter' | 'pro' | null>(null)
 
   const affiliateLink = stats?.affiliateCode && typeof window !== 'undefined'
     ? `${window.location.origin}/ref/${stats.affiliateCode}`
@@ -108,8 +123,6 @@ function AffiliateDashboard({ user }: { user: UserData }) {
     pro: 'bg-primary/10',
   }
 
-
-
   const handleClaim = async (plan: 'starter' | 'pro') => {
     setIsClaiming(plan)
     try {
@@ -122,20 +135,125 @@ function AffiliateDashboard({ user }: { user: UserData }) {
       if (data.error) {
         alert(data.error)
       } else {
-        alert(`Successfully claimed ${plan} plan!`)
-        window.location.reload()
+        setShowHype(true)
+        setTimeout(() => {
+          window.location.reload()
+        }, 3000)
       }
     } catch {
       alert('Failed to claim reward')
     } finally {
       setIsClaiming(null)
+      setPendingPlan(null)
     }
   }
 
-  const formatCredit = (cents: number) => `$${(cents / 100).toFixed(2)}`
+  const weights = { free: 0, starter: 1, pro: 2 }
+  const currentWeight = weights[stats.tier] || 0
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 relative">
+      {/* Confirmation Modal */}
+      <AlertDialog open={pendingPlan !== null} onOpenChange={(open) => !open && setPendingPlan(null)}>
+        <AlertDialogContent className="bg-[#0c0c12] border-white/10 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold flex items-center gap-2">
+              ⚠️ Final Choice: Claim Reward
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white/60 space-y-4 pt-4">
+              <p>You are about to claim the <span className="text-white font-bold uppercase">{pendingPlan}</span> plan as your one-time affiliate reward.</p>
+              <div className="bg-white/5 p-4 rounded-xl border border-white/5 space-y-2 text-xs">
+                <p className="flex items-start gap-2">
+                  <span className="text-primary font-bold">•</span>
+                  <span>This is a <span className="text-white font-bold">one-time benefit</span> per account.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="text-primary font-bold">•</span>
+                  <span>Once claimed, you will <span className="text-white font-bold">permanently lose</span> eligibility for all other affiliate rewards.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="text-primary font-bold">•</span>
+                  <span>If you claim {pendingPlan} now, you cannot claim {pendingPlan === 'starter' ? 'Pro' : 'Starter'} later even with more referrals.</span>
+                </p>
+              </div>
+              <p className="font-medium text-white/80">Are you sure you want to proceed? This choice is final.</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-6">
+            <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/5 text-white">
+              Wait & Aim Higher
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => pendingPlan && handleClaim(pendingPlan)}
+              className="bg-primary hover:bg-primary/90 text-white font-bold shadow-[0_0_20px_rgba(236,72,153,0.3)]"
+            >
+              Confirm & Level Up
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Hype Animation Overlay */}
+      <AnimatePresence>
+        {showHype && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.5, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="text-center space-y-6"
+            >
+              <div className="relative inline-block">
+                <motion.div 
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 10, -10, 0]
+                  }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="w-24 h-24 rounded-3xl bg-primary flex items-center justify-center shadow-[0_0_50px_rgba(236,72,153,0.5)]"
+                >
+                  <Star className="w-12 h-12 text-white fill-white" />
+                </motion.div>
+                {[...Array(12)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ x: 0, y: 0, opacity: 1 }}
+                    animate={{ 
+                      x: Math.cos(i * 30 * Math.PI / 180) * 150,
+                      y: Math.sin(i * 30 * Math.PI / 180) * 150,
+                      opacity: 0,
+                      scale: 0
+                    }}
+                    transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                    className="absolute top-1/2 left-1/2 w-3 h-3 bg-primary rounded-full"
+                  />
+                ))}
+              </div>
+              <motion.h2 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-5xl font-black text-white italic tracking-tighter"
+              >
+                LEVEL UP!
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-white/60 font-medium"
+              >
+                Refreshing your dashboard...
+              </motion.p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="text-center">
         <div className={`inline-block px-6 py-2 rounded-full ${tierBgColors[stats.tier]} mb-4`}>
           <span className={`text-xl font-bold ${tierColors[stats.tier]}`}>
@@ -143,7 +261,9 @@ function AffiliateDashboard({ user }: { user: UserData }) {
           </span>
         </div>
         <p className="text-white/50 text-sm max-w-lg mx-auto">
-          {stats.tier === 'pro'
+          {stats.rewardClaimed 
+            ? `🎉 You have claimed your one-time ${stats.tier} reward!`
+            : stats.tier === 'pro'
             ? '🎉 You have Pro access!'
             : stats.tier === 'starter'
             ? '✨ You have Starter access! Earn more to upgrade to Pro.'
@@ -191,18 +311,20 @@ function AffiliateDashboard({ user }: { user: UserData }) {
               </div>
             </div>
             <div className="h-4 bg-white/5 rounded-full overflow-hidden p-1 border border-white/10">
-              <div 
-                className="h-full bg-blue-500 transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                style={{ width: `${stats.progressToStarter}%` }}
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${stats.progressToStarter}%` }}
+                className="h-full bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                transition={{ duration: 1, ease: "easeOut" }}
               />
             </div>
             <button 
-              disabled={stats.paidReferralCount < (stats.starterRequired || 2) || isClaiming !== null || stats.tier === 'starter' || stats.tier === 'pro'}
-              onClick={() => handleClaim('starter')}
-              className="w-full py-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold hover:bg-blue-500/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={stats.paidReferralCount < (stats.starterRequired || 2) || isClaiming !== null || stats.rewardClaimed || currentWeight >= 1}
+              onClick={() => setPendingPlan('starter')}
+              className="w-full py-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold hover:bg-blue-500/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
             >
-              {isClaiming === 'starter' ? <Loader2 className="w-4 h-4 animate-spin" /> : stats.tier === 'starter' || stats.tier === 'pro' ? <Check className="w-4 h-4" /> : null}
-              {stats.tier === 'starter' || stats.tier === 'pro' ? 'Already Unlocked' : 'Claim Starter Plan'}
+              {isClaiming === 'starter' ? <Loader2 className="w-4 h-4 animate-spin" /> : (stats.rewardClaimed && stats.tier === 'starter') || currentWeight >= 1 ? <Check className="w-4 h-4" /> : null}
+              {stats.rewardClaimed && stats.tier === 'starter' ? 'Reward Claimed' : currentWeight >= 1 ? 'Plan Active' : 'Claim Starter Plan'}
             </button>
           </div>
 
@@ -222,18 +344,20 @@ function AffiliateDashboard({ user }: { user: UserData }) {
               </div>
             </div>
             <div className="h-4 bg-white/5 rounded-full overflow-hidden p-1 border border-white/10">
-              <div 
-                className="h-full bg-primary transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(236,72,153,0.5)]"
-                style={{ width: `${stats.progressToPro}%` }}
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${stats.progressToPro}%` }}
+                className="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(236,72,153,0.5)]"
+                transition={{ duration: 1, ease: "easeOut" }}
               />
             </div>
             <button 
-              disabled={stats.paidReferralCount < (stats.proRequired || 3) || isClaiming !== null || stats.tier === 'pro'}
-              onClick={() => handleClaim('pro')}
-              className="w-full py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={stats.paidReferralCount < (stats.proRequired || 3) || isClaiming !== null || stats.rewardClaimed || currentWeight >= 2}
+              onClick={() => setPendingPlan('pro')}
+              className="w-full py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
             >
-              {isClaiming === 'pro' ? <Loader2 className="w-4 h-4 animate-spin" /> : stats.tier === 'pro' ? <Check className="w-4 h-4" /> : null}
-              {stats.tier === 'pro' ? 'Already Unlocked' : 'Claim Pro Plan'}
+              {isClaiming === 'pro' ? <Loader2 className="w-4 h-4 animate-spin" /> : (stats.rewardClaimed && stats.tier === 'pro') || currentWeight >= 2 ? <Check className="w-4 h-4" /> : null}
+              {stats.rewardClaimed && stats.tier === 'pro' ? 'Reward Claimed' : currentWeight >= 2 ? 'Plan Active' : 'Claim Pro Plan'}
             </button>
           </div>
         </div>

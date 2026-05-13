@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sql } from '@/lib/db'
 import { validateGitHubId, validateString } from '@/lib/validation'
 import { getOrCreateAffiliateUser, getAffiliateUserByGithubId, getReferralsForAffiliate } from '@/lib/affiliate-store-db'
 
@@ -18,6 +19,10 @@ export async function GET(request: NextRequest) {
   const githubIdParam = searchParams.get('githubId')
   const usernameParam = searchParams.get('username')
   const authToken = request.cookies.get('github_token')?.value
+
+  // Milestone requirements
+  const STARTER_REQUIRED = 2
+  const PRO_REQUIRED = 3
 
   if (!authToken) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
@@ -45,29 +50,53 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Username too long' }, { status: 400 })
   }
 
-  let affiliate = await getAffiliateUserByGithubId(requestedGithubId)
-    
-  if (!affiliate) {
+  // Join with users table to get the current plan
+  const result = await sql`
+    SELECT 
+      a.*,
+      u.plan as current_plan
+    FROM affiliate_users a
+    JOIN users u ON a.github_id = u.github_id
+    WHERE a.github_id = ${requestedGithubId}
+  `
+
+  if (result.length === 0) {
     const username = usernameParam ? validateString(usernameParam, 'username', 100) : `user_${requestedGithubId}`
-    affiliate = await getOrCreateAffiliateUser(requestedGithubId, username)
+    const affiliate = await getOrCreateAffiliateUser(requestedGithubId, username)
+    
+    // Fetch the plan for the new affiliate
+    const userResult = await sql`SELECT plan FROM users WHERE github_id = ${requestedGithubId}`
+    return NextResponse.json({
+      affiliateCode: affiliate.affiliateCode,
+      referralCount: affiliate.referralCount,
+      paidReferralCount: affiliate.paidReferralCount,
+      accumulatedCredit: affiliate.accumulatedCredit || 0,
+      rewardClaimed: affiliate.rewardClaimed,
+      rewardClaimedAt: affiliate.rewardClaimedAt,
+      tier: userResult[0]?.plan || 'free',
+      starterRequired: STARTER_REQUIRED,
+      proRequired: PRO_REQUIRED,
+      progressToStarter: Math.min(((affiliate.paidReferralCount || 0) / STARTER_REQUIRED) * 100, 100),
+      progressToPro: Math.min(((affiliate.paidReferralCount || 0) / PRO_REQUIRED) * 100, 100),
+      referrals: [],
+    })
   }
 
-  const referrals = await getReferralsForAffiliate(affiliate.id)
+  const affiliateData = result[0]
+  const referrals = await getReferralsForAffiliate(affiliateData.id)
     
-  // Milestone requirements
-  const STARTER_REQUIRED = 2
-  const PRO_REQUIRED = 3
-  
-  const paidReferralCount = affiliate.paidReferralCount || 0
+  const paidReferralCount = affiliateData.paid_referral_count || 0
   const progressToStarter = Math.min((paidReferralCount / STARTER_REQUIRED) * 100, 100)
   const progressToPro = Math.min((paidReferralCount / PRO_REQUIRED) * 100, 100)
 
   return NextResponse.json({
-    affiliateCode: affiliate.affiliateCode,
-    referralCount: affiliate.referralCount,
+    affiliateCode: affiliateData.affiliate_code,
+    referralCount: affiliateData.referral_count,
     paidReferralCount: paidReferralCount,
-    accumulatedCredit: affiliate.accumulatedCredit || 0,
-    tier: affiliate.tier,
+    accumulatedCredit: affiliateData.accumulated_credit || 0,
+    rewardClaimed: affiliateData.reward_claimed || false,
+    rewardClaimedAt: affiliateData.reward_claimed_at || null,
+    tier: affiliateData.current_plan,
     starterRequired: STARTER_REQUIRED,
     proRequired: PRO_REQUIRED,
     progressToStarter,

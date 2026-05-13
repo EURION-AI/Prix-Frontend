@@ -5,8 +5,8 @@ export interface AffiliateUser {
   affiliateCode: string
   referralCount: number
   paidReferralCount: number
-  accumulatedCredit: number
-  tier: 'free' | 'starter' | 'pro'
+  rewardClaimed: boolean
+  rewardClaimedAt?: string | null
   createdAt: string
   updatedAt?: string
 }
@@ -53,8 +53,4 @@ export async function hashIP(ip: string): Promise<string> {
     .substring(0, 32)
 }
 
-export function getAffiliateTier(paidReferralCount: number): 'free' | 'starter' | 'pro' {
-  if (paidReferralCount >= AFFILIATE_TIERS.pro.requiredReferrals) return 'pro'
-  if (paidReferralCount >= AFFILIATE_TIERS.starter.requiredReferrals) return 'starter'
-  return 'free'
-}
+// Tiers are now managed in the main users table.

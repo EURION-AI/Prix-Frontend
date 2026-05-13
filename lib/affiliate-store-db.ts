@@ -1,5 +1,5 @@
 import { sql } from './db'
-import { generateAffiliateCode, getAffiliateTier, AffiliateUser, Referral } from './affiliate'
+import { generateAffiliateCode, AffiliateUser, Referral } from './affiliate'
 
 export async function getOrCreateAffiliateUser(githubId: number, username: string): Promise<AffiliateUser> {
   const affiliateCode = generateAffiliateCode(username)
@@ -22,7 +22,8 @@ export async function getOrCreateAffiliateUser(githubId: number, username: strin
     referralCount: row.referral_count,
     paidReferralCount: row.paid_referral_count,
     accumulatedCredit: row.accumulated_credit || 0,
-    tier: row.tier,
+    rewardClaimed: row.reward_claimed || false,
+    rewardClaimedAt: row.reward_claimed_at?.toISOString() || null,
     createdAt: row.created_at.toISOString(),
   }
 }
@@ -43,7 +44,8 @@ export async function getAffiliateUserByCode(code: string): Promise<AffiliateUse
     referralCount: row.referral_count,
     paidReferralCount: row.paid_referral_count,
     accumulatedCredit: row.accumulated_credit || 0,
-    tier: row.tier,
+    rewardClaimed: row.reward_claimed || false,
+    rewardClaimedAt: row.reward_claimed_at?.toISOString() || null,
     createdAt: row.created_at.toISOString(),
   }
 }
@@ -64,7 +66,8 @@ export async function getAffiliateUserByGithubId(githubId: number): Promise<Affi
     referralCount: row.referral_count,
     paidReferralCount: row.paid_referral_count,
     accumulatedCredit: row.accumulated_credit || 0,
-    tier: row.tier,
+    rewardClaimed: row.reward_claimed || false,
+    rewardClaimedAt: row.reward_claimed_at?.toISOString() || null,
     createdAt: row.created_at.toISOString(),
   }
 }
@@ -156,15 +159,11 @@ export async function markReferralAsPurchased(referredGithubId: number, plan: st
       `
       
       const currentCredit = affiliateResult[0]?.accumulated_credit || 0
-      const newPaidCount = (affiliateResult[0]?.paid_referral_count || 0) + 1
-      const newTier = getAffiliateTier(newPaidCount)
-
       await tx`
         UPDATE affiliate_users
         SET
           paid_referral_count = paid_referral_count + 1,
-          accumulated_credit = ${currentCredit + amount},
-          tier = ${newTier}
+          accumulated_credit = ${currentCredit + amount}
         WHERE id = ${referral.affiliate_id}
       `
     })
