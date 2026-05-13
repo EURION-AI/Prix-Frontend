@@ -32,7 +32,7 @@ export function csrfCheck(request: Request): NextResponse | null {
 export function rateLimit(request: Request, customLimit = 30): { allowed: boolean; response?: NextResponse } {
   const ip = getClientIP(request)
   const identifier = `${ip}:${request.method}`
-  const result = checkRateLimit(identifier)
+  const result = checkRateLimit(identifier, customLimit)
   
   if (!result.allowed) {
     const response = NextResponse.json(

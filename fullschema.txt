@@ -1,0 +1,472 @@
+[
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "execution_duration_ms",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "created_at",
+		"data_type": "timestamp with time zone"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "github_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "prs_reviewed_monthly",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "auto_prs_monthly",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "issues_planned_monthly",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "monthly_grand_total",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "prs_reviewed_total",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "auto_prs_total",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "issues_planned_total",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "last_reset_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "user_consumption",
+		"column_name": "updated_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "id",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "date",
+		"data_type": "date"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "id",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "users",
+		"column_name": "usage_limit_cap",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "total_value",
+		"data_type": "numeric"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "count",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "metadata",
+		"data_type": "jsonb"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "users",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "github_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "users",
+		"column_name": "updated_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "commission_amount",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "referral_count",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "paid_referral_count",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "reward_claimed",
+		"data_type": "boolean"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "reward_claimed_at",
+		"data_type": "timestamp with time zone"
+	},
+	{
+		"table_name": "users",
+		"column_name": "prs_reviewed",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "audit_logs",
+		"column_name": "id",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "audit_logs",
+		"column_name": "github_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "metadata",
+		"data_type": "jsonb"
+	},
+	{
+		"table_name": "audit_logs",
+		"column_name": "pr_number",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "audit_logs",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "users",
+		"column_name": "selected_repos",
+		"data_type": "jsonb"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "id",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "users",
+		"column_name": "github_installation_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "amount",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "users",
+		"column_name": "github_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "referred_github_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "metadata",
+		"data_type": "jsonb"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "github_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "users",
+		"column_name": "plan_started_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "razorpay_plans",
+		"column_name": "id",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "users",
+		"column_name": "plan_expires_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "has_purchased",
+		"data_type": "boolean"
+	},
+	{
+		"table_name": "razorpay_plans",
+		"column_name": "amount",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "razorpay_plans",
+		"column_name": "created_at",
+		"data_type": "timestamp without time zone"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "github_id",
+		"data_type": "bigint"
+	},
+	{
+		"table_name": "users",
+		"column_name": "billing_day",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "issue_number",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "purchased_amount",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "files_retrieved",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "token_estimate",
+		"data_type": "integer"
+	},
+	{
+		"table_name": "razorpay_plans",
+		"column_name": "internal_plan_id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "username",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "email",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "avatar_url",
+		"data_type": "text"
+	},
+	{
+		"table_name": "users",
+		"column_name": "plan",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "subscription_id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "queued_plan",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "subscription_provider",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "installation_status",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "affiliate_id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "referred_username",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "referred_ip_hash",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "referrals",
+		"column_name": "purchased_plan",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "event_type",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "affiliate_id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "affiliate_code",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "conversion_status",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_events",
+		"column_name": "referrer_id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "event_type",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "customer_id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "subscription_tier",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "revenue_events",
+		"column_name": "currency",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "users",
+		"column_name": "id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "razorpay_plans",
+		"column_name": "razorpay_plan_id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "razorpay_plans",
+		"column_name": "currency",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "repo_name",
+		"data_type": "text"
+	},
+	{
+		"table_name": "issue_plan_logs",
+		"column_name": "plan_tier",
+		"data_type": "text"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "metric_category",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "daily_aggregates",
+		"column_name": "metric_name",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "id",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "username",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "affiliate_code",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "affiliate_users",
+		"column_name": "tier",
+		"data_type": "character varying"
+	},
+	{
+		"table_name": "audit_logs",
+		"column_name": "repo_name",
+		"data_type": "text"
+	}
+]

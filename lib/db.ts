@@ -27,10 +27,20 @@ export async function initializeDatabase() {
         installation_status VARCHAR(20) DEFAULT 'disconnected',
         subscription_id VARCHAR(50),
         subscription_provider VARCHAR(50),
+        queued_plan VARCHAR(20) DEFAULT NULL,
+        usage_limit_cap INTEGER DEFAULT 15,
+        billing_day INTEGER DEFAULT 1,
         plan_started_at TIMESTAMP,
         plan_expires_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS processed_webhooks (
+        event_id VARCHAR(100) PRIMARY KEY,
+        processed_at TIMESTAMP DEFAULT NOW()
       )
     `
 
@@ -66,7 +76,7 @@ export async function initializeDatabase() {
         UNIQUE(referred_github_id),
         CONSTRAINT fk_referrals_affiliate
           FOREIGN KEY (affiliate_id) REFERENCES affiliate_users(id)
-          ON DELETE SET NULL,
+          ON DELETE CASCADE,
         CONSTRAINT fk_referrals_github
           FOREIGN KEY (referred_github_id) REFERENCES users(github_id)
           ON DELETE SET NULL

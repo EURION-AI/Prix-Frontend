@@ -1,25 +1,30 @@
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
 const WINDOW_MS = 60 * 1000
-const MAX_REQUESTS = 30
+const DEFAULT_MAX_REQUESTS = 30
 const MAX_STORE_SIZE = 10000
 
-export function checkRateLimit(identifier: string): { allowed: boolean; remaining: number; resetIn: number } {
+export function checkRateLimit(identifier: string, maxRequests: number = DEFAULT_MAX_REQUESTS): { allowed: boolean; remaining: number; resetIn: number } {
   const now = Date.now()
   const record = rateLimitStore.get(identifier)
 
   if (!record || now > record.resetTime) {
     rateLimitStore.set(identifier, { count: 1, resetTime: now + WINDOW_MS })
-    return { allowed: true, remaining: MAX_REQUESTS - 1, resetIn: WINDOW_MS }
+    return { allowed: true, remaining: maxRequests - 1, resetIn: WINDOW_MS }
   }
 
-  if (record.count >= MAX_REQUESTS) {
+  if (record.count >= maxRequests) {
     return { allowed: false, remaining: 0, resetIn: record.resetTime - now }
   }
 
   record.count++
-  return { allowed: true, remaining: MAX_REQUESTS - record.count, resetIn: record.resetTime - now }
+  return { allowed: true, remaining: maxRequests - record.count, resetIn: record.resetTime - now }
 }
+
+/**
+ * IMPORTANT: This in-memory rate limiter does NOT work across serverless instances.
+ * In production (Vercel), migrate to Vercel KV or Upstash Redis for shared state.
+ */
 
 export function getClientIP(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for')

@@ -147,6 +147,7 @@ export async function cancelUserSubscription(githubId: number): Promise<void> {
     UPDATE users
     SET subscription_id = NULL,
         subscription_provider = NULL,
+        usage_limit_cap = 15,
         updated_at = NOW()
     WHERE github_id = ${githubId}
   `

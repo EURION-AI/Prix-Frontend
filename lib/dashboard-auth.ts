@@ -1,24 +1,30 @@
 import { NextResponse } from 'next/server'
+import crypto from 'crypto'
+
+const sessions = new Map<string, { createdAt: number }>()
 
 export function checkDashboardAuth(request: Request): NextResponse | null {
-  const dashboardSecret = request.cookies.get('dashboard_session')?.value
+  const sessionToken = request.cookies.get('dashboard_session')?.value
 
-  if (!dashboardSecret) {
+  if (!sessionToken) {
     return NextResponse.json(
       { error: 'Authentication required' },
       { status: 401 }
     )
   }
 
-  const expectedSecret = process.env.DASHBOARD_SECRET || process.env.ADMIN_SECRET
-
-  if (!expectedSecret) {
-    throw new Error('DASHBOARD_SECRET or ADMIN_SECRET must be configured')
+  const session = sessions.get(sessionToken)
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Invalid or expired session' },
+      { status: 401 }
+    )
   }
 
-  if (dashboardSecret !== expectedSecret) {
+  if (Date.now() - session.createdAt > 24 * 60 * 60 * 1000) {
+    sessions.delete(sessionToken)
     return NextResponse.json(
-      { error: 'Invalid session' },
+      { error: 'Session expired' },
       { status: 401 }
     )
   }
@@ -26,8 +32,10 @@ export function checkDashboardAuth(request: Request): NextResponse | null {
   return null
 }
 
-export function setDashboardCookie(response: NextResponse, secret: string): void {
-  response.cookies.set('dashboard_session', secret, {
+export function setDashboardCookie(response: NextResponse, _secret: string): void {
+  const token = crypto.randomBytes(32).toString('hex')
+  sessions.set(token, { createdAt: Date.now() })
+  response.cookies.set('dashboard_session', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
