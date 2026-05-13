@@ -152,6 +152,8 @@ function AffiliateDashboard({ user }: { user: UserData }) {
 
   const weights = { free: 0, starter: 1, pro: 2 }
   const currentWeight = weights[stats.tier] || 0
+  const pendingWeight = weights[pendingPlan || 'free'] || 0
+  const isUpgrade = pendingWeight > currentWeight
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 relative">
@@ -168,6 +170,8 @@ function AffiliateDashboard({ user }: { user: UserData }) {
                    <p>Your <span className="text-white font-bold uppercase">{pendingPlan}</span> reward will be activated <span className="text-primary font-bold">immediately</span>. Your new plan starts now!</p>
                 ) : pendingPlan === stats.tier ? (
                    <p>Your current <span className="text-white font-bold uppercase">{stats.tier}</span> plan will be <span className="text-primary font-bold">extended by 30 days</span>. We will postpone your next Razorpay charge, giving you this month for free!</p>
+                ) : isUpgrade ? (
+                   <p>You're currently on <span className="text-white font-bold uppercase">{stats.tier}</span>. Claiming <span className="text-white font-bold uppercase">{pendingPlan}</span> will <span className="text-primary font-bold">immediately upgrade</span> you for the remainder of your current billing period — free {pendingPlan} access until your current plan expires. We will cancel your Razorpay subscription so you won't be charged again.</p>
                 ) : (
                    <p>Your <span className="text-white font-bold uppercase">{pendingPlan}</span> reward has been <span className="text-primary font-bold">queued</span>. It will automatically start after your current {stats.tier} plan ends. We will also postpone your next Razorpay charge.</p>
                 )}
