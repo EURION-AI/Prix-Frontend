@@ -15,7 +15,7 @@ const plans = [
     price: 'Free',
     priceValue: 0,
     description: 'Perfect for trying out AI-powered code fixes.',
-    features: ['5 PR fixes / month', 'Public repositories', 'GitHub integration'],
+    features: ['15 PR fixes / month (5/day)', 'Public repositories', 'GitHub integration'],
     cta: 'Get Started for Free',
     href: '/login',
     popular: false,
@@ -99,6 +99,7 @@ function CountdownTimer() {
 
 export function PricingSection({ region: initialRegion = 'US' }: { region?: Region }) {
   const searchParams = useSearchParams()
+  const refCode = searchParams.get('ref')
   const [region, setRegion] = useState<Region>(initialRegion)
   const [mounted, setMounted] = useState(false)
   const [userPlan, setUserPlan] = useState<string | null>(null)
@@ -153,6 +154,8 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
             const isLocked = isOwner || isProOnStarter
             const isUpgrade = isStarterOnPro
 
+            const appendRef = (href: string) => refCode ? `${href}&ref=${refCode}` : href
+
             let displayPrice: string
             let displayCta: string
             let displayHref: string
@@ -161,7 +164,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
             if (plan.id === 'free') {
               displayPrice = 'Free'
               displayCta = userPlan ? 'Free Forever' : 'Get Started for Free'
-              displayHref = userPlan ? '#' : '/login'
+              displayHref = userPlan ? '#' : (refCode ? `/login?ref=${refCode}` : '/login')
               disabled = !!userPlan
             } else if (isLocked) {
               displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
@@ -171,11 +174,11 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
             } else if (isUpgrade) {
               displayPrice = UPGRADE_PRICE[region] || '$2.99'
               displayCta = `Upgrade for ${displayPrice}`
-              displayHref = `/checkout?plan=pro&region=${region}&upgrade=true`
+              displayHref = appendRef(`/checkout?plan=pro&region=${region}&upgrade=true`)
             } else {
               displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
               displayCta = plan.getCta ? plan.getCta(region) : plan.cta
-              displayHref = plan.getHref ? plan.getHref(region) : plan.href
+              displayHref = plan.getHref ? appendRef(plan.getHref(region)) : plan.href
             }
             
             return (
@@ -185,11 +188,12 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 1 }}
-                className={`relative flex flex-col p-8 lg:p-10 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
+                className={`relative flex flex-col p-8 lg:p-10 rounded-2xl border transition-all duration-300 ${
+                  !disabled ? 'hover:-translate-y-1' : ''} ${
                   plan.popular 
                     ? 'border-primary/40 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 shadow-[0_20_60px_rgba(236,72,153,0.15)] ring-2 ring-primary/30' 
                     : 'border-white/[0.12] bg-white/[0.03] hover:border-white/[0.20] hover:bg-white/[0.05]'
-                }`}
+                } ${disabled ? 'opacity-70' : ''}`}
               >
                 {plan.badge && !isLocked && !isUpgrade && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/40">
@@ -294,7 +298,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                     )}
                     
                     <p className="text-center text-white/30 text-xs">
-                      {plan.guarantee}
+                      {plan.id === 'free' ? plan.guarantee : 'Cancel anytime • Secured by Razorpay'}
                     </p>
                   </div>
                 </div>

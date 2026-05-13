@@ -7,7 +7,7 @@ import { Check, X, Zap, Cpu, Search, Brain, Shield, DollarSign, Command } from '
 const comparisonData = [
   {
     feature: 'Monthly Pricing',
-    prix: '$6.99',
+    prix: 'From $6.99',
     codeRabbit: '$60',
     qodo: '$38',
     icon: DollarSign

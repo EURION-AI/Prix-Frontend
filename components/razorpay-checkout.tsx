@@ -71,6 +71,7 @@ export function RazorpayCheckoutButton({
 }: RazorpayCheckoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
+  const [scriptError, setScriptError] = useState(false)
 
   // Format display price based on currency
   const formatDisplayPrice = (amount: number, currency: string): string => {
@@ -86,12 +87,12 @@ export function RazorpayCheckoutButton({
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
     script.async = true
     script.onload = () => {
-      console.log('Razorpay checkout script loaded successfully')
       setIsScriptLoaded(true)
+      setScriptError(false)
     }
-    script.onerror = (e) => {
-      console.error('Razorpay script load error:', e)
-      onError('Failed to load Razorpay checkout')
+    script.onerror = () => {
+      setScriptError(true)
+      setIsScriptLoaded(false)
     }
     document.body.appendChild(script)
 
@@ -99,6 +100,22 @@ export function RazorpayCheckoutButton({
       document.body.removeChild(script)
     }
   }, [])
+
+  const retryScript = () => {
+    setScriptError(false)
+    setIsScriptLoaded(false)
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.async = true
+    script.onload = () => {
+      setIsScriptLoaded(true)
+      setScriptError(false)
+    }
+    script.onerror = () => {
+      setScriptError(true)
+    }
+    document.body.appendChild(script)
+  }
 
   const handlePayment = async () => {
     if (!isScriptLoaded) {
@@ -180,6 +197,7 @@ export function RazorpayCheckoutButton({
                 razorpay_subscription_id: response.razorpay_subscription_id,
                 razorpay_signature: response.razorpay_signature,
                 plan,
+                region,
               }),
             })
 
@@ -224,11 +242,13 @@ export function RazorpayCheckoutButton({
 
   return (
     <button
-      onClick={handlePayment}
-      disabled={disabled || isLoading || !isScriptLoaded}
+      onClick={scriptError ? retryScript : handlePayment}
+      disabled={disabled || isLoading || (!isScriptLoaded && !scriptError)}
       className="w-full h-14 rounded-xl bg-primary text-white font-bold text-base hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
     >
-      {isLoading || !isScriptLoaded ? (
+      {scriptError ? (
+        'Retry Loading Razorpay'
+      ) : isLoading || !isScriptLoaded ? (
         <>
           <Loader2 className="w-5 h-5 animate-spin" />
           {isScriptLoaded ? 'Processing...' : 'Loading Razorpay...'}

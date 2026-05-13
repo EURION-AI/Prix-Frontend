@@ -5,8 +5,13 @@ import { CodeFixDemo } from './code-fix-demo'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Check, Star } from 'lucide-react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 export function HeroSection() {
+  const searchParams = useSearchParams()
+  const refCode = searchParams.get('ref')
+  const loginHref = refCode ? `/login?ref=${refCode}` : '/login'
+
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background px-4">
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
@@ -39,8 +44,8 @@ export function HeroSection() {
               transition={{ delay: 0.15, duration: 0.5 }}
               className="text-editorial text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-semibold text-white mb-8 leading-[1.05] tracking-tight max-w-4xl"
             >
-              Ship code that&apos;s already fixed.<br />
-              <span className="text-white">Plans generated. Every PR.</span>
+              AI Code Review That Ships<br />
+              <span className="text-white">Fixed Code. Every PR. Every Time.</span>
             </motion.h1>
 
             <motion.p
@@ -63,7 +68,7 @@ export function HeroSection() {
                 asChild
                 className="h-14 px-8 rounded-xl btn-premium text-base group shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300"
               >
-                <Link href="/login">
+                <Link href={loginHref}>
                   <span className="relative z-10 flex items-center gap-3 font-semibold">
                     Start Free. No Credit Card.
                     <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
