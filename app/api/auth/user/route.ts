@@ -55,7 +55,7 @@ export async function GET(request: Request) {
       installationStatus: dbUser.installationStatus || 'disconnected',
       planExpiresAt: dbUser.planExpiresAt || null,
       planStartedAt: dbUser.planStartedAt || null,
-      hasActiveSubscription: !!dbUser.razorpaySubscriptionId,
+      hasActiveSubscription: !!dbUser.subscriptionId,
     }
 
     return NextResponse.json({ user: safeUserData })

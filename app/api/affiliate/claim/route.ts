@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const result = await sql.begin(async (tx: any) => {
       // 1. Fetch current user state and affiliate stats
       const userResult = await tx`
-        SELECT plan, plan_expires_at, razorpay_subscription_id FROM users WHERE github_id = ${githubId} FOR UPDATE
+        SELECT plan, plan_expires_at, subscription_id FROM users WHERE github_id = ${githubId} FOR UPDATE
       `
       
       const affiliateResult = await tx`
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       const user = userResult[0]
       const currentPlan = user.plan || 'free'
       const currentPaidCount = affiliateResult[0].paid_referral_count || 0
-      const activeSubscriptionId = user.razorpay_subscription_id
+      const activeSubscriptionId = user.subscription_id
 
       // Plan Hierarchy Weights
       const weights: Record<string, number> = { 'free': 0, 'starter': 1, 'pro': 2 }
@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
         if (plan === currentPlan) {
           // Case: Same Plan -> Extension
           await tx`
-            UPDATE users
             SET plan_expires_at = plan_expires_at + INTERVAL '30 days',
-                razorpay_subscription_id = NULL,
+                subscription_id = NULL,
+                subscription_provider = NULL,
                 updated_at = NOW()
             WHERE github_id = ${githubId}
           `
@@ -99,7 +99,8 @@ export async function POST(request: NextRequest) {
           await tx`
             UPDATE users
             SET queued_plan = ${plan},
-                razorpay_subscription_id = NULL,
+                subscription_id = NULL,
+                subscription_provider = NULL,
                 updated_at = NOW()
             WHERE github_id = ${githubId}
           `
@@ -109,7 +110,8 @@ export async function POST(request: NextRequest) {
         await tx`
           UPDATE users
           SET plan = ${plan},
-              razorpay_subscription_id = ${razorpaySubscriptionId},
+              subscription_id = ${razorpaySubscriptionId},
+              subscription_provider = 'reward',
               plan_started_at = NOW(),
               plan_expires_at = NOW() + INTERVAL '30 days',
               updated_at = NOW()

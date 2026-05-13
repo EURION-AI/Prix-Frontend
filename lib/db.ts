@@ -25,7 +25,8 @@ export async function initializeDatabase() {
         prs_reviewed INTEGER DEFAULT 0,
         github_installation_id BIGINT,
         installation_status VARCHAR(20) DEFAULT 'disconnected',
-        razorpay_subscription_id VARCHAR(50),
+        subscription_id VARCHAR(50),
+        subscription_provider VARCHAR(50),
         plan_started_at TIMESTAMP,
         plan_expires_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT NOW(),
@@ -223,7 +224,8 @@ export async function initializeDatabase() {
 
     // Add subscription columns if they don't exist
     for (const colDef of [
-      { name: 'razorpay_subscription_id', ddl: 'ALTER TABLE users ADD COLUMN razorpay_subscription_id VARCHAR(50)' },
+      { name: 'subscription_id', ddl: 'ALTER TABLE users ADD COLUMN subscription_id VARCHAR(50)' },
+      { name: 'subscription_provider', ddl: 'ALTER TABLE users ADD COLUMN subscription_provider VARCHAR(50)' },
       { name: 'plan_started_at', ddl: 'ALTER TABLE users ADD COLUMN plan_started_at TIMESTAMP' },
       { name: 'plan_expires_at', ddl: 'ALTER TABLE users ADD COLUMN plan_expires_at TIMESTAMP' },
     ]) {

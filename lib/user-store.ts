@@ -13,7 +13,8 @@ export interface User {
   githubInstallationId: number | null
   installationStatus: string
   prsReviewed: number
-  razorpaySubscriptionId: string | null
+  subscriptionId: string | null
+  subscriptionProvider: string | null
   planStartedAt: string | null
   planExpiresAt: string | null
   createdAt: string
@@ -44,7 +45,8 @@ function rowToUser(row: any): User {
     githubInstallationId: row.github_installation_id,
     installationStatus: row.installation_status || 'disconnected',
     prsReviewed: row.prs_reviewed || 0,
-    razorpaySubscriptionId: row.razorpay_subscription_id || null,
+    subscriptionId: row.subscription_id || null,
+    subscriptionProvider: row.subscription_provider || null,
     planStartedAt: row.plan_started_at ? row.plan_started_at.toISOString() : null,
     planExpiresAt: row.plan_expires_at ? row.plan_expires_at.toISOString() : null,
     createdAt: row.created_at.toISOString(),
@@ -87,12 +89,14 @@ export async function getUserByGithubId(githubId: number): Promise<User | null> 
 export async function activateSubscription(
   githubId: number,
   plan: string,
-  razorpaySubscriptionId: string
+  subscriptionId: string,
+  provider: string = 'razorpay'
 ): Promise<void> {
   await sql`
     UPDATE users
     SET plan = ${plan},
-        razorpay_subscription_id = ${razorpaySubscriptionId},
+        subscription_id = ${subscriptionId},
+        subscription_provider = ${provider},
         plan_started_at = NOW(),
         plan_expires_at = NOW() + INTERVAL '30 days',
         billing_day = EXTRACT(DAY FROM NOW()),
@@ -141,7 +145,8 @@ export async function updateUserPlan(githubId: number, plan: string): Promise<vo
 export async function cancelUserSubscription(githubId: number): Promise<void> {
   await sql`
     UPDATE users
-    SET razorpay_subscription_id = NULL,
+    SET subscription_id = NULL,
+        subscription_provider = NULL,
         updated_at = NOW()
     WHERE github_id = ${githubId}
   `
@@ -155,7 +160,8 @@ export async function expireOverduePlans(): Promise<number> {
   const result = await sql`
     UPDATE users
     SET plan = 'free',
-        razorpay_subscription_id = NULL,
+        subscription_id = NULL,
+        subscription_provider = NULL,
         plan_started_at = NULL,
         plan_expires_at = NULL,
         usage_limit_cap = 15,
@@ -176,9 +182,9 @@ export async function expireOverduePlans(): Promise<number> {
  */
 export async function getUserSubscriptionId(githubId: number): Promise<string | null> {
   const result = await sql`
-    SELECT razorpay_subscription_id FROM users WHERE github_id = ${githubId}
+    SELECT subscription_id FROM users WHERE github_id = ${githubId}
   `
-  return result[0]?.razorpay_subscription_id || null
+  return result[0]?.subscription_id || null
 }
 
 export async function updateSelectedRepos(githubId: number, repos: string[]): Promise<void> {
