@@ -50,22 +50,43 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Username too long' }, { status: 400 })
   }
 
-  // Join with users table to get the current plan
-  const result = await sql`
-    SELECT 
-      a.*,
-      u.plan as current_plan
-    FROM affiliate_users a
-    JOIN users u ON a.github_id = u.github_id
-    WHERE a.github_id = ${requestedGithubId}
+  // 1. Join with users table to get the current state
+  const userResult = await sql`
+    SELECT * FROM users WHERE github_id = ${requestedGithubId}
+  `
+  
+  if (userResult.length === 0) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  }
+
+  let user = userResult[0]
+
+  // 2. Activation Logic: Check if current plan is expired and if a queued plan exists
+  if (user.plan !== 'free' && user.plan_expires_at && user.plan_expires_at < new Date() && user.queued_plan) {
+    const nextPlan = user.queued_plan
+    // Promote queued plan to active
+    const updated = await sql`
+      UPDATE users 
+      SET plan = ${nextPlan},
+          plan_started_at = NOW(),
+          plan_expires_at = NOW() + INTERVAL '30 days',
+          queued_plan = NULL,
+          updated_at = NOW()
+      WHERE github_id = ${requestedGithubId}
+      RETURNING *
+    `
+    user = updated[0]
+  }
+
+  // 3. Get affiliate data
+  const affiliateResult = await sql`
+    SELECT * FROM affiliate_users WHERE github_id = ${requestedGithubId}
   `
 
-  if (result.length === 0) {
+  if (affiliateResult.length === 0) {
     const username = usernameParam ? validateString(usernameParam, 'username', 100) : `user_${requestedGithubId}`
     const affiliate = await getOrCreateAffiliateUser(requestedGithubId, username)
     
-    // Fetch the plan for the new affiliate
-    const userResult = await sql`SELECT plan FROM users WHERE github_id = ${requestedGithubId}`
     return NextResponse.json({
       affiliateCode: affiliate.affiliateCode,
       referralCount: affiliate.referralCount,
@@ -73,7 +94,8 @@ export async function GET(request: NextRequest) {
       accumulatedCredit: affiliate.accumulatedCredit || 0,
       rewardClaimed: affiliate.rewardClaimed,
       rewardClaimedAt: affiliate.rewardClaimedAt,
-      tier: userResult[0]?.plan || 'free',
+      tier: user.plan || 'free',
+      queuedPlan: user.queued_plan || null,
       starterRequired: STARTER_REQUIRED,
       proRequired: PRO_REQUIRED,
       progressToStarter: Math.min(((affiliate.paidReferralCount || 0) / STARTER_REQUIRED) * 100, 100),
@@ -82,7 +104,7 @@ export async function GET(request: NextRequest) {
     })
   }
 
-  const affiliateData = result[0]
+  const affiliateData = affiliateResult[0]
   const referrals = await getReferralsForAffiliate(affiliateData.id)
     
   const paidReferralCount = affiliateData.paid_referral_count || 0
@@ -96,7 +118,8 @@ export async function GET(request: NextRequest) {
     accumulatedCredit: affiliateData.accumulated_credit || 0,
     rewardClaimed: affiliateData.reward_claimed || false,
     rewardClaimedAt: affiliateData.reward_claimed_at || null,
-    tier: affiliateData.current_plan,
+    tier: user.plan,
+    queuedPlan: user.queued_plan || null,
     starterRequired: STARTER_REQUIRED,
     proRequired: PRO_REQUIRED,
     progressToStarter,

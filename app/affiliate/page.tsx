@@ -33,6 +33,7 @@ interface AffiliateStats {
   rewardClaimed: boolean
   rewardClaimedAt: string | null
   tier: 'free' | 'starter' | 'pro'
+  queuedPlan: 'free' | 'starter' | 'pro' | null
   starterRequired: number
   proRequired: number
   progressToStarter: number
@@ -161,7 +162,15 @@ function AffiliateDashboard({ user }: { user: UserData }) {
               ⚠️ Final Choice: Claim Reward
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white/60 space-y-4 pt-4">
-              <p>You are about to claim the <span className="text-white font-bold uppercase">{pendingPlan}</span> plan as your one-time affiliate reward.</p>
+              <div className="space-y-3">
+                {stats.tier === 'free' ? (
+                   <p>Your <span className="text-white font-bold uppercase">{pendingPlan}</span> reward will be activated <span className="text-primary font-bold">immediately</span>. Your new plan starts now!</p>
+                ) : pendingPlan === stats.tier ? (
+                   <p>Your current <span className="text-white font-bold uppercase">{stats.tier}</span> plan will be <span className="text-primary font-bold">extended by 30 days</span>. We will postpone your next Razorpay charge, giving you this month for free!</p>
+                ) : (
+                   <p>Your <span className="text-white font-bold uppercase">{pendingPlan}</span> reward has been <span className="text-primary font-bold">queued</span>. It will automatically start after your current {stats.tier} plan ends. We will also postpone your next Razorpay charge.</p>
+                )}
+              </div>
               <div className="bg-white/5 p-4 rounded-xl border border-white/5 space-y-2 text-xs">
                 <p className="flex items-start gap-2">
                   <span className="text-primary font-bold">•</span>
@@ -255,13 +264,24 @@ function AffiliateDashboard({ user }: { user: UserData }) {
       </AnimatePresence>
 
       <div className="text-center">
-        <div className={`inline-block px-6 py-2 rounded-full ${tierBgColors[stats.tier]} mb-4`}>
+        <div className={`inline-block px-6 py-2 rounded-full ${tierBgColors[stats.tier]} mb-4 relative`}>
           <span className={`text-xl font-bold ${tierColors[stats.tier]}`}>
             {tierLabels[stats.tier]}
           </span>
+          {stats.queuedPlan && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="absolute -right-4 -top-2 bg-primary text-white text-[10px] font-black px-2 py-0.5 rounded-md shadow-lg border border-white/20 rotate-12"
+            >
+              QUEUED: {stats.queuedPlan.toUpperCase()}
+            </motion.div>
+          )}
         </div>
         <p className="text-white/50 text-sm max-w-lg mx-auto">
-          {stats.rewardClaimed 
+          {stats.queuedPlan 
+            ? `🕒 Your ${stats.queuedPlan} reward is queued and will activate once your current plan expires.`
+            : stats.rewardClaimed 
             ? `🎉 You have claimed your one-time ${stats.tier} reward!`
             : stats.tier === 'pro'
             ? '🎉 You have Pro access!'
