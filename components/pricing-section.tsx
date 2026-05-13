@@ -1,12 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check, Zap, Shield, Clock } from 'lucide-react'
+import { Check, Zap, Shield, Clock, Crown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { getUserRegion, formatPrice, type Region, type Plan } from '@/lib/pricing'
+import { getUserRegion, formatPrice, UPGRADE_PRICE, type Region, type Plan } from '@/lib/pricing'
 
 const plans = [
   {
@@ -101,11 +101,17 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
   const searchParams = useSearchParams()
   const [region, setRegion] = useState<Region>(initialRegion)
   const [mounted, setMounted] = useState(false)
+  const [userPlan, setUserPlan] = useState<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
     const forcedRegion = searchParams.get('region')
     setRegion(getUserRegion(forcedRegion) || initialRegion)
+
+    fetch('/api/auth/user')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.user?.plan) setUserPlan(data.user.plan) })
+      .catch(() => {})
   }, [searchParams, initialRegion])
 
   if (!mounted) {
@@ -141,9 +147,36 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 xl:gap-12 max-w-7xl mx-auto">
           {plans.map((plan, index) => {
-            const displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
-            const displayCta = plan.getCta ? plan.getCta(region) : plan.cta
-            const displayHref = plan.getHref ? plan.getHref(region) : plan.href
+            const isOwner = userPlan === plan.id
+            const isStarterOnPro = userPlan === 'starter' && plan.id === 'pro'
+            const isProOnStarter = userPlan === 'pro' && plan.id === 'starter'
+            const isLocked = isOwner || isProOnStarter
+            const isUpgrade = isStarterOnPro
+
+            let displayPrice: string
+            let displayCta: string
+            let displayHref: string
+            let disabled = false
+
+            if (plan.id === 'free') {
+              displayPrice = 'Free'
+              displayCta = userPlan ? 'Free Forever' : 'Get Started for Free'
+              displayHref = userPlan ? '#' : '/login'
+              disabled = !!userPlan
+            } else if (isLocked) {
+              displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
+              displayCta = isProOnStarter ? 'Already on Pro' : 'Already Purchased'
+              displayHref = '#'
+              disabled = true
+            } else if (isUpgrade) {
+              displayPrice = UPGRADE_PRICE[region] || '$2.99'
+              displayCta = `Upgrade for ${displayPrice}`
+              displayHref = `/checkout?plan=pro&region=${region}&upgrade=true`
+            } else {
+              displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
+              displayCta = plan.getCta ? plan.getCta(region) : plan.cta
+              displayHref = plan.getHref ? plan.getHref(region) : plan.href
+            }
             
             return (
               <motion.div
@@ -158,7 +191,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                     : 'border-white/[0.12] bg-white/[0.03] hover:border-white/[0.20] hover:bg-white/[0.05]'
                 }`}
               >
-                {plan.badge && (
+                {plan.badge && !isLocked && !isUpgrade && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/40">
                     {plan.badge}
                   </div>
@@ -177,26 +210,37 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                 {/* Price */}
                 <div className="mb-8">
                   <div className="flex items-baseline gap-2 mb-2">
-                    {plan.originalPrice && (
+                    {plan.originalPrice && !isLocked && !isUpgrade && (
                       <span className="text-xl lg:text-2xl font-light text-white/30 line-through">
                         {plan.getOriginalPrice ? plan.getOriginalPrice(region) : plan.originalPrice}
                       </span>
                     )}
-                    <span className={`text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular ? 'text-primary' : 'text-white'}`}>
-                      {plan.price === 'Free' ? displayPrice : (
-                        formatPrice(region, plan.id as Plan)
+                    <span className={`text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular && !disabled ? 'text-primary' : 'text-white'}`}>
+                      {isLocked ? (
+                        <span className="flex items-center gap-2">
+                          <Crown className="w-6 h-6 text-yellow-400" />
+                          {isProOnStarter ? 'Active' : 'Active'}
+                        </span>
+                      ) : (
+                        displayPrice
                       )}
                     </span>
-                    {plan.price !== 'Free' && (
+                    {plan.price !== 'Free' && !isLocked && (
                       <span className="text-white/50 text-base font-light">/month</span>
                     )}
                   </div>
                   {plan.price === 'Free' && (
                     <span className="text-white/50 text-base font-light">Forever</span>
                   )}
+                  {isLocked && (
+                    <span className="text-green-400 text-xs font-bold block mt-1">{isProOnStarter ? 'Included in Pro' : '✓ Current Plan'}</span>
+                  )}
+                  {isUpgrade && (
+                    <span className="text-primary text-xs font-bold block mt-1">Save {Math.round((1 - 2.99/9.99) * 100)}% vs monthly</span>
+                  )}
                 </div>
 
-                {/* Features - Simplified */}
+                {/* Features */}
                 <div className="space-y-2 mb-6 flex-grow">
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-2">
@@ -216,20 +260,26 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
 
                 {/* CTA Button */}
                 <div className="mt-auto">
-                  <Button 
-                    size="lg" 
-                    asChild
-                    className={`w-full h-12 lg:h-14 rounded-xl font-bold text-base lg:text-lg transition-all duration-300 ${
-                      plan.popular 
-                        ? 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20' 
-                        : 'bg-white text-black hover:bg-white/90 shadow-lg'
-                    }`}
-                  >
-                    <Link href={displayHref}>{displayCta}</Link>
-                  </Button>
+                  {disabled ? (
+                    <div className="w-full h-12 lg:h-14 rounded-xl font-bold text-base lg:text-lg flex items-center justify-center bg-white/5 text-white/40 border border-white/10 cursor-not-allowed">
+                      {displayCta}
+                    </div>
+                  ) : (
+                    <Button 
+                      size="lg" 
+                      asChild
+                      className={`w-full h-12 lg:h-14 rounded-xl font-bold text-base lg:text-lg transition-all duration-300 ${
+                        plan.popular || isUpgrade
+                          ? 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20' 
+                          : 'bg-white text-black hover:bg-white/90 shadow-lg'
+                      }`}
+                    >
+                      <Link href={displayHref}>{displayCta}</Link>
+                    </Button>
+                  )}
                   
                   <div className="mt-4 flex flex-col items-center gap-2">
-                    {plan.price !== 'Free' ? (
+                    {plan.price !== 'Free' && !isLocked ? (
                       <Link 
                         href="/affiliate" 
                       className="px-4 py-1.5 rounded-lg border border-green-500/20 bg-green-500/5 text-[10px] font-bold text-green-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 uppercase tracking-widest"
@@ -237,7 +287,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                         Earn Free via Affiliate
                       </Link>
                     ) : (
-                      <div className="h-[14px]" /> // Spacer to keep buttons aligned
+                      <div className="h-[14px]" />
                     )}
                     
                     <p className="text-center text-white/30 text-xs">
