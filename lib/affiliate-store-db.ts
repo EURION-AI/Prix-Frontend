@@ -21,7 +21,6 @@ export async function getOrCreateAffiliateUser(githubId: number, username: strin
     affiliateCode: row.affiliate_code,
     referralCount: row.referral_count,
     paidReferralCount: row.paid_referral_count,
-    accumulatedCredit: row.accumulated_credit || 0,
     rewardClaimed: row.reward_claimed || false,
     rewardClaimedAt: row.reward_claimed_at?.toISOString() || null,
     createdAt: row.created_at.toISOString(),
@@ -43,7 +42,6 @@ export async function getAffiliateUserByCode(code: string): Promise<AffiliateUse
     affiliateCode: row.affiliate_code,
     referralCount: row.referral_count,
     paidReferralCount: row.paid_referral_count,
-    accumulatedCredit: row.accumulated_credit || 0,
     rewardClaimed: row.reward_claimed || false,
     rewardClaimedAt: row.reward_claimed_at?.toISOString() || null,
     createdAt: row.created_at.toISOString(),
@@ -65,7 +63,6 @@ export async function getAffiliateUserByGithubId(githubId: number): Promise<Affi
     affiliateCode: row.affiliate_code,
     referralCount: row.referral_count,
     paidReferralCount: row.paid_referral_count,
-    accumulatedCredit: row.accumulated_credit || 0,
     rewardClaimed: row.reward_claimed || false,
     rewardClaimedAt: row.reward_claimed_at?.toISOString() || null,
     createdAt: row.created_at.toISOString(),
@@ -153,17 +150,10 @@ export async function markReferralAsPurchased(referredGithubId: number, plan: st
         WHERE id = ${referral.id}
       `
       
-      const affiliateResult = await tx`
-        SELECT paid_referral_count, accumulated_credit FROM affiliate_users WHERE id = ${referral.affiliate_id}
-        FOR UPDATE
-      `
-      
-      const currentCredit = affiliateResult[0]?.accumulated_credit || 0
       await tx`
         UPDATE affiliate_users
         SET
-          paid_referral_count = paid_referral_count + 1,
-          accumulated_credit = ${currentCredit + amount}
+          paid_referral_count = paid_referral_count + 1
         WHERE id = ${referral.affiliate_id}
       `
     })

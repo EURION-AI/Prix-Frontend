@@ -125,6 +125,9 @@ export async function POST(request: NextRequest) {
         WHERE github_id = ${githubId}
       `
 
+      // Calculate the referral cost for logging
+      const cost = plan === 'pro' ? 3 : 2
+
       // 4. Log the claim as a revenue event (zero amount but with plan)
       await tx`
         INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata)
@@ -134,7 +137,11 @@ export async function POST(request: NextRequest) {
           'USD',
           ${githubId},
           ${plan},
-          ${sql.json({ method: 'affiliate_claim', creditUsed: cost, rewardSubscriptionId: razorpaySubscriptionId })}
+          ${sql.json({ 
+            method: 'affiliate_claim', 
+            referralsUsed: cost, 
+            rewardSubscriptionId: razorpaySubscriptionId 
+          })}
         )
       `
 

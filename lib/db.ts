@@ -41,7 +41,6 @@ export async function initializeDatabase() {
         affiliate_code VARCHAR(50) UNIQUE NOT NULL,
         referral_count INTEGER DEFAULT 0,
         paid_referral_count INTEGER DEFAULT 0,
-        accumulated_credit INTEGER DEFAULT 0, -- Store in cents/paise
         tier VARCHAR(20) DEFAULT 'free',
         created_at TIMESTAMP DEFAULT NOW(),
         CONSTRAINT fk_affiliate_users_github
