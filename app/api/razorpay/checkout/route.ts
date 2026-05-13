@@ -172,13 +172,19 @@ export async function POST(request: Request) {
       subscriptionId: subscription.id,
       key: process.env.RAZORPAY_KEY_ID,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Razorpay subscription checkout error:', error)
+    
+    // Extract Razorpay-specific error details if they exist
+    const razorpayError = error?.error?.description || error?.description || null
+    const errorMetadata = error?.error?.metadata || error?.metadata || null
+
     return NextResponse.json(
       { 
         error: 'Failed to create subscription', 
-        details: error instanceof Error ? error.message : 'Unknown error',
-        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : null) : undefined
+        details: razorpayError || (error instanceof Error ? error.message : 'Unknown error'),
+        raw: typeof error === 'object' ? error : String(error),
+        metadata: errorMetadata
       },
       { status: 500 }
     )
