@@ -43,6 +43,8 @@ export async function initializeDatabase() {
         referral_count INTEGER DEFAULT 0,
         paid_referral_count INTEGER DEFAULT 0,
         tier VARCHAR(20) DEFAULT 'free',
+        reward_claimed BOOLEAN DEFAULT FALSE,
+        reward_claimed_at TIMESTAMP WITH TIME ZONE,
         created_at TIMESTAMP DEFAULT NOW(),
         CONSTRAINT fk_affiliate_users_github
           FOREIGN KEY (github_id) REFERENCES users(github_id)
@@ -121,6 +123,50 @@ export async function initializeDatabase() {
         metadata JSONB DEFAULT '{}',
         created_at TIMESTAMP DEFAULT NOW(),
         UNIQUE(date, metric_category, metric_name)
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS user_consumption (
+        github_id BIGINT PRIMARY KEY,
+        prs_reviewed_monthly INTEGER DEFAULT 0,
+        auto_prs_monthly INTEGER DEFAULT 0,
+        issues_planned_monthly INTEGER DEFAULT 0,
+        monthly_grand_total INTEGER DEFAULT 0,
+        prs_reviewed_total INTEGER DEFAULT 0,
+        auto_prs_total INTEGER DEFAULT 0,
+        issues_planned_total INTEGER DEFAULT 0,
+        last_reset_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT fk_user_consumption_github
+          FOREIGN KEY (github_id) REFERENCES users(github_id)
+          ON DELETE CASCADE
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS issue_plan_logs (
+        id BIGSERIAL PRIMARY KEY,
+        github_id BIGINT NOT NULL,
+        repo_name TEXT NOT NULL,
+        issue_number INTEGER NOT NULL,
+        plan_tier TEXT NOT NULL DEFAULT 'pro',
+        files_retrieved INTEGER,
+        token_estimate INTEGER,
+        execution_duration_ms INTEGER,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id SERIAL PRIMARY KEY,
+        github_id BIGINT,
+        repo_name TEXT,
+        pr_number INTEGER,
+        created_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT audit_logs_github_id_fkey
+          FOREIGN KEY (github_id) REFERENCES users(github_id)
       )
     `
 
