@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://prix.ai/sitemap.xml
+Sitemap: https://www.prixai.xyz/sitemap.xml
 
 # Block common non-content paths
 Disallow: /api/

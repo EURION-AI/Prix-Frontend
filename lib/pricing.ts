@@ -120,3 +120,10 @@ export function getCurrencySymbol(region: Region): string {
   return PRICING[region].starter.symbol
 }
 
+export const UPGRADE_PRICE: Record<string, string> = {
+  IN: '₹2.99',
+  US: '$2.99',
+  GB: '£2.99',
+  EU: '€2.99',
+}
+
