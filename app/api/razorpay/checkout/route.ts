@@ -175,7 +175,11 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Razorpay subscription checkout error:', error)
     return NextResponse.json(
-      { error: 'Failed to create subscription' },
+      { 
+        error: 'Failed to create subscription', 
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : null) : undefined
+      },
       { status: 500 }
     )
   }
