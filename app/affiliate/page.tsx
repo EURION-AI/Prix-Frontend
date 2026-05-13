@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, Copy, Check, Users, Gift, Star, ArrowLeft, ExternalLink, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { AffiliateStatsSkeleton } from '@/components/skeleton'
