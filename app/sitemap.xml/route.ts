@@ -41,8 +41,9 @@ ${urls.map(u => `  <url>
 
   return new NextResponse(xml, {
     headers: {
-      'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=0, s-maxage=3600, must-revalidate',
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Vercel-CDN-Cache-Control': 'no-cache',
     },
   })
 }
