@@ -63,6 +63,8 @@ export function RazorpayCheckoutButton({
   userId,
   userName = '',
   userEmail = '',
+  upgrade: upgradeParam,
+  discount: discountParam,
   onSuccess,
   onError,
   disabled
@@ -107,6 +109,23 @@ export function RazorpayCheckoutButton({
     setIsLoading(true)
 
     try {
+      // If this is an upgrade, use the upgrade API (prorated charge)
+      if (upgradeParam) {
+        const upgradeResponse = await fetch('/api/subscription/upgrade', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ newPlanId: plan, region }),
+        })
+
+        if (!upgradeResponse.ok) {
+          const errorData = await upgradeResponse.json()
+          throw new Error(errorData.error || errorData.details || 'Failed to process upgrade')
+        }
+
+        onSuccess()
+        return
+      }
+
       // 1. Get CSRF token first
       const csrfResponse = await fetch('/api/razorpay/checkout')
       const { csrfToken } = await csrfResponse.json()
@@ -124,7 +143,6 @@ export function RazorpayCheckoutButton({
         },
         body: JSON.stringify({
           plan,
-          userId,
           region,
         }),
       })
@@ -162,7 +180,6 @@ export function RazorpayCheckoutButton({
                 razorpay_subscription_id: response.razorpay_subscription_id,
                 razorpay_signature: response.razorpay_signature,
                 plan,
-                userId
               }),
             })
 

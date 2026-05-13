@@ -210,9 +210,9 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                 {/* Price */}
                 <div className="mb-8">
                   <div className="flex items-baseline gap-2 mb-2">
-                    {plan.originalPrice && !isLocked && !isUpgrade && (
+                    {plan.getOriginalPrice && !isLocked && !isUpgrade && (
                       <span className="text-xl lg:text-2xl font-light text-white/30 line-through">
-                        {plan.getOriginalPrice ? plan.getOriginalPrice(region) : plan.originalPrice}
+                        {plan.getOriginalPrice(region)}
                       </span>
                     )}
                     <span className={`text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular && !disabled ? 'text-primary' : 'text-white'}`}>
@@ -235,9 +235,12 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                   {isLocked && (
                     <span className="text-green-400 text-xs font-bold block mt-1">{isProOnStarter ? 'Included in Pro' : '✓ Current Plan'}</span>
                   )}
-                  {isUpgrade && (
-                    <span className="text-primary text-xs font-bold block mt-1">Save {Math.round((1 - 2.99/9.99) * 100)}% vs monthly</span>
-                  )}
+                  {isUpgrade && (() => {
+                    const fullPro = parseFloat(formatPrice(region, 'pro').replace(/[^0-9.]/g, ''))
+                    const upgradeVal = parseFloat((UPGRADE_PRICE[region] || '$2.99').replace(/[^0-9.]/g, ''))
+                    const savedPct = fullPro > 0 ? Math.round((1 - upgradeVal / fullPro) * 100) : 0
+                    return <span className="text-primary text-xs font-bold block mt-1">Save {savedPct}% vs monthly</span>
+                  })()}
                 </div>
 
                 {/* Features */}
