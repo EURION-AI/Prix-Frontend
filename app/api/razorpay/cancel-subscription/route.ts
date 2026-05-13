@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
-import { cookies } from 'next/headers'
 import { getUserByGithubId, getUserSubscriptionId, cancelUserSubscription } from '@/lib/user-store'
+import { getAuthenticatedUser } from '@/lib/auth'
 
 function getRazorpayClient(): Razorpay | null {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
@@ -15,25 +15,11 @@ function getRazorpayClient(): Razorpay | null {
 
 export async function POST(request: Request) {
   try {
-    // Authenticate user from session
-    const cookieStore = await cookies()
-    const sessionCookie = cookieStore.get('github_session')
-
-    if (!sessionCookie?.value) {
+    const authed = await getAuthenticatedUser()
+    if (!authed) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
-
-    let session: { id: number }
-    try {
-      session = JSON.parse(sessionCookie.value)
-    } catch {
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-    }
-
-    const githubId = session.id
-    if (!githubId || typeof githubId !== 'number') {
-      return NextResponse.json({ error: 'Invalid session data' }, { status: 401 })
-    }
+    const githubId = authed.githubId
 
     // Get subscription ID from database
     const subscriptionId = await getUserSubscriptionId(githubId)

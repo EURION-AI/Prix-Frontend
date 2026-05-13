@@ -3,17 +3,23 @@ import crypto from 'crypto'
 import { activateSubscription } from '@/lib/user-store'
 import { sql } from '@/lib/db'
 import { markReferralAsPurchased } from '@/lib/affiliate-store-db'
+import { getAuthenticatedUser } from '@/lib/auth'
 import { PRICING } from '@/lib/pricing'
 
 export async function POST(request: Request) {
   try {
+    const authed = await getAuthenticatedUser()
+    if (!authed) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
+    const userId = String(authed.githubId)
+
     const body = await request.json()
     const {
       razorpay_payment_id,
       razorpay_subscription_id,
       razorpay_signature,
       plan,
-      userId
     } = body
 
     if (!razorpay_payment_id || !razorpay_subscription_id || !razorpay_signature) {

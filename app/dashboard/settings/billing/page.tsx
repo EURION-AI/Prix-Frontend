@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Navbar } from '@/components/navbar'
 import type { Plan } from '@/lib/user-store'
-import { getUserRegion, formatPrice, getCurrencySymbol, type Region } from '@/lib/pricing'
+import { getUserRegion, formatPrice, getCurrencySymbol, UPGRADE_PRICE, type Region } from '@/lib/pricing'
 
 interface UserData {
   id: number
@@ -259,7 +259,7 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
       {
         id: 'pro-upgrade',
         name: 'Upgrade to Pro',
-        price: region === 'IN' ? '₹5' : '$2.00',
+        price: UPGRADE_PRICE[region] || '$2.99',
         description: 'Special upgrade price for existing Starter users.',
         features: [
           'Everything in Starter',
@@ -293,9 +293,7 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
     ]
   }
 
-  if (currentPlan === 'pro') return []
-
-  return [
+    return [
     {
       id: 'starter',
       name: 'Starter Plan',

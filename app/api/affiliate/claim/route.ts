@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import Razorpay from 'razorpay'
-import { updateUserPlan } from '@/lib/user-store'
+import { getAuthenticatedUser } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const { plan, githubId } = await request.json()
+    const authed = await getAuthenticatedUser()
+    if (!authed) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
+
+    const { plan } = await request.json()
+    const githubId = authed.githubId
 
     if (!plan || !['starter', 'pro'].includes(plan)) {
       return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 })
-    }
-
-    if (!githubId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 })
     }
 
     const razorpaySubscriptionId = `reward_${plan}_${Date.now()}`
@@ -46,6 +48,7 @@ export async function POST(request: NextRequest) {
       const weights: Record<string, number> = { 'free': 0, 'starter': 1, 'pro': 2 }
       const currentWeight = weights[currentPlan] ?? 0
       const newWeight = weights[plan]
+      const PLAN_LIMITS: Record<string, number> = { free: 15, starter: 150, pro: 600 }
 
       // Downgrade Protection (Legacy check - we now allow "Different plan" logic but keep weight check for UI consistency)
       if (newWeight <= currentWeight && activeSubscriptionId) {
@@ -88,14 +91,27 @@ export async function POST(request: NextRequest) {
         if (plan === currentPlan) {
           // Case: Same Plan -> Extension
           await tx`
+            UPDATE users
             SET plan_expires_at = plan_expires_at + INTERVAL '30 days',
                 subscription_id = NULL,
                 subscription_provider = NULL,
+                usage_limit_cap = ${PLAN_LIMITS[plan] ?? 150},
+                updated_at = NOW()
+            WHERE github_id = ${githubId}
+          `
+        } else if (newWeight > currentWeight) {
+          // Case: Upgrade (e.g., Starter -> Pro) -> Immediately promote with same tenure
+          await tx`
+            UPDATE users
+            SET plan = ${plan},
+                subscription_id = ${razorpaySubscriptionId},
+                subscription_provider = 'reward',
+                usage_limit_cap = ${PLAN_LIMITS[plan] ?? 150},
                 updated_at = NOW()
             WHERE github_id = ${githubId}
           `
         } else {
-          // Case: Different Plan -> Queue
+          // Case: Downgrade (e.g., Pro -> Starter) -> Queue for next cycle
           await tx`
             UPDATE users
             SET queued_plan = ${plan},

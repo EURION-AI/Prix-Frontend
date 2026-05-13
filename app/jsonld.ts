@@ -1,7 +1,7 @@
 export const softwareApplicationLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'Prix',
+  name: 'Prix AI',
   description: 'AI-powered GitHub PR reviewer that automatically reviews pull requests and generates fixes. Catches bugs, security issues, and performance problems in seconds.',
   url: 'https://www.prixai.xyz',
   applicationCategory: 'DeveloperApplication',
@@ -9,35 +9,26 @@ export const softwareApplicationLd = {
   offers: [
     {
       '@type': 'Offer',
-      name: 'Starter',
+      name: 'Free',
       price: '0',
       priceCurrency: 'USD',
-      description: 'Free plan with 5 PR and 5 issue fixes per month for public repositories.',
+      description: '15 PR reviews per month for public repositories. Includes basic bug detection and GitHub integration.',
     },
     {
       '@type': 'Offer',
-      name: 'Base',
-      price: '7',
+      name: 'Starter',
+      price: '6.99',
       priceCurrency: 'USD',
-      description: 'Unlimited PR reviews for professional developers. $9.99/month regular price.',
-      alternateName: '$9.99',
+      description: '150 PR reviews per month for individual developers. Includes private repositories, automated fixes, security detection, and AI issue planning.',
     },
     {
       '@type': 'Offer',
       name: 'Pro',
       price: '9.99',
       priceCurrency: 'USD',
-      description: 'For teams with unlimited members, admin dashboard, and dedicated support. $19.99/month regular price.',
-      alternateName: '$19.99',
+      description: '600 PR reviews per month with priority processing queue, unlimited AI issue planning, deeper multi-file analysis, and advanced security scanning.',
     },
   ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    ratingCount: '2847',
-    bestRating: '5',
-    worstRating: '1',
-  },
   featureList: [
     'AI-powered code review',
     'Automated PR review',
@@ -57,11 +48,18 @@ export const softwareApplicationLd = {
   screenshot: 'https://www.prixai.xyz/og-image.png',
 }
 
-// Part 3: FAQ Schema for rich snippets
 export const faqLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is Prix AI?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Prix AI is an AI-powered GitHub PR reviewer that automatically analyzes pull requests, detects bugs, security vulnerabilities, and code quality issues, and even generates fixes. It helps developers ship code faster with fewer errors.',
+      },
+    },
     {
       '@type': 'Question',
       name: 'How does AI PR review work?',
@@ -75,7 +73,7 @@ export const faqLd = {
       name: 'Is Prix AI free to use?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Prix AI offers a free Starter plan with 5 PR reviews and 5 issue fixes per month for public repositories. Paid plans start at $7/month for unlimited reviews.',
+        text: 'Yes, Prix AI offers a free plan with 15 PR reviews per month for public repositories. Paid plans start at $6.99/month for the Starter plan with 150 reviews and $9.99/month for the Pro plan with 600 reviews and priority processing.',
       },
     },
     {
@@ -97,5 +95,4 @@ export const faqLd = {
   ],
 }
 
-// Combined JSON-LD export for layout
 export const jsonLd = [softwareApplicationLd, faqLd]

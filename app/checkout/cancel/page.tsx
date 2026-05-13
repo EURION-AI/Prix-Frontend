@@ -27,7 +27,7 @@ function CancelContent() {
 
       <div className="space-y-4">
         <Link
-          href="/checkout"
+          href={plan ? `/checkout?plan=${plan}` : '/checkout'}
           className="block w-full py-4 rounded-xl bg-primary text-white font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-colors"
         >
           Try Again

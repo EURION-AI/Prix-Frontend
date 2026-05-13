@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
-import { Loader2, Check, ArrowLeft, AlertCircle } from 'lucide-react'
+import { Loader2, Check, ArrowLeft, AlertCircle, Crown } from 'lucide-react'
 import Link from 'next/link'
 import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
-import { PRICING, getPricing, formatPrice, getUserRegion, type Region, type Plan } from '@/lib/pricing'
+import { PRICING, getPricing, formatPrice, getUserRegion, UPGRADE_PRICE, type Region, type Plan } from '@/lib/pricing'
 
 interface PlanInfo {
   id: string
@@ -62,15 +62,15 @@ function CheckoutContent() {
   const [userId, setUserId] = useState<string | null>(null)
   const [userName, setUserName] = useState<string>('')
   const [userEmail, setUserEmail] = useState<string>('')
+  const [userPlan, setUserPlan] = useState<string | null>(null)
 
-  const plan = PLAN_DETAILS[planId] || PLAN_DETAILS.starter
+  const plan = { ...(PLAN_DETAILS[planId] || PLAN_DETAILS.starter) }
   const pricing = getPricing(region, planId)
   
   // Display price for UI
   const displayPrice = formatPrice(region, planId) + '/mo'
   const displayPricePaise = pricing.price
 
-  // Update plan price dynamically for UI display
   plan.price = displayPrice
 
   useEffect(() => {
@@ -82,6 +82,7 @@ function CheckoutContent() {
           setUserId(String(data.user.id))
           setUserName(data.user.name || data.user.username || '')
           setUserEmail(data.user.email || '')
+          setUserPlan(data.user.plan || 'free')
         } else {
           // Redirect to login with a specific message for unauthenticated checkout attempts
           router.push('/login?message=auth_required_purchase')
@@ -115,6 +116,33 @@ function CheckoutContent() {
     )
   }
 
+  const alreadyOwns = userPlan === planId
+  const isUpgrade = userPlan === 'starter' && planId === 'pro'
+
+  if (alreadyOwns) {
+    return (
+      <div className="w-full max-w-lg text-center">
+        <div className="mb-8">
+          <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
+            <Crown className="w-10 h-10 text-green-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-3">You already have {plan.name}!</h1>
+          <p className="text-white/50 text-sm">Your {plan.name} plan is already active on your account. No need to purchase it again.</p>
+        </div>
+        <Link href="/dashboard" className="block w-full max-w-sm mx-auto py-4 rounded-xl bg-primary text-white font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-colors">
+          Go to Dashboard
+        </Link>
+        <div className="mt-4">
+          <Link href="/pricing" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm">
+            <ArrowLeft className="w-4 h-4" /> Back to pricing
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const upgradePrice = UPGRADE_PRICE[region] || '$2.99'
+
   return (
     <div className="w-full max-w-lg">
       <div className="mb-8">
@@ -123,10 +151,10 @@ function CheckoutContent() {
         </div>
 
         <h1 className="text-3xl font-bold text-white mb-3 text-center">
-          Subscribe to {plan.name}
+          {isUpgrade ? `Upgrade to ${plan.name}` : `Subscribe to ${plan.name}`}
         </h1>
         <p className="text-white/50 text-sm text-center">
-          You&apos;re one step away from unlocking {plan.name === 'Pro' ? 'unlimited' : 'enhanced'} AI-powered code reviews.
+          {isUpgrade ? `Upgrade from Starter to Pro for just ${upgradePrice}/mo.` : `You&apos;re one step away from unlocking ${plan.name === 'Pro' ? 'unlimited' : 'enhanced'} AI-powered code reviews.`}
         </p>
       </div>
 
@@ -137,7 +165,7 @@ function CheckoutContent() {
             <p className="text-white/40 text-sm">Monthly subscription</p>
           </div>
           <div className="text-right">
-            <span className="text-2xl font-bold text-white">{plan.price}</span>
+            <span className="text-2xl font-bold text-white">{isUpgrade ? upgradePrice : plan.price}</span>
           </div>
         </div>
 
@@ -162,12 +190,13 @@ function CheckoutContent() {
 
         <RazorpayCheckoutButton
           plan={planId}
-          amount={displayPricePaise}
+          amount={isUpgrade ? 0 : displayPricePaise}
           currency={pricing.currency}
           userId={userId}
           region={region}
           userName={userName}
           userEmail={userEmail}
+          upgrade={isUpgrade ? 'true' : null}
           onSuccess={handleSuccess}
           onError={handleError}
           disabled={isLoading}

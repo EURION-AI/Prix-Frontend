@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { activateSubscription, extendSubscription, cancelUserSubscription, expireOverduePlans } from '@/lib/user-store'
+import { activateSubscription, extendSubscription, cancelUserSubscription, expireOverduePlans, getUserByGithubId } from '@/lib/user-store'
 import { sql } from '@/lib/db'
 
 export async function POST(request: Request) {
@@ -27,6 +27,16 @@ export async function POST(request: Request) {
   }
 
   const event = JSON.parse(body)
+  const eventId = event.id
+
+  // Idempotency check — skip if already processed
+  const alreadyProcessed = await sql`
+    SELECT 1 FROM processed_webhooks WHERE event_id = ${eventId}
+  `
+  if (alreadyProcessed.length > 0) {
+    console.log(`[WEBHOOK] Skipping already-processed event: ${eventId}`)
+    return NextResponse.json({ received: true })
+  }
 
   try {
     const eventType = event.event
@@ -34,21 +44,8 @@ export async function POST(request: Request) {
 
     switch (eventType) {
       // ── Initial subscription authentication success ──
+      // Note: activation moved to subscription.charged to prevent granting access before payment
       case 'subscription.authenticated': {
-        const subscription = event.payload.subscription?.entity
-        if (!subscription) break
-
-        const notes = subscription.notes || {}
-        const plan = notes.plan
-        const userId = notes.userId
-
-        if (userId && userId !== 'anonymous' && plan) {
-          const githubId = parseInt(userId, 10)
-          if (!isNaN(githubId) && githubId > 0) {
-            await activateSubscription(githubId, plan, subscription.id)
-            console.log(`[WEBHOOK] Subscription authenticated for user ${githubId}, plan: ${plan}`)
-          }
-        }
         break
       }
 
@@ -62,12 +59,18 @@ export async function POST(request: Request) {
         const userId = notes.userId
         const plan = notes.plan
 
-        if (userId && userId !== 'anonymous') {
+        if (userId && userId !== 'anonymous' && plan) {
           const githubId = parseInt(userId, 10)
           if (!isNaN(githubId) && githubId > 0) {
-            // Extend their plan by 30 days
-            await extendSubscription(githubId)
-            console.log(`[WEBHOOK] Subscription renewed for user ${githubId}`)
+            // First charge = activate, subsequent = extend
+            const user = await getUserByGithubId(githubId)
+            if (!user || user.plan === 'free' || !user.subscriptionId) {
+              await activateSubscription(githubId, plan, subscription.id)
+              console.log(`[WEBHOOK] Subscription activated for user ${githubId}, plan: ${plan}`)
+            } else {
+              await extendSubscription(githubId)
+              console.log(`[WEBHOOK] Subscription renewed for user ${githubId}`)
+            }
 
             // Log recurring revenue event
             try {
@@ -238,7 +241,7 @@ export async function POST(request: Request) {
         } else {
           // Fallback: look up by subscription ID
           const userLookup = await sql`
-            SELECT github_id FROM users WHERE razorpay_subscription_id = ${subscription.id}
+            SELECT github_id FROM users WHERE subscription_id = ${subscription.id}
           `
           if (userLookup.length > 0) {
             githubId = userLookup[0].github_id
@@ -270,6 +273,16 @@ export async function POST(request: Request) {
 
       default:
         console.log(`[WEBHOOK] Unhandled event type: ${eventType}`)
+    }
+
+    // Record event as processed for idempotency
+    try {
+      await sql`
+        INSERT INTO processed_webhooks (event_id) VALUES (${eventId})
+        ON CONFLICT (event_id) DO NOTHING
+      `
+    } catch (e) {
+      console.error('[WEBHOOK] Failed to record processed event:', e)
     }
 
     // Opportunistically expire overdue plans

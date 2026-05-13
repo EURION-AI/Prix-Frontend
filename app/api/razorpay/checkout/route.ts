@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 import { rateLimit } from '@/lib/security'
 import { validateCSRFToken, addCSRFTokenToResponse } from '@/lib/csrf'
+import { getAuthenticatedUser } from '@/lib/auth'
 import { PRICING } from '@/lib/pricing'
 import { sql } from '@/lib/db'
 import { getUserSubscriptionId, activateSubscription } from '@/lib/user-store'
@@ -84,9 +85,14 @@ export async function POST(request: Request) {
   }
 
   try {
+    const authed = await getAuthenticatedUser()
+    if (!authed) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
+    const userId = String(authed.githubId)
+
     const body = await request.json()
     const plan = body.plan
-    const userId = body.userId
     const region = body.region || 'US'
 
     if (!plan || (plan !== 'starter' && plan !== 'pro')) {
@@ -175,16 +181,12 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Razorpay subscription checkout error:', error)
     
-    // Extract Razorpay-specific error details if they exist
     const razorpayError = error?.error?.description || error?.description || null
-    const errorMetadata = error?.error?.metadata || error?.metadata || null
 
     return NextResponse.json(
       { 
         error: 'Failed to create subscription', 
         details: razorpayError || (error instanceof Error ? error.message : 'Unknown error'),
-        raw: typeof error === 'object' ? error : String(error),
-        metadata: errorMetadata
       },
       { status: 500 }
     )

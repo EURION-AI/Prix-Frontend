@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
-import { cookies } from 'next/headers'
 import { sql } from '@/lib/db'
 import { PRICING } from '@/lib/pricing'
 import { getUserSubscriptionId } from '@/lib/user-store'
+import { getAuthenticatedUser } from '@/lib/auth'
 
 /**
  * Initialize Razorpay Client
@@ -57,6 +57,8 @@ async function getRazorpayPlanId(razorpay: Razorpay, plan: 'starter' | 'pro', re
   await sql`
     INSERT INTO razorpay_plans (internal_plan_id, razorpay_plan_id, amount, currency)
     VALUES (${planKey}, ${razorpayPlan.id}, ${planPricing.price}, ${planPricing.currency})
+    ON CONFLICT (internal_plan_id) DO UPDATE SET
+      razorpay_plan_id = EXCLUDED.razorpay_plan_id
   `
 
   return razorpayPlan.id
@@ -68,18 +70,11 @@ async function getRazorpayPlanId(razorpay: Razorpay, plan: 'starter' | 'pro', re
  */
 export async function POST(request: Request) {
   try {
-    // 1. Authenticate User
-    const cookieStore = await cookies()
-    const sessionCookie = cookieStore.get('github_session')
-
-    if (!sessionCookie?.value) {
+    const authed = await getAuthenticatedUser()
+    if (!authed) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
-
-    const { id: githubId } = JSON.parse(sessionCookie.value)
-    if (!githubId) {
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-    }
+    const githubId = authed.githubId
 
     // 2. Parse Request
     const { newPlanId, region = 'US' } = await request.json()
@@ -123,7 +118,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         message: 'Subscription upgraded successfully. Prorated difference will be charged.',
-        subscription: updatedSubscription,
+        subscriptionId: updatedSubscription.id,
       })
 
     } catch (razorpayError: any) {
