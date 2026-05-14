@@ -203,10 +203,9 @@ export default function DashboardPage() {
     }
   }
 
-  async function handleRepoSelect(repoName: string) {
+  async function handleRepoSelect(repoName: string, repoId?: number) {
     const action = selectedRepos.includes(repoName) ? 'remove' : 'add'
     
-    // Frontend limit check - Only for free plan
     if (user && action === 'add' && user.plan === 'free') {
       const limit = 5
       if (selectedRepos.length >= limit) {
@@ -221,7 +220,7 @@ export default function DashboardPage() {
       const response = await fetch('/api/github/select-repo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo: repoName, action }),
+        body: JSON.stringify({ repo: repoName, action, repositoryId: repoId }),
       })
       
       const data = await response.json()
@@ -456,7 +455,7 @@ export default function DashboardPage() {
             filteredRepos.map((repo) => (
               <button
                 key={repo.id}
-                onClick={() => handleRepoSelect(repo.full_name)}
+                onClick={() => handleRepoSelect(repo.full_name, repo.id)}
                 disabled={isSaving}
                 className={`text-left p-6 rounded-2xl border transition-all relative group card-interactive ${
                   selectedRepos.includes(repo.full_name) 

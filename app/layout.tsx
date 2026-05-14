@@ -21,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.prixai.xyz'),
   title: 'Prix AI - AI-Powered GitHub PR Reviewer | Ship Code Faster',
-  description: 'Prix AI automatically reviews your GitHub pull requests, suggests fixes, and raises PRs — helping you ship faster with fewer bugs. Free to start with 15 PR fixes per month.',
+  description: 'Prix AI automatically reviews your GitHub pull requests, suggests fixes, and raises PRs — helping you ship faster with fewer bugs. Free to start with 15 PR reviews, 3 issue plans & 3 auto fixes per month.',
   alternates: {
     canonical: 'https://www.prixai.xyz',
   },

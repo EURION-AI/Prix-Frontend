@@ -6,7 +6,7 @@ import { Footer } from '@/components/footer'
 
 export const metadata: Metadata = {
   title: 'Prix AI Pricing — AI Code Review Plans for Every Team',
-  description: 'Start free with 15 PR fixes per month. Upgrade to Starter from $6.99/mo or Pro from $9.99/mo for unlimited AI-powered code review and automated PR fixes.',
+  description: 'Start free with 15 PR reviews, 3 issue plans & 3 auto fixes per month. Upgrade to Starter from $6.99/mo for 400 reviews & 50 issue plans, or Pro from $9.99/mo for unlimited AI-powered code review, planning and fixes.',
   alternates: {
     canonical: 'https://www.prixai.xyz/pricing',
   },

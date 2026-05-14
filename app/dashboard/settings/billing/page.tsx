@@ -272,23 +272,6 @@ function getUpgradeOptions(currentPlan: string, region: Region): UpgradeOption[]
         icon: <Crown className="w-6 h-6 text-yellow-400" />,
         color: 'border-yellow-400/30 bg-yellow-400/5 hover:border-yellow-400/50',
         popular: true
-      },
-      {
-        id: 'pro',
-        name: 'Pro Plan',
-        price: proPrice,
-        description: 'Everything in Starter, plus unlimited PRs and deeper analysis.',
-        features: [
-          'Everything in Starter',
-          'Unlimited PR reviews',
-          'Unlimited AI issue planning',
-          'Priority processing queue',
-          'Better multi-file context',
-          'Deeper bug & security analysis'
-        ],
-        icon: <Zap className="w-6 h-6 text-blue-400" />,
-        color: 'border-blue-400/30 bg-blue-400/5 hover:border-blue-400/50',
-        popular: false
       }
     ]
   }

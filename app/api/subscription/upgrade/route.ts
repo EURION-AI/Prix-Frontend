@@ -99,26 +99,35 @@ export async function POST(request: Request) {
 
     // If no existing subscription, create a new one instead of rejecting
     if (!subscriptionId || subscriptionId.startsWith('legacy_')) {
-      console.log(`[UPGRADE] No active subscription for user ${githubId}, creating new Pro subscription`)
-      const newSubscription = await (razorpay as any).subscriptions.create({
-        plan_id: razorpayPlanId,
-        total_count: 120,
-        customer_notify: 1,
-        notes: {
-          plan: newPlanId,
-          userId: String(githubId),
-          region,
-        },
-      })
-
-      return NextResponse.json({
-        subscriptionId: newSubscription.id,
-        key: process.env.RAZORPAY_KEY_ID,
-      })
+      console.log(`[UPGRADE] No active subscription for user ${githubId}, creating new Pro subscription. Key configured: ${!!process.env.RAZORPAY_KEY_ID}, plan: ${razorpayPlanId}`)
+      try {
+        const newSubscription = await (razorpay as any).subscriptions.create({
+          plan_id: razorpayPlanId,
+          total_count: 120,
+          customer_notify: 1,
+          notes: {
+            plan: newPlanId,
+            userId: String(githubId),
+            region,
+          },
+        })
+        console.log(`[UPGRADE] New subscription created: ${newSubscription.id}`)
+        return NextResponse.json({
+          subscriptionId: newSubscription.id,
+          key: process.env.RAZORPAY_KEY_ID,
+        })
+      } catch (createErr: any) {
+        console.error('[UPGRADE] Subscription creation failed:', createErr.description || createErr.message, JSON.stringify(createErr))
+        return NextResponse.json({
+          error: 'Failed to create subscription',
+          details: createErr.description || createErr.message || 'Unknown Razorpay error',
+        }, { status: 500 })
+      }
     }
 
     // 5. Update Existing Subscription on Razorpay
     try {
+      console.log(`[UPGRADE] Upgrading existing subscription ${subscriptionId} to plan ${razorpayPlanId}`)
       const updatedSubscription = await (razorpay as any).subscriptions.update(subscriptionId, {
         plan_id: razorpayPlanId,
         schedule_change_at: 'now',
@@ -135,6 +144,7 @@ export async function POST(request: Request) {
 
     } catch (razorpayError: any) {
       const errorMsg = razorpayError.description || razorpayError.message || ''
+      console.error(`[UPGRADE] Razorpay update failed: ${errorMsg}`, JSON.stringify(razorpayError))
       
       if (errorMsg.toLowerCase().includes('amount') || errorMsg.toLowerCase().includes('proration')) {
         return NextResponse.json({
