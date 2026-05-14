@@ -139,6 +139,64 @@ export function RazorpayCheckoutButton({
           throw new Error(errorData.error || errorData.details || 'Failed to process upgrade')
         }
 
+        const upgradeData = await upgradeResponse.json()
+
+        // If the API returned a subscriptionId, the user needs to complete payment via Razorpay modal
+        // (this happens when there was no existing subscription to upgrade)
+        if (upgradeData.subscriptionId) {
+          const options: RazorpayOptions = {
+            key: upgradeData.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+            subscription_id: upgradeData.subscriptionId,
+            name: 'Prix AI',
+            description: 'Prix Pro Plan — Monthly',
+            image: '/logo.png',
+            handler: async (response: RazorpaySubscriptionResponse) => {
+              try {
+                const verifyResponse = await fetch('/api/razorpay/verify-payment', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_subscription_id: response.razorpay_subscription_id,
+                    razorpay_signature: response.razorpay_signature,
+                    plan,
+                    region,
+                  }),
+                })
+
+                const verifyData = await verifyResponse.json()
+                if (!verifyResponse.ok) {
+                  throw new Error(verifyData.error || 'Payment verification failed')
+                }
+
+                onSuccess()
+              } catch (error) {
+                onError(error instanceof Error ? error.message : 'Payment verification failed')
+              }
+            },
+            prefill: {
+              name: userName,
+              email: userEmail
+            },
+            theme: {
+              color: '#ec4899'
+            },
+            modal: {
+              ondismiss: () => {
+                setIsLoading(false)
+              }
+            }
+          }
+
+          const razorpay = new window.Razorpay(options)
+          razorpay.on('payment.failed', (response: { error: { description: string } }) => {
+            onError(response.error?.description || 'Payment failed')
+            setIsLoading(false)
+          })
+          razorpay.open()
+          return
+        }
+
         onSuccess()
         return
       }
