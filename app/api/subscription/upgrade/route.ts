@@ -97,8 +97,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Target plan not found' }, { status: 404 })
     }
 
-    // If no existing subscription, create a new one instead of rejecting
-    if (!subscriptionId || subscriptionId.startsWith('legacy_')) {
+    // If no existing subscription or it's a fake ID (affiliate reward, legacy), create a new one
+    if (!subscriptionId || subscriptionId.startsWith('legacy_') || subscriptionId.startsWith('reward_')) {
       console.log(`[UPGRADE] No active subscription for user ${githubId}, creating new Pro subscription. Key configured: ${!!process.env.RAZORPAY_KEY_ID}, plan: ${razorpayPlanId}`)
       try {
         const newSubscription = await (razorpay as any).subscriptions.create({
