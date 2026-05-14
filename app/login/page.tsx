@@ -211,7 +211,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         <div className="rounded-xl p-4 text-center card-interactive !opacity-100">
           <Star className={`w-6 h-6 mx-auto mb-2 ${tierColors[stats.tier]}`} />
           <div className={`text-2xl font-bold ${tierColors[stats.tier]}`}>
-            {stats.tier === 'free' ? '0' : stats.tier === 'basic' ? '1' : '2'}
+            {stats.tier === 'free' ? '0' : stats.tier === 'starter' ? '1' : '2'}
           </div>
           <div className="text-white/40 text-xs uppercase tracking-wider">Unlocks</div>
         </div>

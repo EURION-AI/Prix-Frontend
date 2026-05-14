@@ -35,7 +35,7 @@ const XSS_PATTERNS = [
 
 // SQL injection patterns
 const SQL_INJECTION_PATTERNS = [
-  /('|(\\')|(;)|(\-\-)|(\s+(or|and)\s+.*(=|like))/gi,
+  /(?:'|;|--|\s+(?:or|and)\s+\w+\s*(?:=|like))/gi,
   /(union\s+select)/gi,
   /(insert\s+into)/gi,
   /(delete\s+from)/gi,

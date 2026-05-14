@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { checkDashboardAuth } from '@/lib/dashboard-auth'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const authError = checkDashboardAuth(request)
   if (authError) return authError;
 

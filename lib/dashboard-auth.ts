@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 
 const sessions = new Map<string, { createdAt: number }>()
 
-export function checkDashboardAuth(request: Request): NextResponse | null {
+export function checkDashboardAuth(request: NextRequest): NextResponse | null {
   const sessionToken = request.cookies.get('dashboard_session')?.value
 
   if (!sessionToken) {
