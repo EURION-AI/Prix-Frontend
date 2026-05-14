@@ -78,6 +78,7 @@ function DependencyGraph() {
                     count={2}
                     array={new Float32Array([...node.position, ...target.position])}
                     itemSize={3}
+                    args={[new Float32Array([...node.position, ...target.position]), 3]}
                   />
                 </bufferGeometry>
                 <lineBasicMaterial 
@@ -134,6 +135,7 @@ function Particles({ count }: { count: number }) {
           count={count}
           array={points}
           itemSize={3}
+          args={[points, 3]}
         />
       </bufferGeometry>
       <pointsMaterial
