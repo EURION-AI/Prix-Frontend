@@ -1,23 +1,22 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, use } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 
-export default function ReferralPage({ params }: { params: { code: string } }) {
+export default function ReferralPage({ params }: { params: Promise<{ code: string }> }) {
+  const { code } = use(params)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   useEffect(() => {
     async function handleReferral() {
       try {
-        const response = await fetch(`/api/affiliate/click?code=${params.code}`)
+        const response = await fetch(`/api/affiliate/click?code=${code}`)
         
         if (response.ok) {
-          // Successfully tracked, redirect to home with ref parameter
-          router.push(`/?ref=${params.code}`)
+          router.push(`/?ref=${code}`)
         } else {
-          // Error handling
           const error = searchParams.get('error') || 'invalid_code'
           router.push(`/?error=${error}`)
         }
@@ -28,7 +27,7 @@ export default function ReferralPage({ params }: { params: { code: string } }) {
     }
 
     handleReferral()
-  }, [params.code, router, searchParams])
+  }, [code, router, searchParams])
 
   return (
     <div className="min-h-screen bg-[#050508] flex items-center justify-center">
