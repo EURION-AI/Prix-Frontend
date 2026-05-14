@@ -84,11 +84,10 @@ function CheckoutContent() {
           setUserEmail(data.user.email || '')
           setUserPlan(data.user.plan || 'free')
         } else {
-          // Redirect to login with a specific message for unauthenticated checkout attempts
-          router.push('/login?message=auth_required_purchase')
+          router.push(`/login?message=auth_required_purchase&redirect=/checkout?plan=${planId}&region=${region}`)
         }
       } catch {
-        router.push('/login?message=auth_required_purchase')
+        router.push(`/login?message=auth_required_purchase&redirect=/checkout?plan=${planId}&region=${region}`)
       } finally {
         setIsLoading(false)
       }

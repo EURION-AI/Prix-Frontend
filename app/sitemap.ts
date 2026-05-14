@@ -66,37 +66,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/blog/reduce-code-review-time`,
-      lastModified: new Date('2024-01-15'),
+      lastModified: new Date('2026-04-01'),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/blog/ai-code-review-best-practices`,
-      lastModified: new Date('2024-01-10'),
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      lastModified: new Date('2026-04-02'),
+
     },
     {
       url: `${baseUrl}/blog/manual-code-review-problems`,
-      lastModified: new Date('2024-01-05'),
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      lastModified: new Date('2026-04-03'),
+
     },
     {
       url: `${baseUrl}/blog/ai-code-review-guide-2026`,
-      lastModified: new Date('2024-02-01'),
+      lastModified: new Date('2026-04-05'),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/blog/technical-debt-ai-analysis`,
-      lastModified: new Date('2024-02-15'),
+      lastModified: new Date('2026-04-10'),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/blog/security-vulnerabilities-automated-review`,
-      lastModified: new Date('2024-03-01'),
+      lastModified: new Date('2026-04-15'),
       changeFrequency: 'monthly',
       priority: 0.8,
     },

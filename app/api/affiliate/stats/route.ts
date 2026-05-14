@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
-import { validateGitHubId, validateString } from '@/lib/validation'
-import { getOrCreateAffiliateUser, getAffiliateUserByGithubId, getReferralsForAffiliate } from '@/lib/affiliate-store-db'
+import { getOrCreateAffiliateUser, getReferralsForAffiliate } from '@/lib/affiliate-store-db'
 
 function getAuthenticatedUserId(request: NextRequest): number | null {
   const userCookie = request.cookies.get('github_user')?.value
@@ -15,9 +14,6 @@ function getAuthenticatedUserId(request: NextRequest): number | null {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const githubIdParam = searchParams.get('githubId')
-  const usernameParam = searchParams.get('username')
   const authToken = request.cookies.get('github_token')?.value
 
   // Milestone requirements
@@ -33,26 +29,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
   }
 
-  if (!githubIdParam) {
-    return NextResponse.json({ error: 'Missing githubId parameter' }, { status: 400 })
-  }
-
-  const requestedGithubId = parseInt(githubIdParam, 10)
-  if (isNaN(requestedGithubId) || !validateGitHubId(requestedGithubId)) {
-    return NextResponse.json({ error: 'Invalid githubId' }, { status: 400 })
-  }
-
-  if (requestedGithubId !== authenticatedUserId) {
-    return NextResponse.json({ error: 'Access denied' }, { status: 403 })
-  }
-
-  if (usernameParam && usernameParam.length > 100) {
-    return NextResponse.json({ error: 'Username too long' }, { status: 400 })
+  // Get username from cookie session instead of query params
+  let username: string = `user_${authenticatedUserId}`
+  try {
+    const userCookie = request.cookies.get('github_user')?.value
+    if (userCookie) {
+      const cookieData = JSON.parse(decodeURIComponent(userCookie))
+      if (cookieData.username) {
+        username = String(cookieData.username).substring(0, 100)
+      }
+    }
+  } catch {
+    // fallback to default
   }
 
   // 1. Join with users table to get the current state
   const userResult = await sql`
-    SELECT * FROM users WHERE github_id = ${requestedGithubId}
+    SELECT * FROM users WHERE github_id = ${authenticatedUserId}
   `
   
   if (userResult.length === 0) {
@@ -61,31 +54,15 @@ export async function GET(request: NextRequest) {
 
   let user = userResult[0]
 
-  // 2. Activation Logic: Check if current plan is expired and if a queued plan exists
-  if (user.plan !== 'free' && user.plan_expires_at && user.plan_expires_at < new Date() && user.queued_plan) {
-    const nextPlan = user.queued_plan
-    // Promote queued plan to active
-    const updated = await sql`
-      UPDATE users 
-      SET plan = ${nextPlan},
-          plan_started_at = NOW(),
-          plan_expires_at = NOW() + INTERVAL '30 days',
-          queued_plan = NULL,
-          updated_at = NOW()
-      WHERE github_id = ${requestedGithubId}
-      RETURNING *
-    `
-    user = updated[0]
-  }
+  // Note: Queued plan activation is now handled centrally in lib/auth.ts on every authenticated request.
 
   // 3. Get affiliate data
   const affiliateResult = await sql`
-    SELECT * FROM affiliate_users WHERE github_id = ${requestedGithubId}
+    SELECT * FROM affiliate_users WHERE github_id = ${authenticatedUserId}
   `
 
   if (affiliateResult.length === 0) {
-    const username = usernameParam ? validateString(usernameParam, 'username', 100) : `user_${requestedGithubId}`
-    const affiliate = await getOrCreateAffiliateUser(requestedGithubId, username)
+    const affiliate = await getOrCreateAffiliateUser(authenticatedUserId, username)
     
     return NextResponse.json({
       affiliateCode: affiliate.affiliateCode,

@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 import { checkRateLimit, getClientIP } from '@/lib/rate-limit'
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
-const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI || `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, '') : ''
+const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI || `${baseUrl}/api/auth/callback`
 
 function generateState(): string {
   // Increase entropy to 64 bytes (512 bits) for stronger security

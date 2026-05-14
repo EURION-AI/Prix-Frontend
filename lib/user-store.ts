@@ -52,7 +52,7 @@ function rowToUser(row: any): User {
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
     billingDay: row.billing_day || 1,
-    usageLimitCap: row.usage_limit_cap || 15,
+    usageLimitCap: row.usage_limit_cap != null ? row.usage_limit_cap : 15,
   }
 }
 
@@ -222,7 +222,7 @@ export async function getUserCount(): Promise<number> {
 export async function getNewUsersCount(days: number): Promise<number> {
   const result = await sql`
     SELECT COUNT(*)::int as count FROM users
-    WHERE created_at > NOW() - INTERVAL '${days} days'
+    WHERE created_at > NOW() - INTERVAL '1 day' * ${days}
   `
   return result[0]?.count || 0
 }

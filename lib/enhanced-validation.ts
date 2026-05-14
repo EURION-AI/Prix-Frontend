@@ -246,7 +246,7 @@ export const validationSchemas = {
   plan: {
     required: true,
     type: 'string' as const,
-    whitelist: ['starter', 'pro', 'free'],
+    whitelist: ['free', 'starter', 'pro'],
     sanitize: true
   },
   

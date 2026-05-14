@@ -62,7 +62,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const response = await fetch(`/api/affiliate/stats?githubId=${user.id}&username=${user.username}`)
+        const response = await fetch(`/api/affiliate/stats`)
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}))
           setError(errData.error || `Failed to load affiliate stats (${response.status})`)

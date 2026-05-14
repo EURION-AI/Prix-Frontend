@@ -46,6 +46,6 @@ export function validateAffiliateCode(code: string): boolean {
   return (oldFormat.test(code) || newFormat.test(code)) && code.length <= 12
 }
 
-export function validatePlan(plan: unknown): plan is 'free' | 'starter' | 'pro' | 'max' {
-  return plan === 'free' || plan === 'starter' || plan === 'pro' || plan === 'max'
+export function validatePlan(plan: unknown): plan is 'free' | 'starter' | 'pro' {
+  return plan === 'free' || plan === 'starter' || plan === 'pro'
 }

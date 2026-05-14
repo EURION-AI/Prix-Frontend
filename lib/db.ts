@@ -146,6 +146,8 @@ export async function initializeDatabase() {
         prs_reviewed_total INTEGER DEFAULT 0,
         auto_prs_total INTEGER DEFAULT 0,
         issues_planned_total INTEGER DEFAULT 0,
+        prs_reviewed_daily INTEGER DEFAULT 0,
+        last_daily_reset TIMESTAMP DEFAULT NOW(),
         last_reset_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
         CONSTRAINT fk_user_consumption_github
@@ -311,6 +313,25 @@ export async function initializeDatabase() {
       console.log('Migrated existing paid users with 30-day grace period')
     } catch (e) {
       console.log('Migration info: paid user migration may have already run', e)
+    }
+
+    // Migrate user_consumption table: add daily tracking columns if not exist
+    for (const colDef of [
+      { name: 'prs_reviewed_daily', ddl: 'ALTER TABLE user_consumption ADD COLUMN prs_reviewed_daily INTEGER DEFAULT 0' },
+      { name: 'last_daily_reset', ddl: 'ALTER TABLE user_consumption ADD COLUMN last_daily_reset TIMESTAMP DEFAULT NOW()' },
+    ]) {
+      try {
+        const hasCol = await sql`
+          SELECT column_name FROM information_schema.columns
+          WHERE table_name = 'user_consumption' AND column_name = ${colDef.name}
+        `
+        if (hasCol.length === 0) {
+          await sql.unsafe(colDef.ddl)
+          console.log(`Added ${colDef.name} column to user_consumption table`)
+        }
+      } catch (e) {
+        console.log(`Migration info: ${colDef.name} column may already exist`, e)
+      }
     }
 
     console.log('Database initialized successfully')

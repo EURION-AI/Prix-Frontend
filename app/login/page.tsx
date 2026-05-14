@@ -134,7 +134,7 @@ function AffiliateDashboard({ user }: { user: UserData }) {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const response = await fetch(`/api/affiliate/stats?githubId=${user.id}&username=${user.username}`)
+        const response = await fetch(`/api/affiliate/stats`)
         const data = await response.json()
         setStats(data)
       } catch {
@@ -178,8 +178,8 @@ function AffiliateDashboard({ user }: { user: UserData }) {
 
   const tierLabels = {
     free: 'Free Tier',
-    starter: 'Pro Plan',
-    pro: 'Team Plan',
+    starter: 'Starter Plan',
+    pro: 'Pro Plan',
   }
 
   return (
@@ -190,10 +190,10 @@ function AffiliateDashboard({ user }: { user: UserData }) {
         </div>
         <p className="text-white/40 text-sm">
           {stats.tier === 'pro'
-            ? '🎉 You have lifetime Team access!'
+            ? '🎉 You have Pro access!'
             : stats.tier === 'starter'
-            ? '✨ You have lifetime Pro access!'
-            : `Get ${stats.requiredForStarter - stats.paidReferralCount} more paid referrals for Pro, ${stats.requiredForPro - stats.paidReferralCount} for Team`}
+            ? '✨ You have Starter access!'
+            : `Get ${stats.requiredForStarter - stats.paidReferralCount} more paid referrals for Starter, ${stats.requiredForPro - stats.paidReferralCount} for Pro`}
         </p>
       </div>
 
@@ -343,6 +343,7 @@ export default function LoginPage() {
   }, [])
 
   const handleLogout = async () => {
+    try { await fetch('/api/auth/logout', { method: 'POST' }) } catch {}
     document.cookie = 'github_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     document.cookie = 'github_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
     setUser(null)

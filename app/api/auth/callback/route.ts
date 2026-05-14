@@ -31,7 +31,8 @@ function validateState(state: string): boolean {
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
-const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI || `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, '') : ''
+const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI || `${baseUrl}/api/auth/callback`
 
 interface GitHubTokenResponse {
   access_token?: string
@@ -48,6 +49,13 @@ interface GitHubUser {
   email: string | null
   avatar_url: string
   bio: string | null
+}
+
+interface GitHubEmail {
+  email: string
+  primary: boolean
+  verified: boolean
+  visibility: string | null
 }
 
 export async function GET(request: NextRequest) {
@@ -126,6 +134,27 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/login?error=invalid_user', request.url))
     }
 
+    // Fetch primary email from /user/emails (handles private emails)
+    let verifiedEmail: string | null = userData.email || null
+    try {
+      const emailsResponse = await fetch('https://api.github.com/user/emails', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+        },
+      })
+      if (emailsResponse.ok) {
+        const emails: GitHubEmail[] = await emailsResponse.json()
+        const primary = emails.find(e => e.primary && e.verified)
+        if (primary) {
+          verifiedEmail = primary.email
+        }
+      }
+    } catch (err) {
+      console.error('[AUTH] Failed to fetch GitHub emails:', err)
+      // Non-fatal — fall back to public email
+    }
+
     let isNewUser = false
     // Check if user exists and create/update records
     const existingUser = await sql`SELECT id FROM users WHERE github_id = ${userData.id}`
@@ -136,7 +165,7 @@ export async function GET(request: NextRequest) {
     // Create or update main user record
     const userId = `user_${Date.now()}_${userData.id}_${crypto.randomUUID().split('-')[0]}`
     await sql`INSERT INTO users (id, github_id, username, email, avatar_url)
-      VALUES (${userId}, ${userData.id}, ${userData.login.substring(0, 100)}, ${userData.email || null}, ${userData.avatar_url || null})
+      VALUES (${userId}, ${userData.id}, ${userData.login.substring(0, 100)}, ${verifiedEmail}, ${userData.avatar_url || null})
       ON CONFLICT (github_id) DO UPDATE SET
         username = EXCLUDED.username,
         email = EXCLUDED.email,

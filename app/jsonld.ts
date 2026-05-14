@@ -12,7 +12,7 @@ export const softwareApplicationLd = {
       name: 'Free',
       price: '0',
       priceCurrency: 'USD',
-      description: '15 PR reviews per month for public repositories. Includes basic bug detection and GitHub integration.',
+      description: '15 PR fixes per month (5 per day) for public repositories. Includes basic bug detection and GitHub integration. Free forever.',
     },
     {
       '@type': 'Offer',
@@ -73,7 +73,7 @@ export const faqLd = {
       name: 'Is Prix AI free to use?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Prix AI offers a free plan with 15 PR reviews per month for public repositories. Paid plans start at $6.99/month for the Starter plan with 150 reviews and $9.99/month for the Pro plan with 600 reviews and priority processing.',
+        text: 'Yes, Prix AI offers a free plan with 15 PR fixes per month (5 per day) for public repositories. Paid plans start at $6.99/month for the Starter plan with 150 reviews and $9.99/month for the Pro plan with 600 reviews and priority processing.',
       },
     },
     {

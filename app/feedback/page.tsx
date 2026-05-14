@@ -6,6 +6,9 @@ import { FeedbackContent } from './feedback-content'
 export const metadata: Metadata = {
   title: 'Feedback - Help Us Improve Prix',
   description: 'Share your experience with Prix. Your feedback helps us build a better product for the entire developer community.',
+  alternates: {
+    canonical: 'https://www.prixai.xyz/feedback',
+  },
 }
 
 export default function FeedbackPage() {

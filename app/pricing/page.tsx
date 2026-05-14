@@ -5,10 +5,10 @@ import { CTASection } from '@/components/cta-section'
 import { Footer } from '@/components/footer'
 
 export const metadata: Metadata = {
-  title: 'Pricing | Prix AI - Plans for Every Team',
-  description: 'Start free with 5 PR reviews per month. Upgrade to Starter (₹5/month) or Pro (₹10/month) for unlimited AI-powered code review and automated PR fixes.',
+  title: 'Prix AI Pricing — AI Code Review Plans for Every Team',
+  description: 'Start free with 15 PR fixes per month. Upgrade to Starter from $6.99/mo or Pro from $9.99/mo for unlimited AI-powered code review and automated PR fixes.',
   alternates: {
-    canonical: './',
+    canonical: 'https://www.prixai.xyz/pricing',
   },
 }
 
@@ -18,6 +18,7 @@ export default function PricingPage() {
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <Navbar />
       <div className="pt-20">
+        <h1 className="sr-only">Prix AI Pricing — AI Code Review Plans</h1>
         <PricingSection />
       </div>
       <CTASection />

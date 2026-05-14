@@ -20,6 +20,7 @@ export async function POST(request: Request) {
       razorpay_subscription_id,
       razorpay_signature,
       plan,
+      region,
     } = body
 
     if (!razorpay_payment_id || !razorpay_subscription_id || !razorpay_signature) {
@@ -68,8 +69,8 @@ export async function POST(request: Request) {
       const githubId = parseInt(userId, 10)
 
       if (!isNaN(githubId) && githubId > 0) {
-        // Get regional pricing from shared config
-        const pricing = PRICING.IN[plan as keyof typeof PRICING.IN]
+        const userRegion = (region && ['IN', 'US', 'GB', 'EU'].includes(region)) ? region : 'US'
+        const pricing = PRICING[userRegion as keyof typeof PRICING][plan as keyof typeof PRICING.IN]
 
         // CRITICAL: Activate subscription with expiration tracking
         await activateSubscription(githubId, plan, razorpay_subscription_id)

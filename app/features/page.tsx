@@ -13,8 +13,8 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Features | Prix AI - Automated Code Review Platform',
-  description: 'AI-powered code review with automatic bug detection, security scanning, and PR fix generation. Integrates with GitHub, GitLab, and Bitbucket.',
+  title: 'AI Code Review Features | Prix AI — Automated PR Analysis & Fix Generation',
+  description: 'AI-powered code review with automatic bug detection, security scanning, and PR fix generation. Seamless GitHub integration with automatic PR analysis.',
   alternates: {
     canonical: './',
   },
@@ -37,7 +37,7 @@ export default function FeaturesPage() {
             <Link href="/login">Get Started for Free</Link>
           </Button>
           <Button variant="outline" size="lg" asChild className="h-12 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white text-base transition-all duration-300">
-            <Link href="/#pricing">View Pricing</Link>
+            <Link href="/pricing">View Pricing</Link>
           </Button>
         </div>
       </div>
