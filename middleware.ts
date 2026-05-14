@@ -29,12 +29,10 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
 
-  // Development mode requires 'unsafe-eval' for React debugging
-  // Production builds never use eval()
   const isDev = process.env.NODE_ENV === 'development'
   const scriptSrc = isDev 
     ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com"
-    : "'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com"
+    : "'self' https://checkout.razorpay.com https://cdn.razorpay.com"
 
   const cspHeader = `
     default-src 'self';
