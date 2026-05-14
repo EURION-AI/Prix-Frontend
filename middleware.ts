@@ -22,44 +22,26 @@ export function middleware(request: NextRequest) {
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
 
   const isDev = process.env.NODE_ENV === 'development'
+  const scriptSrc = isDev 
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com"
+    : "'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com"
 
-  if (isDev) {
-    const cspHeader = `
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com;
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' data: https:;
-      font-src 'self';
-      connect-src 'self' https: https://api.razorpay.com https://lumberjack.razorpay.com;
-      frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      frame-ancestors 'none';
-      upgrade-insecure-requests;
-    `.replace(/\s{2,}/g, ' ').trim()
-    response.headers.set('Content-Security-Policy', cspHeader)
-  } else {
-    const bytes = new Uint8Array(16)
-    crypto.getRandomValues(bytes)
-    const nonce = btoa(String.fromCharCode(...bytes))
-    const cspHeader = `
-      default-src 'self';
-      script-src 'self' 'nonce-${nonce}' https://checkout.razorpay.com https://cdn.razorpay.com;
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' data: https:;
-      font-src 'self';
-      connect-src 'self' https: https://api.razorpay.com https://lumberjack.razorpay.com;
-      frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      frame-ancestors 'none';
-      upgrade-insecure-requests;
-    `.replace(/\s{2,}/g, ' ').trim()
-    response.headers.set('Content-Security-Policy', cspHeader)
-    response.headers.set('x-nonce', nonce)
-  }
+  const cspHeader = `
+    default-src 'self';
+    script-src ${scriptSrc};
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: https:;
+    font-src 'self';
+    connect-src 'self' https: https://api.razorpay.com https://lumberjack.razorpay.com;
+    frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+  `.replace(/\s{2,}/g, ' ').trim()
+
+  response.headers.set('Content-Security-Policy', cspHeader)
 
   return response
 }
