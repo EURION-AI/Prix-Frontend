@@ -85,13 +85,6 @@ export async function POST(request: Request) {
 
     // 3. Get Existing Subscription
     const subscriptionId = await getUserSubscriptionId(githubId)
-    if (!subscriptionId) {
-      return NextResponse.json({ error: 'No active subscription found' }, { status: 404 })
-    }
-
-    if (subscriptionId.startsWith('legacy_')) {
-      return NextResponse.json({ error: 'Legacy payments cannot be upgraded mid-cycle. Please wait for expiry.' }, { status: 400 })
-    }
 
     const razorpay = getRazorpayClient()
     if (!razorpay) {
@@ -104,13 +97,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Target plan not found' }, { status: 404 })
     }
 
-    // 5. Update Subscription on Razorpay
-    // schedule_change_at: 'now' ensures instant upgrade with automatic proration charge
+    // If no existing subscription, create a new one instead of rejecting
+    if (!subscriptionId || subscriptionId.startsWith('legacy_')) {
+      console.log(`[UPGRADE] No active subscription for user ${githubId}, creating new Pro subscription`)
+      const newSubscription = await (razorpay as any).subscriptions.create({
+        plan_id: razorpayPlanId,
+        total_count: 120,
+        customer_notify: 1,
+        notes: {
+          plan: newPlanId,
+          userId: String(githubId),
+          region,
+        },
+      })
+
+      return NextResponse.json({
+        subscriptionId: newSubscription.id,
+        key: process.env.RAZORPAY_KEY_ID,
+      })
+    }
+
+    // 5. Update Existing Subscription on Razorpay
     try {
       const updatedSubscription = await (razorpay as any).subscriptions.update(subscriptionId, {
         plan_id: razorpayPlanId,
         schedule_change_at: 'now',
-        customer_notify: 1, // Notify user via email
+        customer_notify: 1,
       })
 
       console.log(`[UPGRADE] Successfully upgraded ${subscriptionId} to ${newPlanId}`)
@@ -122,8 +134,6 @@ export async function POST(request: Request) {
       })
 
     } catch (razorpayError: any) {
-      // 6. Specific Error Handling for Proration Minimums
-      // Razorpay requires the prorated difference to be at least 1 unit (e.g. ₹1 or $1)
       const errorMsg = razorpayError.description || razorpayError.message || ''
       
       if (errorMsg.toLowerCase().includes('amount') || errorMsg.toLowerCase().includes('proration')) {
@@ -134,7 +144,7 @@ export async function POST(request: Request) {
         }, { status: 400 })
       }
 
-      throw razorpayError // Re-throw generic errors
+      throw razorpayError
     }
 
   } catch (error: any) {
