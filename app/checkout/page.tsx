@@ -202,7 +202,7 @@ function CheckoutContent() {
           <RazorpayCheckoutButton
             plan={planId}
             amount={isUpgrade ? upgradePriceCents : displayPricePaise}
-            currency={isUpgrade ? 'USD' : pricing.currency}
+            currency={pricing.currency}
             userId={userId}
             region={region}
             userName={userName}
@@ -218,7 +218,7 @@ function CheckoutContent() {
           <PayPalCheckoutButton
             plan={planId}
             amount={isUpgrade ? upgradePriceCents : displayPricePaise}
-            currency={isUpgrade ? 'USD' : pricing.currency}
+            currency={pricing.currency}
             userId={userId}
             region={region}
             userName={userName}

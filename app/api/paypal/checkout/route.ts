@@ -86,6 +86,9 @@ export async function POST(request: Request) {
       { plan, userId: String(authed.githubId), region }
     )
 
+    const approvalUrl = subscription.links?.find((l: any) => l.rel === 'approve')?.href
+    console.log(`[PAYPAL] Subscription created: ${subscription.id}, approval: ${approvalUrl}`)
+
     return NextResponse.json({
       subscriptionId: subscription.id,
       status: subscription.status,

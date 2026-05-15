@@ -126,8 +126,10 @@ export async function POST(request: Request) {
           subscriptionId: updatedSubscription.id,
         })
       } catch (razorpayError: any) {
-        const errorMsg = razorpayError.description || razorpayError.message || ''
-        console.error(`[UPGRADE] Subscription update failed: ${errorMsg}`)
+        const description = razorpayError.error?.description || razorpayError.description || ''
+        const message = razorpayError.error?.message || razorpayError.message || ''
+        const errorMsg = description || message
+        console.error(`[UPGRADE] Subscription update failed:`, JSON.stringify(razorpayError))
 
         if (errorMsg.toLowerCase().includes('amount') || errorMsg.toLowerCase().includes('proration')) {
           return NextResponse.json({
@@ -137,18 +139,17 @@ export async function POST(request: Request) {
           }, { status: 400 })
         }
 
-        return NextResponse.json({
-          error: 'Could not upgrade subscription',
-          details: `Razorpay update failed: ${errorMsg}. Please try again or contact support.`,
-        }, { status: 400 })
+        // Fall through to create a new subscription at the upgrade price below
+        console.warn(`[UPGRADE] Subscription update failed, falling back to new upgrade sub: ${errorMsg}`)
       }
     }
 
     // User has no active subscription — create a new one at the upgrade price
     // (legacy, reward, or new user upgrading directly)
     const upgradeCents = UPGRADE_PRICE_CENTS[region] || 299
-    const upgradeCurrency = region === 'IN' ? 'INR' : 'USD'
-    console.log(`[UPGRADE] Creating new Pro subscription for user ${githubId} at upgrade price ${upgradeCents} ${upgradeCurrency}`)
+    const upgradeCurrency: Record<string, string> = { IN: 'INR', US: 'USD', GB: 'GBP', EU: 'EUR' }
+    const currency = upgradeCurrency[region] || 'USD'
+    console.log(`[UPGRADE] Creating new Pro subscription for user ${githubId} at upgrade price ${upgradeCents} ${currency}`)
 
     try {
       const upgradePlan = await (razorpay as any).plans.create({
@@ -157,7 +158,7 @@ export async function POST(request: Request) {
         item: {
           name: `Prix AI Pro Upgrade (${region})`,
           amount: upgradeCents,
-          currency: upgradeCurrency,
+          currency,
           description: 'One-time upgrade from Starter to Pro',
         },
       })
