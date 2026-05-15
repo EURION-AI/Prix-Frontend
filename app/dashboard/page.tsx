@@ -55,12 +55,15 @@ export default function DashboardPage() {
   const [isValidating, setIsValidating] = useState(false)
   const [showInstallPrompt, setShowInstallPrompt] = useState(false)
   const [pendingAppName, setPendingAppName] = useState('prix-ai-automation')
+  const [promptError, setPromptError] = useState<string | null>(null)
+  const [isCheckingInstall, setIsCheckingInstall] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('pending_install') === 'true') {
       setPendingAppName(params.get('app') || 'prix-ai-automation')
       setShowInstallPrompt(true)
+      setPromptError(null)
       window.history.replaceState({}, '', '/dashboard')
     }
   }, [])
@@ -288,17 +291,23 @@ export default function DashboardPage() {
   }
 
   const handleCheckInstallation = async () => {
+    setIsCheckingInstall(true)
+    setPromptError(null)
+
     await validateInstallation()
     let userRes = await fetch('/api/auth/user')
-    if (!userRes.ok) return
+    if (!userRes.ok) {
+      setIsCheckingInstall(false)
+      return
+    }
     let data = await userRes.json()
 
     if (data.user.githubInstallationId) {
       setShowInstallPrompt(false)
-      setError(null)
       setInfoMessage('GitHub App found! ✅ Select repos below to get started.')
       setUser(data.user)
       await fetchRepos()
+      setIsCheckingInstall(false)
       return
     }
 
@@ -307,7 +316,6 @@ export default function DashboardPage() {
 
     if (discoverData.found) {
       setShowInstallPrompt(false)
-      setError(null)
       setInfoMessage('GitHub App found! ✅ Select repos below to get started.')
       userRes = await fetch('/api/auth/user')
       if (userRes.ok) {
@@ -316,8 +324,9 @@ export default function DashboardPage() {
       }
       await fetchRepos()
     } else {
-      setError('No installation found. Make sure you installed the Prix GitHub App on the correct account, then click "I\'ve already installed" again.')
+      setPromptError('No installation found. Make sure you installed the Prix GitHub App on the correct account, then try again.')
     }
+    setIsCheckingInstall(false)
   }
 
   return (
@@ -332,10 +341,18 @@ export default function DashboardPage() {
                 <Github className="w-8 h-8 text-primary" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-3">Install Prix on GitHub</h2>
-              <p className="text-white/50 text-sm leading-relaxed mb-8">
+              <p className="text-white/50 text-sm leading-relaxed mb-6">
                 Prix needs access to your repositories through the GitHub App.
                 Click below to install it, or if you&apos;ve already installed it, click &quot;Check Installation&quot;.
               </p>
+
+              {promptError && (
+                <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-2 text-red-400 text-sm text-left">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{promptError}</span>
+                </div>
+              )}
+
               <div className="space-y-3">
                 <a
                   href={`https://github.com/apps/${pendingAppName}/installations/new`}
@@ -348,9 +365,17 @@ export default function DashboardPage() {
                 </a>
                 <button
                   onClick={handleCheckInstallation}
-                  className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white rounded-xl font-medium transition-all"
+                  disabled={isCheckingInstall}
+                  className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  I&apos;ve already installed — Check
+                  {isCheckingInstall ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Checking...
+                    </>
+                  ) : (
+                    'I\'ve already installed — Check'
+                  )}
                 </button>
               </div>
             </div>
