@@ -33,6 +33,16 @@ export async function POST(request: Request) {
   }
 
   try {
+    // Record as processed BEFORE handling to prevent double-processing on crash/retry
+    try {
+      await sql`
+        INSERT INTO processed_webhooks (event_id) VALUES (${eventId})
+        ON CONFLICT (event_id) DO NOTHING
+      `
+    } catch (e) {
+      console.error('[PAYPAL_WEBHOOK] Failed to record processed event:', e)
+    }
+
     const eventType = event.event_type
     console.log(`[PAYPAL_WEBHOOK] Received event: ${eventType}`)
 
@@ -170,15 +180,6 @@ export async function POST(request: Request) {
 
       default:
         console.log(`[PAYPAL_WEBHOOK] Unhandled event type: ${eventType}`)
-    }
-
-    try {
-      await sql`
-        INSERT INTO processed_webhooks (event_id) VALUES (${eventId})
-        ON CONFLICT (event_id) DO NOTHING
-      `
-    } catch (e) {
-      console.error('[PAYPAL_WEBHOOK] Failed to record processed event:', e)
     }
 
     try {

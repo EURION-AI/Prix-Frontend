@@ -31,14 +31,25 @@ export async function POST(request: Request) {
       )
     }
 
-    const subscription = await getPayPalSubscriptionDetails(subscription_id)
+    // Poll for ACTIVE status with retries (handles race where PayPal hasn't synced yet)
+    let subscription = await getPayPalSubscriptionDetails(subscription_id)
+    const ACCEPTED_STATUSES = ['ACTIVE', 'APPROVAL_PENDING']
 
-    if (subscription.status !== 'ACTIVE') {
-      console.error(`PayPal subscription ${subscription_id} is not active, status: ${subscription.status}`)
-      return NextResponse.json(
-        { error: `Subscription is not active. Current status: ${subscription.status}` },
-        { status: 400 }
-      )
+    if (!ACCEPTED_STATUSES.includes(subscription.status)) {
+      let retries = 0
+      while (retries < 5 && subscription.status === 'APPROVAL_PENDING') {
+        await new Promise(r => setTimeout(r, 1000))
+        subscription = await getPayPalSubscriptionDetails(subscription_id)
+        retries++
+      }
+
+      if (subscription.status !== 'ACTIVE') {
+        console.error(`PayPal subscription ${subscription_id} is not active after retries, status: ${subscription.status}`)
+        return NextResponse.json(
+          { error: `Subscription is not active. Current status: ${subscription.status}` },
+          { status: 400 }
+        )
+      }
     }
 
     if (userId && userId !== 'anonymous') {
