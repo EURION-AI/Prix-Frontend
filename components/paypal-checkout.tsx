@@ -35,6 +35,10 @@ export function PayPalCheckoutButton({
   const [scriptError, setScriptError] = useState(false)
   const [showManualLink, setShowManualLink] = useState(false)
   const [pendingApprovalLink, setPendingApprovalLink] = useState('')
+  const [pendingSubscriptionId, setPendingSubscriptionId] = useState('')
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false)
+
+  const STORAGE_KEY = `paypal_verified_${plan}_${region}`
 
   const formatDisplayPrice = (amount: number, currency: string): string => {
     if (currency === 'INR') {
@@ -45,6 +49,10 @@ export function PayPalCheckoutButton({
   }
 
   useEffect(() => {
+    if (sessionStorage.getItem(STORAGE_KEY) === 'true') {
+      setPaymentConfirmed(true)
+    }
+
     const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
     if (!clientId) {
       setScriptError(true)
@@ -91,6 +99,16 @@ export function PayPalCheckoutButton({
   }
 
   const handlePayment = async () => {
+    if (paymentConfirmed) {
+      onSuccess()
+      return
+    }
+
+    if (upgradeParam) {
+      onError('PayPal upgrade is not supported yet. Please use Razorpay for upgrades.')
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -139,6 +157,7 @@ export function PayPalCheckoutButton({
 
       if (!popup || popup.closed) {
         setPendingApprovalLink(approvalLink)
+        setPendingSubscriptionId(data.subscriptionId)
         setShowManualLink(true)
         setIsLoading(false)
         return
@@ -173,6 +192,8 @@ export function PayPalCheckoutButton({
 
       setTimeout(() => {
         clearInterval(pollTimer)
+        setIsLoading(false)
+        onError('Payment window timed out. Please try again.')
       }, 300000)
     } catch (error) {
       onError(error instanceof Error ? error.message : 'Failed to initiate PayPal payment')
@@ -197,6 +218,11 @@ export function PayPalCheckoutButton({
         throw new Error(verifyData.error || 'Payment verification failed')
       }
 
+      setShowManualLink(false)
+      setPendingApprovalLink('')
+      setPaymentConfirmed(true)
+      sessionStorage.setItem(STORAGE_KEY, 'true')
+      setIsLoading(false)
       onSuccess()
     } catch (error) {
       onError(error instanceof Error ? error.message : 'Payment verification failed')
@@ -231,11 +257,20 @@ export function PayPalCheckoutButton({
               Open PayPal
             </a>
             <p className="text-white/30 text-xs">
-              After completing payment, return here and click &quot;Subscribe&quot; again to verify.
+              After approving on PayPal, click &quot;Check Payment&quot; to verify.
             </p>
             <button
+              onClick={() => verifyAndActivate(pendingSubscriptionId)}
+              disabled={isLoading}
+              className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/10 text-white rounded-xl font-medium transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Verifying...</>
+              ) : 'Check Payment'}
+            </button>
+            <button
               onClick={closeManualLink}
-              className="mt-3 text-white/40 hover:text-white text-sm transition-colors"
+              className="mt-2 text-white/40 hover:text-white text-xs transition-colors"
             >
               Dismiss
             </button>
@@ -244,10 +279,16 @@ export function PayPalCheckoutButton({
       )}
       <button
         onClick={scriptError ? retryScript : handlePayment}
-        disabled={disabled || isLoading || (!isScriptLoaded && !scriptError)}
+        disabled={disabled || isLoading || (!isScriptLoaded && !scriptError) || paymentConfirmed}
         className="w-full h-14 rounded-xl bg-[#0070ba] text-white font-bold text-base hover:bg-[#003087] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
       >
-        {scriptError ? (
+        {upgradeParam ? (
+          'Upgrade via Razorpay'
+        ) : paymentConfirmed ? (
+          <>
+            Payment Confirmed ✓
+          </>
+        ) : scriptError ? (
           'Retry Loading PayPal'
         ) : isLoading ? (
           <>
