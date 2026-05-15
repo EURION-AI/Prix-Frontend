@@ -111,57 +111,59 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Target plan not found' }, { status: 404 })
     }
 
-    if (!subscriptionId || subscriptionId.startsWith('legacy_') || subscriptionId.startsWith('reward_')) {
-      console.log(`[UPGRADE] No active subscription for user ${githubId}, creating new Pro subscription.`)
+    // Try to update the existing subscription. If that fails (e.g., API version incompatibility,
+    // invalid subscription state, etc.), fall back to creating a new subscription.
+    if (subscriptionId && !subscriptionId.startsWith('legacy_') && !subscriptionId.startsWith('reward_')) {
       try {
-        const newSubscription = await (razorpay as any).subscriptions.create({
+        const updatedSubscription = await (razorpay as any).subscriptions.update(subscriptionId, {
           plan_id: razorpayPlanId,
-          total_count: 120,
+          schedule_change_at: 'now',
           customer_notify: 1,
-          notes: {
-            plan: newPlanId,
-            userId: String(githubId),
-            region,
-          },
         })
+
         return NextResponse.json({
-          subscriptionId: newSubscription.id,
-          key: process.env.RAZORPAY_KEY_ID,
+          success: true,
+          message: 'Subscription upgraded successfully. Prorated difference will be charged.',
+          subscriptionId: updatedSubscription.id,
         })
-      } catch (createErr: any) {
-        console.error('[UPGRADE] Razorpay subscription creation failed:', createErr)
-        return NextResponse.json({
-          error: 'Failed to create subscription',
-          details: createErr.description || createErr.message || 'Unknown Razorpay error',
-        }, { status: 500 })
+      } catch (razorpayError: any) {
+        const errorMsg = razorpayError.description || razorpayError.message || ''
+        console.warn(`[UPGRADE] Subscription update failed, falling back to new subscription: ${errorMsg}`)
+
+        if (errorMsg.toLowerCase().includes('amount') || errorMsg.toLowerCase().includes('proration')) {
+          return NextResponse.json({
+            error: 'Proration limit reached',
+            details: 'The remaining time in your current cycle results in a difference too small to charge. You will be automatically moved to the new plan at the start of your next billing cycle.',
+            code: 'PRORATION_AMOUNT_TOO_LOW'
+          }, { status: 400 })
+        }
+        // Fall through to create a new subscription below
       }
     }
 
+    // Create a new subscription (for new users or when update fails)
+    console.log(`[UPGRADE] Creating new Pro subscription for user ${githubId}`)
     try {
-      const updatedSubscription = await (razorpay as any).subscriptions.update(subscriptionId, {
+      const newSubscription = await (razorpay as any).subscriptions.create({
         plan_id: razorpayPlanId,
-        schedule_change_at: 'now',
+        total_count: 120,
         customer_notify: 1,
+        notes: {
+          plan: newPlanId,
+          userId: String(githubId),
+          region,
+        },
       })
-
       return NextResponse.json({
-        success: true,
-        message: 'Subscription upgraded successfully. Prorated difference will be charged.',
-        subscriptionId: updatedSubscription.id,
+        subscriptionId: newSubscription.id,
+        key: process.env.RAZORPAY_KEY_ID,
       })
-
-    } catch (razorpayError: any) {
-      const errorMsg = razorpayError.description || razorpayError.message || ''
-      
-      if (errorMsg.toLowerCase().includes('amount') || errorMsg.toLowerCase().includes('proration')) {
-        return NextResponse.json({
-          error: 'Proration limit reached',
-          details: 'The remaining time in your current cycle results in a difference too small to charge. You will be automatically moved to the new plan at the start of your next billing cycle.',
-          code: 'PRORATION_AMOUNT_TOO_LOW'
-        }, { status: 400 })
-      }
-
-      throw razorpayError
+    } catch (createErr: any) {
+      console.error('[UPGRADE] Razorpay subscription creation failed:', createErr)
+      return NextResponse.json({
+        error: 'Failed to create subscription',
+        details: createErr.description || createErr.message || 'Unknown Razorpay error',
+      }, { status: 500 })
     }
 
   } catch (error: any) {
