@@ -218,16 +218,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const response = NextResponse.redirect(new URL(`/dashboard${referralMessage}`, request.url))
-
-    response.cookies.set('github_token', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
-
+    // Determine redirect: new users go to GitHub App install, returning users go to dashboard
+    let redirectPath: string
+    const GITHUB_APP_NAME = process.env.GITHUB_APP_NAME || 'prix-ai-automation'
     let selectedRepos: string[] = []
     let prsReviewed: number = 0
     let plan: string = 'free'
@@ -241,12 +234,21 @@ export async function GET(request: NextRequest) {
       plan = userRecord[0]?.plan || 'free'
       githubInstallationId = userRecord[0]?.github_installation_id
       installationStatus = userRecord[0]?.installation_status || 'disconnected'
+      
+      // If user already has an active App installation, go to dashboard
+      if (githubInstallationId && installationStatus === 'connected') {
+        redirectPath = `/dashboard${referralMessage}`
+      } else {
+        // New user — redirect to GitHub App install page immediately
+        // After install, GitHub redirects back to /dashboard?installation_id=XXX
+        redirectPath = `https://github.com/apps/${GITHUB_APP_NAME}/installations/new`
+      }
     } catch (error: any) {
+      redirectPath = `/dashboard${referralMessage}`
       // Handle missing columns gracefully
       if (error.message?.includes('column') || error.message?.includes('does not exist')) {
         console.log('[AUTH] Database schema missing columns, using fallback values')
         try {
-          // Try to get basic user data without the missing columns
           const basicRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
           selectedRepos = basicRecord[0]?.selected_repos || []
           prsReviewed = basicRecord[0]?.prs_reviewed || 0
@@ -255,9 +257,19 @@ export async function GET(request: NextRequest) {
           console.log('[AUTH] Using default values - no user data found')
         }
       } else {
-        throw error // Re-throw if it's not a column error
+        throw error
       }
     }
+
+    const response = NextResponse.redirect(redirectPath)
+
+    response.cookies.set('github_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    })
 
     // Store user data in httpOnly cookie (secure from XSS)
     response.cookies.set('github_user', JSON.stringify({

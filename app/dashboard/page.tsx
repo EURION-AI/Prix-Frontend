@@ -65,6 +65,10 @@ export default function DashboardPage() {
       const params = new URLSearchParams(window.location.search)
       const installationId = params.get('installation_id')
 
+      if (params.get('error') === 'access_denied') {
+        setError('You cancelled the GitHub App installation. Prix needs the app installed to work with your repositories. Click the button above to try again.')
+      }
+
       if (params.get('message') === 'account_exists_no_referral') {
         setInfoMessage('You already have an account! You have been logged in. Referral link was ignored.')
       }
@@ -77,7 +81,7 @@ export default function DashboardPage() {
             body: JSON.stringify({ installationId }),
           })
           if (response.ok) {
-            setInfoMessage('Successfully mounted repositories! You can now select them below.')
+            setInfoMessage('GitHub App installed! ✅ Click below to select which repos you want Prix to watch.')
             // Refresh user data immediately to update UI state (Mount -> Manage)
             const userResponse = await fetch('/api/auth/user')
             if (userResponse.ok) {
@@ -290,12 +294,6 @@ export default function DashboardPage() {
             <p className="text-white/50 text-lg max-w-2xl">
               Select a GitHub repository to enable Prix's automated intelligence and performance monitoring.
             </p>
-            <div className="mt-4 px-5 py-3 bg-primary/10 border border-primary/20 rounded-xl inline-flex items-center gap-3 text-sm">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse flex-shrink-0" />
-              <span className="text-white/70">
-                First time? Click <strong className="text-primary font-bold">Mount Repositories</strong> to install the Prix GitHub App on your repos, then select them below.
-              </span>
-            </div>
             {user && user.plan !== 'free' && user.planExpiresAt && (
               <div className="mt-3 flex items-center gap-2 text-sm">
                 <CreditCard className="w-4 h-4 text-primary" />
@@ -312,20 +310,25 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-3">
-            <a 
-              href={user?.githubInstallationId 
-                ? `https://github.com/settings/installations/${user.githubInstallationId}`
-                : `https://github.com/apps/prix-ai-automation/installations/new`
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl transition-all flex items-center gap-2 group"
-            >
-              <Github className="w-4 h-4 text-primary" />
-              <span className="font-medium text-primary">
-                {user?.githubInstallationId ? 'Manage Repositories' : 'Mount Repositories'}
-              </span>
-            </a>
+            <div className="flex flex-col items-end gap-1.5">
+              <a 
+                href={user?.githubInstallationId 
+                  ? `https://github.com/settings/installations/${user.githubInstallationId}`
+                  : `https://github.com/apps/prix-ai-automation/installations/new`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl transition-all flex items-center gap-2 group"
+              >
+                <Github className="w-4 h-4 text-primary" />
+                <span className="font-medium text-primary">
+                  {user?.githubInstallationId ? 'Manage Repositories' : 'Mount Repositories'}
+                </span>
+              </a>
+              <p className="text-[11px] text-white/30 text-right max-w-[200px] leading-tight">
+                Click here to install the Prix bot on your repos or change which repos it can access.
+              </p>
+            </div>
 
             <Link 
               href="/affiliate"
