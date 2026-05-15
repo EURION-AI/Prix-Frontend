@@ -6,7 +6,6 @@ import { Suspense } from 'react'
 import { Loader2, Check, ArrowLeft, AlertCircle, Crown, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
-import { PayPalCheckoutButton } from '@/components/paypal-checkout'
 import { PaymentMethodSelector } from '@/components/payment-method-selector'
 import { PRICING, getPricing, formatPrice, getUserRegion, UPGRADE_PRICE, UPGRADE_PRICE_CENTS, type Region, type Plan } from '@/lib/pricing'
 
@@ -65,7 +64,7 @@ function CheckoutContent() {
   const [userName, setUserName] = useState<string>('')
   const [userEmail, setUserEmail] = useState<string>('')
   const [userPlan, setUserPlan] = useState<string | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'paypal' | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | null>(null)
 
   const plan = { ...(PLAN_DETAILS[planId] || PLAN_DETAILS.starter) }
   const pricing = getPricing(region, planId)
@@ -214,27 +213,13 @@ function CheckoutContent() {
           />
         )}
 
-        {paymentMethod === 'paypal' && (
-          <PayPalCheckoutButton
-            plan={planId}
-            amount={isUpgrade ? upgradePriceCents : displayPricePaise}
-            currency={pricing.currency}
-            userId={userId}
-            region={region}
-            userName={userName}
-            userEmail={userEmail}
-            upgrade={isUpgrade ? 'true' : null}
-            onSuccess={handleSuccess}
-            onError={handleError}
-            disabled={isLoading}
-          />
-        )}
+
       </div>
 
       <div className="flex flex-col items-center gap-4 mt-6">
         <div className="flex items-center gap-2 text-white/30 text-xs">
           <Shield className="w-4 h-4" />
-          <span>Secure payment powered by {paymentMethod === 'paypal' ? 'PayPal' : 'Razorpay'}</span>
+          <span>Secure payment powered by Razorpay</span>
         </div>
 
         <Link

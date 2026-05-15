@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const SUPPORTED_PAYPAL_CURRENCIES = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY', 'MXN']
+    const SUPPORTED_PAYPAL_CURRENCIES = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY', 'MXN', 'INR']
 
     // Use region's pricing, but fall back to US pricing if currency isn't supported by PayPal
     const regionalPricing = PRICING[region as keyof typeof PRICING] || PRICING.US

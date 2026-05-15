@@ -111,7 +111,7 @@ export default function DashboardPage() {
       try {
         const response = await fetch('/api/auth/user')
         if (!response.ok) {
-          window.location.href = '/login'
+          window.location.href = '/login?loop_detected=1'
           return
         }
         const data = await response.json()
@@ -125,7 +125,7 @@ export default function DashboardPage() {
         
         await fetchRepos()
       } catch {
-        window.location.href = '/login'
+        window.location.href = '/login?loop_detected=1'
       }
     }
 
