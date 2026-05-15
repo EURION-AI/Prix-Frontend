@@ -53,6 +53,17 @@ export default function DashboardPage() {
   const [installationValid, setInstallationValid] = useState<boolean | null>(null)
   const [installationStatus, setInstallationStatus] = useState<string | null>(null)
   const [isValidating, setIsValidating] = useState(false)
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false)
+  const [pendingAppName, setPendingAppName] = useState('prix-ai-automation')
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('pending_install') === 'true') {
+      setPendingAppName(params.get('app') || 'prix-ai-automation')
+      setShowInstallPrompt(true)
+      window.history.replaceState({}, '', '/dashboard')
+    }
+  }, [])
 
   useEffect(() => {
     async function initializeDashboard() {
@@ -67,12 +78,6 @@ export default function DashboardPage() {
 
       if (params.get('error') === 'access_denied') {
         setError('You cancelled the GitHub App installation. Prix needs the app installed to work with your repositories. Click the button above to try again.')
-      }
-
-      if (params.get('pending_install') === 'true') {
-        const appName = params.get('app') || 'prix-ai-automation'
-        window.location.href = `https://github.com/apps/${appName}/installations/new`
-        return
       }
 
       if (params.get('message') === 'account_exists_no_referral') {
@@ -282,9 +287,77 @@ export default function DashboardPage() {
     )
   }
 
+  const handleCheckInstallation = async () => {
+    await validateInstallation()
+    let userRes = await fetch('/api/auth/user')
+    if (!userRes.ok) return
+    let data = await userRes.json()
+
+    if (data.user.githubInstallationId) {
+      setShowInstallPrompt(false)
+      setError(null)
+      setInfoMessage('GitHub App found! ✅ Select repos below to get started.')
+      setUser(data.user)
+      await fetchRepos()
+      return
+    }
+
+    const discoverRes = await fetch('/api/github/discover-installation')
+    const discoverData = await discoverRes.json()
+
+    if (discoverData.found) {
+      setShowInstallPrompt(false)
+      setError(null)
+      setInfoMessage('GitHub App found! ✅ Select repos below to get started.')
+      userRes = await fetch('/api/auth/user')
+      if (userRes.ok) {
+        data = await userRes.json()
+        setUser(data.user)
+      }
+      await fetchRepos()
+    } else {
+      setError('No installation found. Make sure you installed the Prix GitHub App on the correct account, then click "I\'ve already installed" again.')
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#050508] text-white selection:bg-primary/30">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none" />
+
+      {showInstallPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="relative max-w-md w-full mx-4 p-8 rounded-3xl border border-white/10 bg-[#0c0c12] shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                <Github className="w-8 h-8 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-3">Install Prix on GitHub</h2>
+              <p className="text-white/50 text-sm leading-relaxed mb-8">
+                Prix needs access to your repositories through the GitHub App.
+                Click below to install it, or if you&apos;ve already installed it, click &quot;Check Installation&quot;.
+              </p>
+              <div className="space-y-3">
+                <a
+                  href={`https://github.com/apps/${pendingAppName}/installations/new`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <Github className="w-4 h-4" />
+                  Install App
+                </a>
+                <button
+                  onClick={handleCheckInstallation}
+                  className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white rounded-xl font-medium transition-all"
+                >
+                  I&apos;ve already installed — Check
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 pt-32 pb-20">
