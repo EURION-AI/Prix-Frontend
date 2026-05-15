@@ -92,12 +92,27 @@ export interface PayPalPlan {
   product_id: string
 }
 
+async function ensurePayPalPlansTable() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS paypal_plans (
+      id SERIAL PRIMARY KEY,
+      internal_plan_id VARCHAR(50) UNIQUE NOT NULL,
+      paypal_plan_id VARCHAR(100) NOT NULL,
+      product_id VARCHAR(100) NOT NULL,
+      amount INTEGER NOT NULL,
+      currency VARCHAR(3) NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `
+}
+
 export async function createPayPalPlan(
   planKey: string,
   amount: number,
   currency: string,
   planName: string
 ): Promise<PayPalPlan> {
+  await ensurePayPalPlansTable()
   const cached = await sql`
     SELECT paypal_plan_id, product_id FROM paypal_plans WHERE internal_plan_id = ${planKey}
   `
