@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ArrowUpRight, ExternalLink } from 'lucide-react'
 
 interface PayPalCheckoutButtonProps {
   plan: 'starter' | 'pro'
@@ -33,6 +33,8 @@ export function PayPalCheckoutButton({
   const [isLoading, setIsLoading] = useState(false)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [scriptError, setScriptError] = useState(false)
+  const [showManualLink, setShowManualLink] = useState(false)
+  const [pendingApprovalLink, setPendingApprovalLink] = useState('')
 
   const formatDisplayPrice = (amount: number, currency: string): string => {
     if (currency === 'INR') {
@@ -135,8 +137,10 @@ export function PayPalCheckoutButton({
         'width=600,height=700,scrollbars=yes'
       )
 
-      if (!popup) {
-        window.location.href = approvalLink
+      if (!popup || popup.closed) {
+        setPendingApprovalLink(approvalLink)
+        setShowManualLink(true)
+        setIsLoading(false)
         return
       }
 
@@ -200,33 +204,71 @@ export function PayPalCheckoutButton({
     }
   }
 
+  const closeManualLink = () => {
+    setShowManualLink(false)
+    setPendingApprovalLink('')
+  }
+
   return (
-    <button
-      onClick={scriptError ? retryScript : handlePayment}
-      disabled={disabled || isLoading || (!isScriptLoaded && !scriptError)}
-      className="w-full h-14 rounded-xl bg-[#0070ba] text-white font-bold text-base hover:bg-[#003087] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-    >
-      {scriptError ? (
-        'Retry Loading PayPal'
-      ) : isLoading ? (
-        <>
-          <Loader2 className="w-5 h-5 animate-spin" />
-          Processing...
-        </>
-      ) : !isScriptLoaded ? (
-        <>
-          <Loader2 className="w-5 h-5 animate-spin" />
-          Loading PayPal...
-        </>
-      ) : (
-        <>
-          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-            <path d="M17.81 4.04A6.37 6.37 0 0 0 13.6 2H4.35a1.8 1.8 0 0 0-1.79 1.54L.8 15.62a1.07 1.07 0 0 0 1.06 1.24h3.97l1.02-6.48-.03.18c.1-.61.63-1.06 1.26-1.06h3.49c2.29 0 4.24 1.65 4.6 3.88H16.8l1.01-6.42z"/>
-            <path d="M8.9 1.79A1.8 1.8 0 0 1 10.69.25h8.9a6.37 6.37 0 0 1 4.22 2.04c.4.47.72 1 .95 1.56l-1.01 6.42h.01c-.36-2.23-2.31-3.88-4.6-3.88h-3.49c-.63 0-1.16.45-1.26 1.06l-.03.18-1.02 6.48H8.9l-1.01-6.42H7.87l1.03-6.53z" opacity=".3"/>
-          </svg>
-          Subscribe {formatDisplayPrice(amount, currency)}/mo
-        </>
+    <>
+      {showManualLink && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="relative max-w-sm w-full mx-4 p-6 rounded-2xl border border-white/10 bg-[#0c0c12] shadow-2xl text-center">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <ExternalLink className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2">Complete Payment on PayPal</h3>
+            <p className="text-white/50 text-sm mb-5">
+              Your browser blocked the popup. Click the button below to open PayPal directly.
+            </p>
+            <a
+              href={pendingApprovalLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 bg-[#0070ba] hover:bg-[#003087] text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 mb-3"
+            >
+              <ArrowUpRight className="w-4 h-4" />
+              Open PayPal
+            </a>
+            <p className="text-white/30 text-xs">
+              After completing payment, return here and click &quot;Subscribe&quot; again to verify.
+            </p>
+            <button
+              onClick={closeManualLink}
+              className="mt-3 text-white/40 hover:text-white text-sm transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
       )}
-    </button>
+      <button
+        onClick={scriptError ? retryScript : handlePayment}
+        disabled={disabled || isLoading || (!isScriptLoaded && !scriptError)}
+        className="w-full h-14 rounded-xl bg-[#0070ba] text-white font-bold text-base hover:bg-[#003087] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+      >
+        {scriptError ? (
+          'Retry Loading PayPal'
+        ) : isLoading ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Processing...
+          </>
+        ) : !isScriptLoaded ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Loading PayPal...
+          </>
+        ) : (
+          <>
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
+              <path d="M17.81 4.04A6.37 6.37 0 0 0 13.6 2H4.35a1.8 1.8 0 0 0-1.79 1.54L.8 15.62a1.07 1.07 0 0 0 1.06 1.24h3.97l1.02-6.48-.03.18c.1-.61.63-1.06 1.26-1.06h3.49c2.29 0 4.24 1.65 4.6 3.88H16.8l1.01-6.42z"/>
+              <path d="M8.9 1.79A1.8 1.8 0 0 1 10.69.25h8.9a6.37 6.37 0 0 1 4.22 2.04c.4.47.72 1 .95 1.56l-1.01 6.42h.01c-.36-2.23-2.31-3.88-4.6-3.88h-3.49c-.63 0-1.16.45-1.26 1.06l-.03.18-1.02 6.48H8.9l-1.01-6.42H7.87l1.03-6.53z" opacity=".3"/>
+            </svg>
+            Subscribe {formatDisplayPrice(amount, currency)}/mo
+          </>
+        )}
+      </button>
+    </>
   )
 }
