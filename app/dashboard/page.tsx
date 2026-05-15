@@ -291,42 +291,20 @@ export default function DashboardPage() {
   }
 
   const handleCheckInstallation = async () => {
-    setIsCheckingInstall(true)
-    setPromptError(null)
-
-    await validateInstallation()
-    let userRes = await fetch('/api/auth/user')
-    if (!userRes.ok) {
-      setIsCheckingInstall(false)
-      return
-    }
-    let data = await userRes.json()
-
-    if (data.user.githubInstallationId) {
-      setShowInstallPrompt(false)
-      setInfoMessage('GitHub App found! ✅ Select repos below to get started.')
-      setUser(data.user)
-      await fetchRepos()
-      setIsCheckingInstall(false)
-      return
-    }
+    setShowInstallPrompt(false)
 
     const discoverRes = await fetch('/api/github/discover-installation')
     const discoverData = await discoverRes.json()
 
     if (discoverData.found) {
-      setShowInstallPrompt(false)
       setInfoMessage('GitHub App found! ✅ Select repos below to get started.')
-      userRes = await fetch('/api/auth/user')
+      const userRes = await fetch('/api/auth/user')
       if (userRes.ok) {
-        data = await userRes.json()
+        const data = await userRes.json()
         setUser(data.user)
       }
       await fetchRepos()
-    } else {
-      setPromptError('No installation found. Make sure you installed the Prix GitHub App on the correct account, then try again.')
     }
-    setIsCheckingInstall(false)
   }
 
   return (
