@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { MessageSquare, Send, Shield, Heart, Bug, Lightbulb, ThumbsUp } from 'lucide-react'
+import { MessageSquare, Send, Shield, Heart, Bug, Lightbulb, ThumbsUp, Mail, ArrowUpRight } from 'lucide-react'
 import { FeedbackForm } from './feedback-form'
 
 const feedbackTypes = [
@@ -62,6 +62,29 @@ export function FeedbackContent() {
             <p className="text-white/40 text-sm leading-relaxed">{item.description}</p>
           </div>
         ))}
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+        className="p-6 rounded-2xl bg-primary/5 border border-primary/20 mb-6 text-center"
+      >
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <Mail className="w-5 h-5 text-primary" />
+          <span className="text-white font-semibold">Need help immediately?</span>
+        </div>
+        <p className="text-white/50 text-sm">
+          Email us at{' '}
+          <a
+            href="mailto:support@prixai.xyz"
+            className="text-primary font-bold hover:underline inline-flex items-center gap-1"
+          >
+            support@prixai.xyz
+            <ArrowUpRight className="w-3 h-3" />
+          </a>{' '}
+          and we&apos;ll get back to you within 24 hours.
+        </p>
       </motion.div>
 
       <motion.div
