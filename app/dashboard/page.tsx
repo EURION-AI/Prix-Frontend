@@ -69,6 +69,12 @@ export default function DashboardPage() {
         setError('You cancelled the GitHub App installation. Prix needs the app installed to work with your repositories. Click the button above to try again.')
       }
 
+      if (params.get('pending_install') === 'true') {
+        const appName = params.get('app') || 'prix-ai-automation'
+        window.location.href = `https://github.com/apps/${appName}/installations/new`
+        return
+      }
+
       if (params.get('message') === 'account_exists_no_referral') {
         setInfoMessage('You already have an account! You have been logged in. Referral link was ignored.')
       }

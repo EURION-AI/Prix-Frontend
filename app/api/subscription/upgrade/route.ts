@@ -4,7 +4,6 @@ import { sql } from '@/lib/db'
 import { PRICING } from '@/lib/pricing'
 import { getUserSubscriptionId } from '@/lib/user-store'
 import { getAuthenticatedUser } from '@/lib/auth'
-import { getPayPalAccessToken, createPayPalPlan, getPayPalSubscriptionDetails } from '@/lib/paypal'
 
 function getRazorpayClient(): Razorpay | null {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
@@ -76,6 +75,7 @@ export async function POST(request: Request) {
 
     // Handle PayPal upgrade
     if (provider === 'paypal') {
+      const { createPayPalPlan } = await import('@/lib/paypal')
       const planKey = `${newPlanId}_${region}`
       const regionalPricing = PRICING[region as keyof typeof PRICING] || PRICING.US
       type PlanKey = 'starter' | 'pro'
@@ -129,6 +129,7 @@ export async function POST(request: Request) {
           key: process.env.RAZORPAY_KEY_ID,
         })
       } catch (createErr: any) {
+        console.error('[UPGRADE] Razorpay subscription creation failed:', createErr)
         return NextResponse.json({
           error: 'Failed to create subscription',
           details: createErr.description || createErr.message || 'Unknown Razorpay error',

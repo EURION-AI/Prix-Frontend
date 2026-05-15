@@ -239,9 +239,14 @@ export async function GET(request: NextRequest) {
       if (githubInstallationId && installationStatus === 'connected') {
         redirectPath = `/dashboard${referralMessage}`
       } else {
-        // New user — redirect to GitHub App install page immediately
-        // After install, GitHub redirects back to /dashboard?installation_id=XXX
-        redirectPath = `https://github.com/apps/${GITHUB_APP_NAME}/installations/new`
+        // New user — redirect to dashboard with pending_install flag
+        // Dashboard will handle client-side redirect to GitHub App install
+        // This ensures cookies are fully set before any external navigation
+        const appQuery = `app=${GITHUB_APP_NAME}`
+        const suffix = referralMessage
+          ? `${referralMessage}&pending_install=true&${appQuery}`
+          : `?pending_install=true&${appQuery}`
+        redirectPath = `/dashboard${suffix}`
       }
     } catch (error: any) {
       redirectPath = `/dashboard${referralMessage}`
