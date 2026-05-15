@@ -3,8 +3,8 @@
 import { Check } from 'lucide-react'
 
 interface PaymentMethodSelectorProps {
-  selected: 'razorpay' | 'paypal' | null
-  onSelect: (method: 'razorpay' | 'paypal') => void
+  selected: 'razorpay' | null
+  onSelect: (method: 'razorpay') => void
 }
 
 export function PaymentMethodSelector({ selected, onSelect }: PaymentMethodSelectorProps) {
@@ -14,22 +14,14 @@ export function PaymentMethodSelector({ selected, onSelect }: PaymentMethodSelec
         Choose your payment method
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
-          type="button"
-          onClick={() => onSelect('paypal')}
-          className={`relative flex items-center gap-4 p-5 rounded-2xl border transition-all text-left
-            ${selected === 'paypal'
-              ? 'border-primary bg-primary/5 shadow-[0_0_15px_-3px] shadow-primary/20'
-              : 'border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/[0.07]'
-            }`}
+        <div
+          className="relative flex items-center gap-4 p-5 rounded-2xl border border-white/5 bg-white/[0.02] opacity-50 cursor-not-allowed select-none"
         >
-          {selected === 'paypal' && (
-            <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-              <Check className="w-3 h-3 text-white" />
-            </div>
-          )}
-          <div className="w-12 h-12 rounded-xl bg-white/[0.08] flex items-center justify-center shrink-0">
-            <svg viewBox="0 0 36 36" className="w-7 h-7">
+          <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-white/10 text-white/40 text-[10px] font-bold uppercase tracking-wider">
+            Coming Soon
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-white/[0.05] flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 36 36" className="w-7 h-7 opacity-40">
               <defs>
                 <linearGradient id="paypal-logo" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#003087" />
@@ -43,9 +35,9 @@ export function PaymentMethodSelector({ selected, onSelect }: PaymentMethodSelec
           </div>
           <div>
             <p className="text-white font-bold text-base">PayPal</p>
-            <p className="text-white/40 text-xs mt-0.5">Pay with your PayPal account</p>
+            <p className="text-white/40 text-xs mt-0.5">Coming soon — stay tuned!</p>
           </div>
-        </button>
+        </div>
 
         <button
           type="button"

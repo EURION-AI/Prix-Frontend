@@ -6,6 +6,14 @@ export function middleware(request: NextRequest) {
   const userCookie = request.cookies.get('github_user')
 
   if (pathname === '/login' && userCookie) {
+    const hasLoopParam = request.nextUrl.searchParams.get('loop_detected')
+    if (hasLoopParam) {
+      const response = NextResponse.next()
+      response.cookies.delete('github_token')
+      response.cookies.delete('github_user')
+      response.cookies.delete('oauth_state')
+      return response
+    }
     try {
       JSON.parse(userCookie.value)
       return NextResponse.redirect(new URL('/dashboard', request.url))
