@@ -219,8 +219,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Determine redirect: new users go to GitHub App install, returning users go to dashboard
-    let redirectPath: string
     const GITHUB_APP_NAME = process.env.GITHUB_APP_NAME || 'prix-ai-automation'
+    let redirectPath: string
     let selectedRepos: string[] = []
     let prsReviewed: number = 0
     let plan: string = 'free'
@@ -234,39 +234,30 @@ export async function GET(request: NextRequest) {
       plan = userRecord[0]?.plan || 'free'
       githubInstallationId = userRecord[0]?.github_installation_id
       installationStatus = userRecord[0]?.installation_status || 'disconnected'
-      
-      // If user already has an active App installation, go to dashboard
-      if (githubInstallationId && installationStatus === 'connected') {
-        redirectPath = `/dashboard${referralMessage}`
-      } else {
-        // New user — redirect to dashboard with pending_install flag
-        // Dashboard will handle client-side redirect to GitHub App install
-        // This ensures cookies are fully set before any external navigation
-        const appQuery = `app=${GITHUB_APP_NAME}`
-        const suffix = referralMessage
-          ? `${referralMessage}&pending_install=true&${appQuery}`
-          : `?pending_install=true&${appQuery}`
-        redirectPath = `/dashboard${suffix}`
-      }
     } catch (error: any) {
-      redirectPath = `/dashboard${referralMessage}`
-      // Handle missing columns gracefully
-      if (error.message?.includes('column') || error.message?.includes('does not exist')) {
-        console.log('[AUTH] Database schema missing columns, using fallback values')
-        try {
-          const basicRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
-          selectedRepos = basicRecord[0]?.selected_repos || []
-          prsReviewed = basicRecord[0]?.prs_reviewed || 0
-          plan = basicRecord[0]?.plan || 'free'
-        } catch (basicError) {
-          console.log('[AUTH] Using default values - no user data found')
-        }
-      } else {
-        throw error
+      console.error('[AUTH] Failed to query user data for cookies:', error.message || error)
+      try {
+        const basicRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
+        selectedRepos = basicRecord[0]?.selected_repos || []
+        prsReviewed = basicRecord[0]?.prs_reviewed || 0
+        plan = basicRecord[0]?.plan || 'free'
+      } catch (basicError) {
+        console.log('[AUTH] Using default values - no user data found')
       }
     }
+    
+    // Set redirect based on installation status
+    if (githubInstallationId && installationStatus === 'connected') {
+      redirectPath = `/dashboard${referralMessage}`
+    } else {
+      const appQuery = `app=${GITHUB_APP_NAME}`
+      const suffix = referralMessage
+        ? `${referralMessage}&pending_install=true&${appQuery}`
+        : `?pending_install=true&${appQuery}`
+      redirectPath = `/dashboard${suffix}`
+    }
 
-    const response = NextResponse.redirect(redirectPath)
+    const response = NextResponse.redirect(new URL(redirectPath, request.url))
 
     response.cookies.set('github_token', accessToken, {
       httpOnly: true,
@@ -301,7 +292,7 @@ export async function GET(request: NextRequest) {
 
     return response
   } catch (err) {
-    console.error('GitHub OAuth callback error:', err)
+    console.error('[AUTH] GitHub OAuth callback UNEXPECTED error:', err instanceof Error ? err.message : err)
     return NextResponse.redirect(new URL('/login?error=server_error', request.url))
   }
 }
