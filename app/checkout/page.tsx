@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
 import { PayPalCheckoutButton } from '@/components/paypal-checkout'
 import { PaymentMethodSelector } from '@/components/payment-method-selector'
-import { PRICING, getPricing, formatPrice, getUserRegion, UPGRADE_PRICE, type Region, type Plan } from '@/lib/pricing'
+import { PRICING, getPricing, formatPrice, getUserRegion, UPGRADE_PRICE, UPGRADE_PRICE_CENTS, type Region, type Plan } from '@/lib/pricing'
 
 interface PlanInfo {
   id: string
@@ -144,6 +144,7 @@ function CheckoutContent() {
   }
 
   const upgradePrice = UPGRADE_PRICE[region] || '$2.99'
+  const upgradePriceCents = UPGRADE_PRICE_CENTS[region] || 299
 
   return (
     <div className="w-full max-w-lg">
@@ -200,8 +201,8 @@ function CheckoutContent() {
         {paymentMethod === 'razorpay' && (
           <RazorpayCheckoutButton
             plan={planId}
-            amount={isUpgrade ? 0 : displayPricePaise}
-            currency={pricing.currency}
+            amount={isUpgrade ? upgradePriceCents : displayPricePaise}
+            currency={isUpgrade ? 'USD' : pricing.currency}
             userId={userId}
             region={region}
             userName={userName}
@@ -216,8 +217,8 @@ function CheckoutContent() {
         {paymentMethod === 'paypal' && (
           <PayPalCheckoutButton
             plan={planId}
-            amount={isUpgrade ? 0 : displayPricePaise}
-            currency={pricing.currency}
+            amount={isUpgrade ? upgradePriceCents : displayPricePaise}
+            currency={isUpgrade ? 'USD' : pricing.currency}
             userId={userId}
             region={region}
             userName={userName}

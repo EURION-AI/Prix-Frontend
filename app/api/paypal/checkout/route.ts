@@ -40,8 +40,11 @@ export async function POST(request: Request) {
       )
     }
 
+    const SUPPORTED_PAYPAL_CURRENCIES = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY', 'MXN']
+
+    // Use region's pricing, but fall back to US pricing if currency isn't supported by PayPal
     const regionalPricing = PRICING[region as keyof typeof PRICING] || PRICING.US
-    const planPricing = regionalPricing[plan as PlanKey]
+    let planPricing = regionalPricing[plan as PlanKey]
 
     if (!planPricing) {
       return NextResponse.json(
@@ -50,13 +53,26 @@ export async function POST(request: Request) {
       )
     }
 
-    const planKey = `${plan}_${region}`
+    // Fall back to US pricing if the region's currency isn't supported by PayPal
+    let paypalRegion = region
+    let paypalPrice = planPricing.price
+    let paypalCurrency = planPricing.currency
+
+    if (!SUPPORTED_PAYPAL_CURRENCIES.includes(planPricing.currency)) {
+      const usPricing = PRICING.US[plan as PlanKey]
+      paypalRegion = 'US'
+      paypalPrice = usPricing.price
+      paypalCurrency = usPricing.currency
+      console.log(`[PAYPAL] Currency ${planPricing.currency} not supported, falling back to USD for plan ${plan}`)
+    }
+
+    const planKey = `${plan}_paypal_${paypalRegion}`
     const planName = plan === 'starter' ? 'Starter' : 'Pro'
 
     const paypalPlan = await createPayPalPlan(
       planKey,
-      planPricing.price,
-      planPricing.currency,
+      paypalPrice,
+      paypalCurrency,
       planName
     )
 

@@ -127,3 +127,10 @@ export const UPGRADE_PRICE: Record<string, string> = {
   EU: '€2.99',
 }
 
+export const UPGRADE_PRICE_CENTS: Record<string, number> = {
+  IN: 299,
+  US: 299,
+  GB: 299,
+  EU: 299,
+}
+

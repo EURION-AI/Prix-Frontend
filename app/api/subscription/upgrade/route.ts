@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 import { sql } from '@/lib/db'
-import { PRICING } from '@/lib/pricing'
+import { PRICING, UPGRADE_PRICE_CENTS } from '@/lib/pricing'
 import { getUserSubscriptionId } from '@/lib/user-store'
 import { getAuthenticatedUser } from '@/lib/auth'
 
@@ -111,8 +111,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Target plan not found' }, { status: 404 })
     }
 
-    // Try to update the existing subscription. If that fails (e.g., API version incompatibility,
-    // invalid subscription state, etc.), fall back to creating a new subscription.
+    // Try to update the existing subscription (prorated charge)
     if (subscriptionId && !subscriptionId.startsWith('legacy_') && !subscriptionId.startsWith('reward_')) {
       try {
         const updatedSubscription = await (razorpay as any).subscriptions.update(subscriptionId, {
@@ -128,7 +127,7 @@ export async function POST(request: Request) {
         })
       } catch (razorpayError: any) {
         const errorMsg = razorpayError.description || razorpayError.message || ''
-        console.warn(`[UPGRADE] Subscription update failed, falling back to new subscription: ${errorMsg}`)
+        console.error(`[UPGRADE] Subscription update failed: ${errorMsg}`)
 
         if (errorMsg.toLowerCase().includes('amount') || errorMsg.toLowerCase().includes('proration')) {
           return NextResponse.json({
@@ -137,21 +136,41 @@ export async function POST(request: Request) {
             code: 'PRORATION_AMOUNT_TOO_LOW'
           }, { status: 400 })
         }
-        // Fall through to create a new subscription below
+
+        return NextResponse.json({
+          error: 'Could not upgrade subscription',
+          details: `Razorpay update failed: ${errorMsg}. Please try again or contact support.`,
+        }, { status: 400 })
       }
     }
 
-    // Create a new subscription (for new users or when update fails)
-    console.log(`[UPGRADE] Creating new Pro subscription for user ${githubId}`)
+    // User has no active subscription — create a new one at the upgrade price
+    // (legacy, reward, or new user upgrading directly)
+    const upgradeCents = UPGRADE_PRICE_CENTS[region] || 299
+    const upgradeCurrency = region === 'IN' ? 'INR' : 'USD'
+    console.log(`[UPGRADE] Creating new Pro subscription for user ${githubId} at upgrade price ${upgradeCents} ${upgradeCurrency}`)
+
     try {
+      const upgradePlan = await (razorpay as any).plans.create({
+        period: 'monthly',
+        interval: 1,
+        item: {
+          name: `Prix AI Pro Upgrade (${region})`,
+          amount: upgradeCents,
+          currency: upgradeCurrency,
+          description: 'One-time upgrade from Starter to Pro',
+        },
+      })
+
       const newSubscription = await (razorpay as any).subscriptions.create({
-        plan_id: razorpayPlanId,
-        total_count: 120,
+        plan_id: upgradePlan.id,
+        total_count: 1,
         customer_notify: 1,
         notes: {
           plan: newPlanId,
           userId: String(githubId),
           region,
+          upgrade: 'true',
         },
       })
       return NextResponse.json({
@@ -159,9 +178,9 @@ export async function POST(request: Request) {
         key: process.env.RAZORPAY_KEY_ID,
       })
     } catch (createErr: any) {
-      console.error('[UPGRADE] Razorpay subscription creation failed:', createErr)
+      console.error('[UPGRADE] Razorpay upgrade subscription creation failed:', createErr)
       return NextResponse.json({
-        error: 'Failed to create subscription',
+        error: 'Failed to create upgrade subscription',
         details: createErr.description || createErr.message || 'Unknown Razorpay error',
       }, { status: 500 })
     }
