@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
-import { Loader2, Check, ArrowLeft, AlertCircle, Crown } from 'lucide-react'
+import { Loader2, Check, ArrowLeft, AlertCircle, Crown, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
+import { PayPalCheckoutButton } from '@/components/paypal-checkout'
+import { PaymentMethodSelector } from '@/components/payment-method-selector'
 import { PRICING, getPricing, formatPrice, getUserRegion, UPGRADE_PRICE, type Region, type Plan } from '@/lib/pricing'
 
 interface PlanInfo {
@@ -63,6 +65,7 @@ function CheckoutContent() {
   const [userName, setUserName] = useState<string>('')
   const [userEmail, setUserEmail] = useState<string>('')
   const [userPlan, setUserPlan] = useState<string | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'paypal' | null>(null)
 
   const plan = { ...(PLAN_DETAILS[planId] || PLAN_DETAILS.starter) }
   const pricing = getPricing(region, planId)
@@ -187,27 +190,50 @@ function CheckoutContent() {
           </div>
         )}
 
-        <RazorpayCheckoutButton
-          plan={planId}
-          amount={isUpgrade ? 0 : displayPricePaise}
-          currency={pricing.currency}
-          userId={userId}
-          region={region}
-          userName={userName}
-          userEmail={userEmail}
-          upgrade={isUpgrade ? 'true' : null}
-          onSuccess={handleSuccess}
-          onError={handleError}
-          disabled={isLoading}
-        />
+        <div className="mb-6">
+          <PaymentMethodSelector
+            selected={paymentMethod}
+            onSelect={setPaymentMethod}
+          />
+        </div>
+
+        {paymentMethod === 'razorpay' && (
+          <RazorpayCheckoutButton
+            plan={planId}
+            amount={isUpgrade ? 0 : displayPricePaise}
+            currency={pricing.currency}
+            userId={userId}
+            region={region}
+            userName={userName}
+            userEmail={userEmail}
+            upgrade={isUpgrade ? 'true' : null}
+            onSuccess={handleSuccess}
+            onError={handleError}
+            disabled={isLoading}
+          />
+        )}
+
+        {paymentMethod === 'paypal' && (
+          <PayPalCheckoutButton
+            plan={planId}
+            amount={isUpgrade ? 0 : displayPricePaise}
+            currency={pricing.currency}
+            userId={userId}
+            region={region}
+            userName={userName}
+            userEmail={userEmail}
+            upgrade={isUpgrade ? 'true' : null}
+            onSuccess={handleSuccess}
+            onError={handleError}
+            disabled={isLoading}
+          />
+        )}
       </div>
 
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4 mt-6">
         <div className="flex items-center gap-2 text-white/30 text-xs">
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-          </svg>
-          <span>Secure payment powered by Razorpay</span>
+          <Shield className="w-4 h-4" />
+          <span>Secure payment powered by {paymentMethod === 'paypal' ? 'PayPal' : 'Razorpay'}</span>
         </div>
 
         <Link

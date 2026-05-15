@@ -2,68 +2,188 @@ import { Metadata } from 'next'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import Link from 'next/link'
-import { ArrowRight, Zap, Shield, Code2 } from 'lucide-react'
+import { ArrowRight, Terminal, Play, Github } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Demo - Prix AI Code Review',
-  description: 'Experience automated code review with Prix. Catch bugs, security issues, and get instant AI-powered fixes.',
+  title: 'How to Use Prix AI — Demo & Documentation',
+  description: 'Learn how Prix AI works. Automated PR reviews, !prix fix for auto-generated fixes, and !prix plan for step-by-step implementation plans.',
 }
+
+const steps = [
+  {
+    src: '/review.mp4',
+    title: '1. Automated PR Reviews',
+    subtitle: 'Zero setup. Every PR gets reviewed automatically.',
+    description: `Whenever someone opens or updates a pull request, Prix AI automatically analyzes every changed file. It detects bugs, security vulnerabilities, logic errors, performance issues, and syntax problems — all before a human reviewer even looks at it.`,
+    highlights: [
+      'No commands needed — reviews happen automatically',
+      'Catches critical issues: syntax errors, security holes, logic bugs',
+      'Each issue gets an inline comment with severity, confidence score, and impact analysis',
+      'Works on both public and private repositories',
+    ],
+    command: null,
+  },
+  {
+    src: '/autofix.mp4',
+    title: '2. Auto-Fix with !prix fix',
+    subtitle: 'Fix everything with one command.',
+    description: `After a review, type !prix fix in any PR comment to automatically generate fixes for all detected issues. Prix will analyze each bug, apply the correction to your code, and raise a new PR with the changes. No manual editing.`,
+    highlights: [
+      'Comment <code class="text-primary font-bold">!prix fix</code> on any PR to trigger auto-fix',
+      'Generates verified patches for each issue',
+      'Creates a new PR with all fixes applied',
+      'Supports multi-file repositories with complex interdependencies',
+    ],
+    command: '!prix fix',
+  },
+  {
+    src: '/plan.mp4',
+    title: '3. Issue Planning with !prix plan',
+    subtitle: 'Turn issues into actionable implementation plans.',
+    description: `Drop <code class="text-primary font-bold">!prix plan</code> on any GitHub issue, and Prix generates a detailed, phase-by-phase implementation plan. Each phase includes the specific files to modify, the exact code changes needed, and ready-to-use AI prompts you can feed directly into Cursor, Windsurf, or any AI coding agent.`,
+    highlights: [
+      'Comment <code class="text-primary font-bold">!prix plan</code> on any issue to start',
+      'Receives a structured multi-phase implementation breakdown',
+      'Each phase includes file paths, code snippets, and AI prompts',
+      'Perfect for handing off to AI coding agents or your team',
+    ],
+    command: '!prix plan',
+  },
+]
 
 export default function DemoPage() {
   return (
     <div className="min-h-screen bg-[#050508]">
       <Navbar />
-      <main className="pt-32 pb-20 relative min-h-screen flex flex-col justify-between">
-        <div className="flex-1 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-center">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Try Prix Today
+      <main className="pt-32 pb-20">
+        <div className="max-w-5xl mx-auto px-6">
+          {/* Header */}
+          <div className="text-center mb-20">
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-primary mb-6 block font-bold">
+              Documentation
+            </span>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+              How Prix AI Works
             </h1>
-            <p className="text-white/50 text-lg max-w-2xl mx-auto">
-              Get started with automated code review. Our AI analyzes your pull requests, catches bugs and security issues, and provides instant fixes.
+            <p className="text-white/50 text-lg max-w-2xl mx-auto leading-relaxed">
+              Three features. Zero friction. Watch how Prix automates code review, generates fixes, and plans implementations — all from inside GitHub.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 w-full mb-16">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-primary/50 transition-colors">
-              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Instant Analysis</h3>
-              <p className="text-white/50 text-sm">Get code review results in seconds, not hours</p>
-            </div>
+          {/* Video Sections */}
+          <div className="space-y-32">
+            {steps.map((step, i) => (
+              <section
+                key={i}
+                className="scroll-mt-24"
+              >
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                  {/* Video */}
+                  <div className={`${i % 2 === 1 ? 'md:order-2' : ''}`}>
+                    <div className="bg-black/60 border border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl">
+                      <video
+                        className="w-full aspect-video object-contain"
+                        preload="metadata"
+                        muted
+                        controls
+                        playsInline
+                        loop
+                      >
+                        <source src={step.src} type="video/mp4" />
+                      </video>
+                    </div>
+                  </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-primary/50 transition-colors">
-              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Security First</h3>
-              <p className="text-white/50 text-sm">Catch vulnerabilities before they reach production</p>
-            </div>
+                  {/* Content */}
+                  <div className={`${i % 2 === 1 ? 'md:order-1' : ''}`}>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                      {step.title}
+                    </h2>
+                    <p className="text-primary font-medium text-sm mb-6">
+                      {step.subtitle}
+                    </p>
+                    <p className="text-white/60 leading-relaxed mb-8 text-sm">
+                      {step.description}
+                    </p>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-primary/50 transition-colors">
-              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
-                <Code2 className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Auto-Fixes</h3>
-              <p className="text-white/50 text-sm">Get AI-generated fixes you can apply instantly</p>
+                    {/* Highlights */}
+                    <ul className="space-y-3 mb-8">
+                      {step.highlights.map((h, j) => (
+                        <li key={j} className="flex items-start gap-3 text-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                          <span
+                            className="text-white/70 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: h }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Command Badge */}
+                    {step.command && (
+                      <div className="inline-flex items-center gap-3 px-5 py-3 bg-primary/10 border border-primary/20 rounded-xl">
+                        <Terminal className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span className="text-sm font-mono text-primary font-bold">
+                          {step.command}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Prerequisite */}
+          <div className="mt-32 mb-16">
+            <div className="max-w-2xl mx-auto bg-primary/5 border border-primary/20 rounded-2xl p-8 text-center">
+              <Terminal className="w-8 h-8 text-primary mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-white mb-3">
+                Before you start
+              </h2>
+              <p className="text-white/60 leading-relaxed mb-4 text-sm max-w-lg mx-auto">
+                Make sure you have mounted your repositories in the{' '}
+                <Link href="/dashboard" className="text-primary hover:underline font-medium">Prix Dashboard</Link> first.
+                Install the Prix GitHub App on your repos, then select which ones to monitor.
+              </p>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-bold text-sm"
+              >
+                <Github className="w-4 h-4" />
+                Go to Dashboard
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href="/pricing"
-              className="px-8 py-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-bold flex items-center gap-2"
-            >
-              View Pricing
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/features"
-              className="px-8 py-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors font-bold"
-            >
-              Learn More
-            </Link>
+          {/* CTA */}
+          <div className="text-center">
+            <div className="max-w-xl mx-auto bg-white/[0.03] border border-white/[0.08] rounded-2xl p-10">
+              <h2 className="text-2xl font-bold text-white mb-4">
+                Ready to try it?
+              </h2>
+              <p className="text-white/50 mb-8 leading-relaxed">
+                Install the Prix AI GitHub App, push a PR, and watch the review appear automatically. No configuration needed.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="https://github.com/apps/prix-ai-automation/installations/new"
+                  target="_blank"
+                  className="px-8 py-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-bold flex items-center gap-2 justify-center"
+                >
+                  <Github className="w-5 h-5" />
+                  Install GitHub App
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="px-8 py-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors font-bold"
+                >
+                  View Pricing
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </main>

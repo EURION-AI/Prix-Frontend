@@ -123,6 +123,18 @@ export async function initializeDatabase() {
     `
 
     await sql`
+      CREATE TABLE IF NOT EXISTS paypal_plans (
+        id SERIAL PRIMARY KEY,
+        internal_plan_id VARCHAR(50) UNIQUE NOT NULL,
+        paypal_plan_id VARCHAR(100) NOT NULL,
+        product_id VARCHAR(100) NOT NULL,
+        amount INTEGER NOT NULL,
+        currency VARCHAR(3) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `
+
+    await sql`
       CREATE TABLE IF NOT EXISTS daily_aggregates (
         id SERIAL PRIMARY KEY,
         date DATE NOT NULL,

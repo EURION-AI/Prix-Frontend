@@ -290,6 +290,12 @@ export default function DashboardPage() {
             <p className="text-white/50 text-lg max-w-2xl">
               Select a GitHub repository to enable Prix's automated intelligence and performance monitoring.
             </p>
+            <div className="mt-4 px-5 py-3 bg-primary/10 border border-primary/20 rounded-xl inline-flex items-center gap-3 text-sm">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse flex-shrink-0" />
+              <span className="text-white/70">
+                First time? Click <strong className="text-primary font-bold">Mount Repositories</strong> to install the Prix GitHub App on your repos, then select them below.
+              </span>
+            </div>
             {user && user.plan !== 'free' && user.planExpiresAt && (
               <div className="mt-3 flex items-center gap-2 text-sm">
                 <CreditCard className="w-4 h-4 text-primary" />
