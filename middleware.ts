@@ -23,8 +23,8 @@ export function middleware(request: NextRequest) {
 
   const isDev = process.env.NODE_ENV === 'development'
   const scriptSrc = isDev 
-    ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com"
-    : "'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com"
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com https://www.paypal.com https://www.paypalobjects.com"
+    : "'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com https://www.paypal.com https://www.paypalobjects.com"
 
   const cspHeader = `
     default-src 'self';
@@ -32,8 +32,8 @@ export function middleware(request: NextRequest) {
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https:;
     font-src 'self';
-    connect-src 'self' https: https://api.razorpay.com https://lumberjack.razorpay.com;
-    frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;
+    connect-src 'self' https: https://api.razorpay.com https://lumberjack.razorpay.com https://api-m.paypal.com;
+    frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://www.paypal.com https://www.paypalobjects.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
