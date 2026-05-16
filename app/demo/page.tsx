@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const steps = [
   {
-    src: '/review.mp4',
+    src: '/Review.mp4',
     title: '1. Automated PR Reviews',
     subtitle: 'Zero setup. Every PR gets reviewed automatically.',
     description: `Whenever someone opens or updates a pull request, Prix AI automatically analyzes every changed file. It detects bugs, security vulnerabilities, logic errors, performance issues, and syntax problems — all before a human reviewer even looks at it.`,
@@ -24,7 +24,7 @@ const steps = [
     command: null,
   },
   {
-    src: '/autofix.mp4',
+    src: '/autoFix.mp4',
     title: '2. Auto-Fix with !prix fix',
     subtitle: 'Fix everything with one command.',
     description: `After a review, type !prix fix in any PR comment to automatically generate fixes for all detected issues. Prix will analyze each bug, apply the correction to your code, and raise a new PR with the changes. No manual editing.`,
@@ -85,6 +85,7 @@ export default function DemoPage() {
                         className="w-full aspect-video object-contain"
                         preload="metadata"
                         muted
+                        controls
                         playsInline
                         loop
                       >
