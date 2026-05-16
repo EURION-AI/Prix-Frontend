@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: 'Start free with 15 PR reviews, 3 issue plans & 3 auto fixes per month. Upgrade to Starter from $6.99/mo for 400 reviews & 50 issue plans, or Pro from $9.99/mo for unlimited AI-powered code review, planning and fixes.',
   alternates: {
     canonical: 'https://www.prixai.xyz/pricing',
+    types: {
+      'text/markdown': '/markdown/pricing',
+    },
   },
 }
 
