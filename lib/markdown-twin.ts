@@ -2,7 +2,7 @@ export function estimateTokenCount(text: string): number {
   return Math.ceil(text.length / 4)
 }
 
-const homepage = `# AI Code Review That Ships Fixed Code — Every PR. Every Time.
+const homepage = `# Prix AI - AI-Powered GitHub PR Reviewer | Ship Code Faster
 
 Prix automatically reviews your GitHub pull requests, suggests fixes, and raises PRs — helping you ship faster with fewer bugs.
 
@@ -31,7 +31,7 @@ Prix understands your codebase architecture. Get automatic fixes, implementation
 
 Start free at https://www.prixai.xyz/login`
 
-const pricing = `# Prix AI Pricing — AI Code Review Plans
+const pricing = `# Prix AI Pricing — AI Code Review Plans for Every Team
 
 ## Free
 - 15 PR reviews per month
@@ -61,7 +61,7 @@ const pricing = `# Prix AI Pricing — AI Code Review Plans
 
 Get started at https://www.prixai.xyz/login`
 
-const features = `# Engineered for velocity.
+const features = `# AI Code Review Features | Prix AI — Automated PR Analysis & Fix Generation
 
 The platform that fixes, plans, and accelerates your workflow. Ship code faster with fixes, implementation plans, and actionable engineering steps built into your development process.
 
@@ -82,7 +82,7 @@ Install the GitHub app, open a PR, and Prix handles the rest. Automatic reviews 
 
 Get started at https://www.prixai.xyz/login`
 
-const blogIndex = `# Engineering Insights
+const blogIndex = `# Blog | Prix AI - Insights on AI Code Review & Engineering Velocity
 
 Articles, guides, and best practices for modern engineering teams focused on velocity and code quality.
 
