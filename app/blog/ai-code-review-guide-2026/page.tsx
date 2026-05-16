@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: './',
+    types: {
+      'text/markdown': '/markdown/blog/ai-code-review-guide-2026',
+    },
   },
 }
 

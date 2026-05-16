@@ -16,7 +16,10 @@ export const metadata: Metadata = {
   title: 'AI Code Review Features | Prix AI — Automated PR Analysis & Fix Generation',
   description: 'AI-powered code review with automatic bug detection, security scanning, and PR fix generation. Seamless GitHub integration with automatic PR analysis.',
   alternates: {
-    canonical: './',
+    canonical: 'https://www.prixai.xyz/features',
+    types: {
+      'text/markdown': '/markdown/features',
+    },
   },
 }
 
