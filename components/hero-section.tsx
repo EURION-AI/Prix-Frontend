@@ -38,7 +38,7 @@ export function HeroSection() {
               </div>
             </motion.div>
 
-            <motion.h1
+            <motion.h2
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5 }}
@@ -46,7 +46,7 @@ export function HeroSection() {
             >
               AI Code Review That Ships<br />
               <span className="text-white">Fixed Code. Every PR. Every Time.</span>
-            </motion.h1>
+            </motion.h2>
 
             <motion.p
               initial={{ opacity: 0, y: 15 }}

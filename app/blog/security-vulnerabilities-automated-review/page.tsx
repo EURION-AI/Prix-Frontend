@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: './',
+    types: {
+      'text/markdown': '/markdown/blog/security-vulnerabilities-automated-review',
+    },
   },
 }
 

@@ -1,34 +1,36 @@
-'use client'
-
-import { useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { Navbar } from '@/components/navbar'
 import { HeroSection } from '@/components/hero-section'
 import { FeaturesSection } from '@/components/features-section'
-import { PricingSection } from '@/components/pricing-section'
 import { HowItWorksSection } from '@/components/how-it-works-section'
 import { ComparisonSection } from '@/components/comparison-section'
 import { CTASection } from '@/components/cta-section'
 import { Footer } from '@/components/footer'
-import { getUserRegion } from '@/lib/pricing'
+import { HomePageClient } from '@/components/home-page-client'
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://www.prixai.xyz',
+    types: {
+      'text/markdown': '/markdown',
+    },
+  },
+}
 
 export default function Home() {
-  const searchParams = useSearchParams()
-  const region = getUserRegion(searchParams.get('region'))
-
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
-
   return (
     <main className="min-h-screen bg-[#050508]">
       <Navbar />
       <div className="relative z-10">
+        <h1 className="sr-only">AI Code Review That Ships Fixed Code — Every PR. Every Time.</h1>
         <HeroSection />
         <FeaturesSection />
         <HowItWorksSection />
         <ComparisonSection />
-        <PricingSection region={region} />
+        <Suspense fallback={null}>
+          <HomePageClient />
+        </Suspense>
         <CTASection />
         <Footer />
       </div>

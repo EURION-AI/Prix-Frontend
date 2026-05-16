@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: './',
+    types: {
+      'text/markdown': '/markdown/blog/technical-debt-ai-analysis',
+    },
   },
 }
 

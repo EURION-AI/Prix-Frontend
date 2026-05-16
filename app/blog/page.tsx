@@ -12,7 +12,10 @@ export const metadata: Metadata = {
   description: 'Explore our latest articles on AI code review best practices, engineering productivity, and how to accelerate your development workflow.',
   keywords: ['AI code review blog', 'engineering productivity', 'developer velocity', 'automated PR review', 'code quality insights'],
   alternates: {
-    canonical: './',
+    canonical: 'https://www.prixai.xyz/blog',
+    types: {
+      'text/markdown': '/markdown/blog',
+    },
   },
 }
 
