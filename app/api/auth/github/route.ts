@@ -70,6 +70,9 @@ export async function GET(request: Request) {
     state,
   })
 
+  const host = request.headers.get('host') || ''
+  const cookieDomain = host.endsWith('prixai.xyz') ? '.prixai.xyz' : undefined
+
   const response = NextResponse.json({ url: `https://github.com/login/oauth/authorize?${params.toString()}` })
   
   response.cookies.set('oauth_state', state, {
@@ -78,6 +81,7 @@ export async function GET(request: Request) {
     sameSite: 'lax',
     maxAge: 60 * 10,
     path: '/',
+    domain: cookieDomain,
   })
 
   return response
