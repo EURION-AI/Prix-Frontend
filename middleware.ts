@@ -1,8 +1,33 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+const BOT_UAS = [
+  'Googlebot', 'GPTBot', 'Claude', 'Claude-Web', 'anthropic',
+  'CCBot', 'ChatGPT-User', 'Twitterbot', 'facebookexternalhit',
+  'LinkedInBot', 'Slurp', 'Bingbot', 'DuckDuckBot', 'Baiduspider',
+  'Applebot', 'YandexBot', 'SemrushBot', 'AhrefsBot', 'MJ12bot',
+]
+
+const CONTENT_PATHS = /^\/(pricing|features|blog)(\/|$)/
+const MARKDOWN_PATH = /^\/markdown/
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const ua = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+
+  if (!MARKDOWN_PATH.test(pathname)) {
+    const wantsMarkdown = accept.includes('text/markdown')
+    const isBot = BOT_UAS.some(bot => ua.includes(bot))
+    const isHomepage = pathname === '/'
+    const isContentPage = isHomepage || CONTENT_PATHS.test(pathname)
+
+    if (isContentPage && (wantsMarkdown || isBot)) {
+      const markdownSlug = isHomepage ? '' : pathname.slice(1)
+      return NextResponse.redirect(new URL(`/markdown/${markdownSlug}`, request.url))
+    }
+  }
+
   const userCookie = request.cookies.get('github_user')
 
   if (pathname === '/login' && userCookie) {
