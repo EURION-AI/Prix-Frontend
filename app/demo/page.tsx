@@ -85,7 +85,6 @@ export default function DemoPage() {
                         className="w-full aspect-video object-contain"
                         preload="metadata"
                         muted
-                        controls
                         playsInline
                         loop
                       >

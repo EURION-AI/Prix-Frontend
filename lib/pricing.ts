@@ -1,7 +1,7 @@
 export const PRICING = {
   IN: {
-    starter: { price: 69900, currency: 'INR', symbol: '₹', display: '₹699' },
-    pro: { price: 99900, currency: 'INR', symbol: '₹', display: '₹999' },
+    starter: { price: 59900, currency: 'INR', symbol: '₹', display: '₹599' },
+    pro: { price: 79900, currency: 'INR', symbol: '₹', display: '₹799' },
   },
   GB: {
     starter: { price: 699, currency: 'GBP', symbol: '£', display: '£6.99' }, // £6.99
@@ -121,14 +121,14 @@ export function getCurrencySymbol(region: Region): string {
 }
 
 export const UPGRADE_PRICE: Record<string, string> = {
-  IN: '₹299',
+  IN: '₹199',
   US: '$2.99',
   GB: '£2.99',
   EU: '€2.99',
 }
 
 export const UPGRADE_PRICE_CENTS: Record<string, number> = {
-  IN: 29900,
+  IN: 19900,
   US: 299,
   GB: 299,
   EU: 299,

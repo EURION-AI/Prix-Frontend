@@ -167,7 +167,16 @@ function CheckoutContent() {
             <p className="text-white/40 text-sm">Monthly subscription</p>
           </div>
           <div className="text-right">
-            <span className="text-2xl font-bold text-white">{isUpgrade ? upgradePrice : plan.price}</span>
+            {isUpgrade ? (
+              <span className="text-2xl font-bold text-white">{upgradePrice}</span>
+            ) : (
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-light text-white/30 line-through">
+                  {region === 'IN' ? (planId === 'pro' ? '₹1,499' : '₹999') : plan.price}
+                </span>
+                <span className="text-2xl font-bold text-white">{plan.price}</span>
+              </div>
+            )}
           </div>
         </div>
 
