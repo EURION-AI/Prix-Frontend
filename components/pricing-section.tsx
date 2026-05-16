@@ -27,7 +27,7 @@ const plans = [
     name: 'Starter',
     getPrice: (region: Region) => formatPrice(region, 'starter'),
     getOriginalPrice: (region: Region) => {
-      if (region === 'IN') return '₹10'
+      if (region === 'IN') return '₹999'
       if (region === 'GB') return '£14'
       if (region === 'EU') return '€14'
       return '$14'
@@ -46,7 +46,7 @@ const plans = [
     name: 'Pro',
     getPrice: (region: Region) => formatPrice(region, 'pro'),
     getOriginalPrice: (region: Region) => {
-      if (region === 'IN') return '₹20'
+      if (region === 'IN') return '₹1,499'
       if (region === 'GB') return '£19'
       if (region === 'EU') return '€19'
       return '$19'
