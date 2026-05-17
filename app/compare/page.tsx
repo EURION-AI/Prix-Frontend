@@ -140,7 +140,7 @@ export default function ComparePage() {
 
           {/* Detailed Comparison */}
           <div className="grid md:grid-cols-3 gap-6 mb-16">
-            <div className="card-base p-7 border-primary/20 bg-primary/[0.03]">
+            <div className="card-base p-7 border-primary/20 from-primary/[0.08] to-primary/[0.01] bg-gradient-to-br">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
                   <Zap className="w-5 h-5 text-white" />
@@ -235,7 +235,7 @@ export default function ComparePage() {
           </div>
 
           {/* CTA */}
-          <div className="text-center p-10 card-base border-primary/20 bg-primary/[0.03]">
+          <div className="text-center p-10 card-base border-primary/20 from-primary/[0.08] to-transparent bg-gradient-to-br">
             <h2 className="text-2xl font-bold text-white mb-3">Ready to Transform Your Code Review?</h2>
             <p className="text-white/50 mb-8 max-w-2xl mx-auto text-sm">
               Join engineering teams shipping 5x faster with Prix AI-powered code review. Start your free trial today.
