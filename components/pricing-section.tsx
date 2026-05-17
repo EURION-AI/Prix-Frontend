@@ -189,6 +189,15 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                   <p className="text-center text-white/30 text-xs mt-2">
                     {plan.id === 'free' ? 'No credit card required' : 'Cancel anytime'}
                   </p>
+
+                  {plan.id !== 'free' && !isLocked && (
+                    <Link
+                      href="/affiliate"
+                      className="mt-3 inline-block w-full text-center text-[11px] font-semibold text-green-400 hover:text-green-300 transition-colors"
+                    >
+                      Earn for free →
+                    </Link>
+                  )}
                 </div>
               </div>
             )
