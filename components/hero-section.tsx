@@ -1,9 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CodeFixDemo } from './code-fix-demo'
+import { ConversationScreenshot } from './github-screenshots'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Check, Star } from 'lucide-react'
+import { ArrowRight, Check, PlayCircle, Lightning as Zap } from '@phosphor-icons/react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
@@ -13,46 +13,30 @@ export function HeroSection() {
   const loginHref = refCode ? `/login?ref=${refCode}` : '/login'
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background px-4">
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:32px_32px]" />
-      </div>
-
-      <div className="relative z-[60] w-full max-w-[1600px] mx-auto px-6 lg:px-12 pt-32 pb-16">
-        <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-8 xl:gap-16 2xl:gap-20 items-center min-h-[calc(100vh-200px)]">
+    <section className="relative flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0f] px-6">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+      <div className="relative z-[60] w-full max-w-[1400px] mx-auto pt-20 md:pt-28 pb-8 md:pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-start"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.4 }}
-              className="flex items-center gap-3 mb-8"
-            >
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-primary">Engineering Assistant • Auto-Fix & Planning</span>
-              </div>
-            </motion.div>
-
-            <motion.h2
+            <motion.h1
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.5 }}
-              className="text-editorial text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-semibold text-white mb-8 leading-[1.05] tracking-tight max-w-4xl"
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="text-[clamp(2rem,5.2vw,4.25rem)] font-bold text-white mb-6 leading-[1.02] tracking-tight max-w-2xl"
             >
-              AI Code Review That Ships<br />
-              <span className="text-white">Fixed Code. Every PR. Every Time.</span>
-            </motion.h2>
+              AI code review that<br />ships fixed code.<br />Every PR. Every time.
+            </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="max-w-xl text-base sm:text-lg md:text-xl text-white/50 leading-relaxed mb-10"
+              className="max-w-lg text-[18px] text-white/50 leading-relaxed mb-10 font-medium"
             >
               Prix understands your codebase architecture. Get automatic fixes, implementation plans, and actionable guidance before your users do.
             </motion.p>
@@ -60,18 +44,18 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.5 }}
-              className="flex flex-col sm:flex-row items-start gap-5 mb-10"
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="flex flex-wrap items-center gap-6 mb-10"
             >
               <Button
                 size="lg"
                 asChild
-                className="h-14 px-8 rounded-xl btn-premium text-base group shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300"
+                className="h-12 px-9 rounded-xl btn-premium text-sm font-bold group"
               >
                 <Link href={loginHref}>
-                  <span className="relative z-10 flex items-center gap-3 font-semibold">
-                    Start Free. No Credit Card.
-                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  <span className="relative z-10 flex items-center gap-2">
+                    Start Free
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
               </Button>
@@ -80,58 +64,98 @@ export function HeroSection() {
                 variant="outline"
                 size="lg"
                 asChild
-                className="h-14 px-8 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white text-base transition-all duration-300"
+                className="h-12 px-9 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white text-sm font-bold transition-all"
               >
                 <Link href="/features">
                   Explore Features
                 </Link>
               </Button>
 
-              <Button
-                variant="ghost"
-                size="lg"
-                asChild
-                className="h-14 px-8 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all duration-300"
+              <Link 
+                href="/demo" 
+                className="flex items-center gap-2 text-white/50 hover:text-white transition-colors font-bold group ml-2"
               >
-                <Link href="/demo">
-                  Watch Demo
-                </Link>
-              </Button>
+                <span className="text-sm">Watch Demo</span>
+                <PlayCircle className="w-4 h-4 text-white/30 group-hover:text-primary transition-colors" />
+              </Link>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="flex flex-wrap items-center gap-6 text-sm text-white/40"
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="flex flex-wrap items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-white/30"
             >
               {['5-min setup', 'Free forever plan', 'Cancel anytime'].map((item) => (
                 <div key={item} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-400" />
+                  <Check className="w-3.5 h-3.5 text-primary" />
                   <span>{item}</span>
                 </div>
               ))}
             </motion.div>
-
-
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, scale: 0.98, x: 20 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="relative flex items-center justify-center lg:justify-end"
           >
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-transparent to-secondary/20 rounded-3xl blur-xl opacity-30" />
-              <div className="relative bg-gradient-to-br from-white/5 to-white/10 rounded-2xl p-2 border border-white/10">
-                <CodeFixDemo />
-              </div>
+            <div className="absolute inset-0 bg-primary/5 blur-[80px] rounded-full -z-10" />
+            <div className="w-full max-w-[560px] xl:max-w-[580px]">
+              <ConversationScreenshot />
             </div>
           </motion.div>
         </div>
 
-
+        {/* Tech Stack Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="mt-14 py-5 px-5 md:px-10 rounded-2xl bg-white/[0.015] border border-white/[0.05] flex items-center justify-between gap-8 w-full overflow-x-auto overflow-y-hidden"
+        >
+          <div className="flex items-center gap-6 border-r border-white/10 pr-10 shrink-0">
+            <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">Built for engineering teams</span>
+          </div>
+          
+          <div className="flex flex-1 items-center justify-between gap-4 md:gap-8 px-2 text-white/45 transition-colors duration-300 flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                <span className="text-black font-black text-[10px]">N</span>
+              </div>
+              <span className="text-sm font-bold">Next.js</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#3178C6] rounded flex items-center justify-center">
+                <span className="text-white font-black text-[10px]">TS</span>
+              </div>
+              <span className="text-sm font-bold">TypeScript</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#3776AB] rounded-full flex items-center justify-center overflow-hidden">
+                <span className="text-white font-black text-[8px]">PY</span>
+              </div>
+              <span className="text-sm font-bold">Python</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Zap className="w-6 h-6 text-[#05998B]" fill="#05998B" />
+              <span className="text-sm font-bold">FastAPI</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 text-[#61DAFB]">
+                <svg viewBox="0 0 100 100" className="w-full h-full fill-current"><path d="M50 42.4c-1.3 0-2.4 1.1-2.4 2.4s1.1 2.4 2.4 2.4 2.4-1.1 2.4-2.4-1.1-2.4-2.4-2.4zm23.6 2.4c0-4.6-10.5-8.4-23.6-8.4s-23.6 3.8-23.6 8.4 10.5 8.4 23.6 8.4 23.6-3.8 23.6-8.4zm-23.6 15.6c-13.1 0-23.6-3.8-23.6-8.4 0-.4.1-.8.4-1.2-2.5 4.3-3.9 9.1-3.9 14.1 0 13.1 10.5 23.6 23.6 23.6s23.6-10.5 23.6-23.6c0-5-1.4-9.8-3.9-14.1.3.4.4.8.4 1.2 0 4.6-10.5 8.4-23.6 8.4z"/></svg>
+              </div>
+              <span className="text-sm font-bold">React</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#CC0000] rounded flex items-center justify-center">
+                <span className="text-white font-black text-[8px]">Rails</span>
+              </div>
+              <span className="text-sm font-bold">Rails</span>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

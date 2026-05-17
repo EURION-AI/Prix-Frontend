@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Twitter, Linkedin } from 'lucide-react'
+import { XLogo as Twitter, LinkedinLogo as Linkedin } from '@phosphor-icons/react'
 
 const footerLinks = {
   Product: [
@@ -21,13 +21,13 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-[#0b0b0f] border-t border-white/5 pt-20 pb-10">
-      <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-20">
+    <footer className="bg-[#0a0a0f] border-t border-white/5 pt-16 pb-10">
+      <div className="section-container">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10 mb-16">
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-6">
-              <Image src="/logo.png" alt="Prix" width={56} height={56} className="rounded-xl" />
-              <span className="text-xl font-bold tracking-tight text-white">Prix</span>
+            <Link href="/" className="flex items-center gap-3 mb-4">
+              <Image src="/logo.png" alt="Prix" width={40} height={40} className="rounded-lg" />
+              <span className="text-lg font-bold tracking-tight text-white">Prix</span>
             </Link>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs">
               Auto-fixes bugs, generates implementation plans, and accelerates your development workflow. No configuration required.
@@ -36,8 +36,8 @@ export function Footer() {
 
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="text-sm font-bold text-white mb-6 tracking-wider uppercase">{category}</h4>
-              <ul className="space-y-4">
+              <h4 className="text-xs font-bold text-white mb-5 tracking-wider uppercase">{category}</h4>
+              <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link 
@@ -53,8 +53,8 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-xs text-white/30 tracking-wide">
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-xs text-white/30">
             © {new Date().getFullYear()} Prix Technologies Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
@@ -65,7 +65,7 @@ export function Footer() {
               className="text-white/40 hover:text-white transition-colors"
               aria-label="Follow Prix AI on X (Twitter)"
             >
-              <Twitter className="w-5 h-5" />
+              <Twitter className="w-4 h-4" />
             </Link>
             <Link
               href="https://www.linkedin.com/company/eurion-ai/"
@@ -74,7 +74,7 @@ export function Footer() {
               className="text-white/40 hover:text-white transition-colors"
               aria-label="Follow Prix AI on LinkedIn"
             >
-              <Linkedin className="w-5 h-5" />
+              <Linkedin className="w-4 h-4" />
             </Link>
           </div>
         </div>

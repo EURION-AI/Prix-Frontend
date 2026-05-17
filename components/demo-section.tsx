@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useRef, useState } from 'react'
-import { Terminal, Copy, Shield, Zap, ArrowRight, Check, ExternalLink, GitPullRequest } from 'lucide-react'
+import { Terminal, Copy, ArrowRight, Check, ExternalLink, GitPullRequest } from 'lucide-react'
 
 export function DemoSection() {
   const [isFixed, setIsFixed] = useState(false)
@@ -14,7 +14,7 @@ export function DemoSection() {
     setTimeout(() => {
       setIsApplying(false)
       setIsFixed(true)
-    }, 1200) // Slightly longer for more "tactile" feel
+    }, 1200)
   }
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -32,27 +32,26 @@ export function DemoSection() {
   ]
 
   return (
-    <section ref={containerRef} className="relative min-h-[120vh] bg-background py-32 overflow-hidden">
-      {/* Surgical Grid Overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] grid-surgical-wide" />
+    <section ref={containerRef} className="relative min-h-screen bg-background py-24 md:py-32 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]" />
 
       <div className="sticky top-[15%] w-full max-w-[1600px] mx-auto px-6 lg:px-12">
         <motion.div 
           style={{ opacity, scale, y }}
           className="relative max-w-5xl mx-auto"
         >
-          {/* Surgical Header */}
-          <div className="flex flex-col items-center mb-20 text-center">
-            <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/20 mb-8 font-bold">
+          {/* Section Header */}
+          <div className="section-header">
+            <span className="section-label">
               01 — THE ENGINE
             </span>
-            <h2 className="text-editorial text-5xl md:text-6xl font-semibold text-white max-w-2xl leading-[1.05]">
+            <h2 className="section-title text-center max-w-2xl">
               Reviews that understand <br />
               <span className="text-primary">architectural intent.</span>
             </h2>
           </div>
 
-          {/* Elite Mockup Window */}
+          {/* Mockup Window */}
           <motion.div 
             animate={isApplying ? { 
               scale: [1, 1.005, 1], 
@@ -87,7 +86,7 @@ export function DemoSection() {
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-3 px-3 py-1 rounded bg-secondary/10 border border-secondary/20">
-                  <div className="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
                   <span className="text-[9px] font-mono text-secondary font-bold uppercase tracking-widest">
                     AST_NOMINAL
                   </span>
@@ -97,7 +96,7 @@ export function DemoSection() {
 
             {/* Code Content */}
             <div className="flex relative z-10 min-h-[480px]">
-              {/* Minimal Sidebar with Diff Counts */}
+              {/* Sidebar with Diff Counts */}
               <div className="w-20 border-r border-white/[0.05] flex flex-col items-center py-8 gap-8 bg-[#0e0e11]/50">
                 <div className="flex flex-col items-center gap-2 group/diff">
                   <div className="w-5 h-5 rounded-md bg-white/[0.03] border border-white/[0.05] flex items-center justify-center transition-colors group-hover/diff:border-secondary/30">
@@ -125,12 +124,12 @@ export function DemoSection() {
                   <div className="text-white">export async function handleAuth(req, res) {'{'}</div>
                 </div>
 
-                {/* Tactical Diff with Shimmer */}
+                {/* Diff */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className={`relative mt-2 transition-all duration-700 ${isApplying ? 'shimmer brightness-125' : ''}`}
+                  className={`relative mt-2 transition-all duration-700 ${isApplying ? 'brightness-125' : ''}`}
                 >
                   <AnimatePresence mode="wait">
                     {!isFixed ? (
@@ -154,9 +153,6 @@ export function DemoSection() {
                         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
                         className="bg-primary/5 text-white border-l-2 border-primary/60 pl-6 py-4 rounded-r-lg relative overflow-hidden"
                       >
-                        <div className="absolute top-0 right-0 p-2 opacity-10">
-                           <Shield className="w-12 h-12 text-primary" />
-                        </div>
                         <div className="text-primary/40 text-[11px] mb-2 uppercase tracking-widest font-bold">// ARCHITECTURE CORRECTED</div>
                         <div className="text-white/80">if (!token) {'{'}</div>
                         <div className="text-white/80">  return res.status(401).json({'{'} error: 'Unauthorized' {'}'});</div>
@@ -166,7 +162,7 @@ export function DemoSection() {
                   </AnimatePresence>
                 </motion.div>
 
-                {/* AI Reasoning - Surgical & Tactile */}
+                {/* AI Reasoning */}
                 <motion.div 
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -178,7 +174,7 @@ export function DemoSection() {
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
                     
                     <div className="flex items-center gap-4 mb-4 relative z-10">
-                      <div className="w-6 h-6 rounded bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(236,72,153,0.3)]">
+                      <div className="w-6 h-6 rounded bg-primary flex items-center justify-center">
                         <Terminal className="w-3.5 h-3.5 text-white" />
                       </div>
                       <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">Control Flow Analysis</span>
@@ -197,7 +193,6 @@ export function DemoSection() {
                       {isFixed
                         ? "Structural integrity validated. Enforced JSON response pattern aligns with enterprise API standards."
                         : "Heuristic match: API consistency violation. Auth failures must return structured JSON to ensure client-side resilience."}
-                      {/* Consider dynamic content based on actual audit findings */}
                     </p>
                     
                     <div className="flex gap-6 relative z-10">
@@ -222,7 +217,7 @@ export function DemoSection() {
                 </motion.div>
               </div>
 
-              {/* Technical Audit Log Overlay - Modernized */}
+              {/* Audit Log Overlay */}
               <div className="absolute bottom-6 right-6 flex flex-col gap-3 pointer-events-none z-20">
                 <AnimatePresence>
                    {auditLogs.map((log, i) => (
@@ -233,7 +228,7 @@ export function DemoSection() {
                        transition={{ delay: 1 + (i * 0.1) }}
                        className="bg-[#0e0e11]/90 backdrop-blur-xl border border-white/[0.08] px-4 py-2.5 rounded-lg flex items-center gap-4 shadow-2xl pointer-events-auto group/log cursor-pointer hover:border-white/20 transition-colors"
                      >
-                       <div className={`w-1.5 h-1.5 rounded-full ${log.status === 'Fixed' ? 'bg-secondary shadow-[0_0_8px_rgba(34,197,94,0.6)]' : log.status === 'Warning' ? 'bg-amber-500' : 'bg-white/20'}`} />
+                       <div className={`w-1.5 h-1.5 rounded-full ${log.status === 'Fixed' ? 'bg-secondary' : log.status === 'Warning' ? 'bg-amber-500' : 'bg-white/20'}`} />
                        <div className="flex flex-col">
                          <span className="text-[9px] font-mono text-white/80 font-bold uppercase tracking-widest">PR {log.id}</span>
                          <span className="text-[8px] font-mono text-white/30 uppercase">{log.type} • {log.time}</span>

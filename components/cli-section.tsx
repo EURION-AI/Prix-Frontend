@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Terminal, Command, ChevronRight } from 'lucide-react'
+import { Terminal, ChevronRight } from 'lucide-react'
 
 const commands = [
   { cmd: '!prix fix', desc: 'Apply recommended architectural fixes directly in your PR' },
@@ -10,28 +10,28 @@ const commands = [
 
 export function CLISection() {
   return (
-    <section className="py-32 bg-background border-t border-white/[0.03]">
-      <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+    <section className="section-padding bg-background border-t border-white/[0.03]">
+      <div className="section-container">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary mb-8 block font-bold">
+            <span className="section-label">
               06 — Control
             </span>
-            <h2 className="text-editorial text-5xl md:text-6xl font-semibold text-white mb-8">
+            <h2 className="section-title mb-6">
               Engineered for <br />
               <span className="text-gradient-vibrant">GitHub-first</span> workflows.
             </h2>
-            <p className="text-xl text-white/60 leading-relaxed mb-12 max-w-lg">
+            <p className="text-white/60 text-lg leading-relaxed mb-10 max-w-lg">
               Prix works directly in your GitHub pull requests. Simply comment with commands to get instant architectural analysis and fixes, right where you need them.
             </p>
             
-            <div className="space-y-6">
+            <div className="space-y-5">
               {commands.map((c, i) => (
                 <div key={i} className="flex items-start gap-4 group cursor-pointer">
-                  <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
+                  <div className="mt-2 w-1 h-1 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
                   <div>
                     <code className="text-sm font-mono text-white/90 font-bold tracking-tight">{c.cmd}</code>
-                    <p className="text-xs text-white/40 mt-1 font-medium">{c.desc}</p>
+                    <p className="text-xs text-white/40 mt-1">{c.desc}</p>
                   </div>
                 </div>
               ))}

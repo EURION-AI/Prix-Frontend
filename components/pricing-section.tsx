@@ -1,12 +1,9 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Check, Zap, Shield, Clock, Crown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { getUserRegion, formatPrice, UPGRADE_PRICE, type Region, type Plan } from '@/lib/pricing'
+import { getUserRegion, formatPrice, type Region } from '@/lib/pricing'
 
 const plans = [
   {
@@ -14,88 +11,32 @@ const plans = [
     name: 'Free',
     price: 'Free',
     priceValue: 0,
-    description: 'Perfect for trying out AI-powered code fixes.',
-    features: ['15 PR reviews / month (5/day)', '3 AI issue plans / month', '3 auto fixes / month', 'Public repositories', 'GitHub integration'],
+    description: '15 PR reviews/month, public repos only.',
+    features: ['15 PR reviews / month', '3 AI issue plans / month', '3 auto fixes / month', 'Public repositories', 'GitHub integration'],
     cta: 'Get Started for Free',
     href: '/login',
-    popular: false,
-    badge: null,
-    guarantee: 'No credit card required'
   },
-    {
+  {
     id: 'starter',
     name: 'Starter',
     getPrice: (region: Region) => formatPrice(region, 'starter'),
-    getOriginalPrice: (region: Region) => {
-      if (region === 'IN') return '₹999'
-      if (region === 'GB') return '£14'
-      if (region === 'EU') return '€14'
-      return '$14'
-    },
     priceValue: 5,
-    description: 'For individual developers who want reliable automation.',
-    features: ['400 combined PR reviews & auto fixes / month', '50 AI issue plans / month', 'Private repositories', 'Bug detection (logic + common issues)', 'Security issue detection (SQL injection, XSS, etc.)', 'Basic performance analysis', 'Basic AI issue planning & task breakdowns'],
+    description: '400 combined reviews & fixes/month, private repos.',
+    features: ['400 combined reviews & fixes / month', '50 issue plans / month', 'Private repositories', 'Bug detection (logic + common issues)', 'Security scanning (SQL injection, XSS, etc.)'],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'starter')}`,
     getHref: (region: Region) => `/checkout?plan=starter&region=${region}`,
-    popular: false,
-    badge: null,
-    guarantee: 'No credit card required'
   },
   {
     id: 'pro',
     name: 'Pro',
     getPrice: (region: Region) => formatPrice(region, 'pro'),
-    getOriginalPrice: (region: Region) => {
-      if (region === 'IN') return '₹1,499'
-      if (region === 'GB') return '£19'
-      if (region === 'EU') return '€19'
-      return '$19'
-    },
     priceValue: 10,
-    description: 'For developers who rely on AI daily for fast, high-quality fixes.',
-    features: ['Everything in Starter', 'Unlimited PR reviews', 'Unlimited AI issue planning & task breakdowns' , 'high automated fixes', 'Faster processing (priority queue)', 'Better multi-file context understanding', 'Deeper analysis (bugs, performance, security)'],
+    description: 'Unlimited reviews, priority processing.',
+    features: ['Unlimited PR reviews', 'Unlimited auto-fixes', 'Unlimited issue plans', 'Priority queue processing', 'Deeper multi-file analysis'],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'pro')}`,
     getHref: (region: Region) => `/checkout?plan=pro&region=${region}`,
-    popular: true,
-    badge: 'Most Popular',
-    guarantee: 'No credit card required'
-  }
+  },
 ]
-
-function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-
-  useEffect(() => {
-    const targetDate = new Date('2026-06-07T23:59:59')
-
-    const calculateTimeLeft = () => {
-      const now = new Date()
-      const difference = targetDate.getTime() - now.getTime()
-
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60)
-        })
-      }
-    }
-
-    calculateTimeLeft()
-    const timer = setInterval(calculateTimeLeft, 1000)
-    return () => clearInterval(timer)
-  }, [])
-
-  return (
-    <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
-      <Clock className="w-4 h-4 text-green-400" />
-      <span className="text-green-400 text-sm font-medium">
-        Launch special: 50% off • Ends in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
-      </span>
-    </div>
-  )
-}
 
 export function PricingSection({ region: initialRegion = 'US' }: { region?: Region }) {
   const searchParams = useSearchParams()
@@ -117,11 +58,11 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
 
   if (!mounted) {
     return (
-      <section id="pricing" className="py-20 lg:py-24 bg-background relative border-t border-white/[0.03]">
+      <section id="pricing" className="py-20 lg:py-24 bg-[#0a0a0f] border-t border-white/[0.03]">
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col items-center mb-12 lg:mb-16 text-center">
             <div className="animate-pulse">
-              <div className="h-8 w-8 bg-white/10 rounded-full mb-8"></div>
+              <div className="h-8 w-8 bg-white/10 rounded-full mb-8" />
             </div>
           </div>
         </div>
@@ -130,7 +71,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
   }
 
   return (
-    <section id="pricing" className="py-20 lg:py-24 bg-background relative border-t border-white/[0.03]">
+    <section id="pricing" className="py-20 lg:py-24 bg-[#0a0a0f] border-t border-white/[0.03]">
       <div className="w-full max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex flex-col items-center mb-10 md:mb-16 text-center">
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
@@ -139,9 +80,6 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
           <p className="text-white/50 text-base md:text-lg max-w-xl">
             Start free. Upgrade when you need unlimited fixes and planning. No hidden fees.
           </p>
-          <div className="mt-6">
-            <CountdownTimer />
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 xl:gap-12 max-w-7xl mx-auto">
@@ -151,6 +89,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
             const isProOnStarter = userPlan === 'pro' && plan.id === 'starter'
             const isLocked = isOwner || isProOnStarter
             const isUpgrade = isStarterOnPro
+            const isPro = plan.id === 'pro'
 
             const appendRef = (href: string) => refCode ? `${href}&ref=${refCode}` : href
 
@@ -170,62 +109,41 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
               displayHref = '#'
               disabled = true
             } else if (isUpgrade) {
-              displayPrice = UPGRADE_PRICE[region] || '$2.99'
-              displayCta = `Upgrade for ${displayPrice}`
+              displayPrice = plan.getPrice ? plan.getPrice(region) : ''
+              displayCta = 'Upgrade'
               displayHref = appendRef(`/checkout?plan=pro&region=${region}&upgrade=true`)
             } else {
               displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
               displayCta = plan.getCta ? plan.getCta(region) : plan.cta
               displayHref = plan.getHref ? appendRef(plan.getHref(region)) : plan.href
             }
-            
+
             return (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 1 }}
-                className={`relative flex flex-col p-5 md:p-8 lg:p-10 rounded-2xl border transition-all duration-300 ${
-                  !disabled ? 'hover:-translate-y-1' : ''} ${
-                  plan.popular 
-                    ? 'border-primary/40 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 shadow-[0_20_60px_rgba(236,72,153,0.15)] ring-2 ring-primary/30' 
-                    : 'border-white/[0.12] bg-white/[0.03] hover:border-white/[0.20] hover:bg-white/[0.05]'
+                className={`relative flex flex-col p-5 md:p-8 lg:p-10 rounded-lg border ${
+                  isPro ? 'border-primary/30 bg-[#121218]' : 'border-white/[0.08] bg-[#0a0a0f]'
                 } ${disabled ? 'opacity-70' : ''}`}
               >
-                {plan.badge && !isLocked && !isUpgrade && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/40">
-                    {plan.badge}
+                {isPro && (
+                  <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-primary text-white text-[10px] font-bold uppercase tracking-wider">
+                    Most popular
                   </div>
                 )}
 
-                {/* Plan Name & Tagline */}
                 <div className="mb-4 md:mb-6">
-                  <h3 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 ${plan.popular ? 'text-primary' : 'text-white'}`}>
+                  <h3 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 ${isPro ? 'text-primary' : 'text-white'}`}>
                     {plan.name}
                   </h3>
-                  <p className="text-sm md:text-base lg:text-lg text-white/70 font-light leading-relaxed">
+                  <p className="text-sm md:text-base lg:text-lg text-white/50 leading-relaxed">
                     {plan.description}
                   </p>
                 </div>
 
-                {/* Price */}
                 <div className="mb-5 md:mb-8">
                   <div className="flex items-baseline gap-2 mb-2">
-                    {plan.getOriginalPrice && !isLocked && !isUpgrade && (
-                      <span className="text-base md:text-xl lg:text-2xl font-light text-white/30 line-through">
-                        {plan.getOriginalPrice(region)}
-                      </span>
-                    )}
-                    <span className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular && !disabled ? 'text-primary' : 'text-white'}`}>
-                      {isLocked ? (
-                        <span className="flex items-center gap-2">
-                          <Crown className="w-4 h-4 md:w-6 md:h-6 text-yellow-400" />
-                          {isProOnStarter ? 'Active' : 'Active'}
-                        </span>
-                      ) : (
-                        displayPrice
-                      )}
+                    <span className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight ${isPro && !disabled ? 'text-primary' : 'text-white'}`}>
+                      {displayPrice}
                     </span>
                     {plan.price !== 'Free' && !isLocked && (
                       <span className="text-white/50 text-sm md:text-base font-light">/month</span>
@@ -235,104 +153,47 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                     <span className="text-white/50 text-sm md:text-base font-light">Forever</span>
                   )}
                   {isLocked && (
-                    <span className="text-green-400 text-xs font-bold block mt-1">{isProOnStarter ? 'Included in Pro' : '✓ Current Plan'}</span>
+                    <span className="text-green-400 text-xs font-bold block mt-1">{isProOnStarter ? 'Included in Pro' : 'Current Plan'}</span>
                   )}
-                  {isUpgrade && (() => {
-                    const fullPro = parseFloat(formatPrice(region, 'pro').replace(/[^0-9.]/g, ''))
-                    const upgradeVal = parseFloat((UPGRADE_PRICE[region] || '$2.99').replace(/[^0-9.]/g, ''))
-                    const savedPct = fullPro > 0 ? Math.round((1 - upgradeVal / fullPro) * 100) : 0
-                    return <span className="text-primary text-xs font-bold block mt-1">Save {savedPct}% vs monthly</span>
-                  })()}
                 </div>
 
-                {/* Features */}
                 <div className="space-y-2 mb-6 flex-grow">
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-2">
-                      <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                        plan.popular 
-                          ? 'bg-primary/20 text-primary' 
-                          : 'bg-white/10 text-white/60'
-                      }`}>
-                        <Check className="w-3 h-3" strokeWidth={2.5} />
-                      </div>
-                      <span className={`text-xs lg:text-sm ${plan.popular ? 'text-white/90' : 'text-white/60'} font-light leading-tight`}>
+                      <span className="text-zinc-500 mt-[3px] shrink-0">·</span>
+                      <span className={`text-xs lg:text-sm ${isPro ? 'text-white/80' : 'text-white/50'} leading-tight`}>
                         {feature}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* CTA Button */}
                 <div className="mt-auto">
                   {disabled ? (
-                    <div className="w-full h-12 lg:h-14 rounded-xl font-bold text-base lg:text-lg flex items-center justify-center bg-white/5 text-white/40 border border-white/10 cursor-not-allowed">
+                    <div className="w-full h-12 lg:h-14 rounded-lg font-bold text-base lg:text-lg flex items-center justify-center bg-white/5 text-white/40 border border-white/10 cursor-not-allowed">
                       {displayCta}
                     </div>
                   ) : (
-                    <Button 
-                      size="lg" 
-                      asChild
-                      className={`w-full h-12 lg:h-14 rounded-xl font-bold text-base lg:text-lg transition-all duration-300 ${
-                        plan.popular || isUpgrade
-                          ? 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20' 
-                          : 'bg-white text-black hover:bg-white/90 shadow-lg'
+                    <Link
+                      href={displayHref}
+                      className={`w-full h-12 lg:h-14 rounded-lg font-bold text-base lg:text-lg flex items-center justify-center transition-colors ${
+                        isPro || isUpgrade
+                          ? 'bg-primary text-white hover:bg-primary/90'
+                          : 'bg-white text-black hover:bg-white/90'
                       }`}
                     >
-                      <Link href={displayHref}>{displayCta}</Link>
-                    </Button>
+                      {displayCta}
+                    </Link>
                   )}
-                  
-                  <div className="mt-4 flex flex-col items-center gap-2">
-                    {plan.price !== 'Free' && !isLocked ? (
-                      <Link 
-                        href="/affiliate" 
-                      className="px-4 py-1.5 rounded-lg border border-green-500/20 bg-green-500/5 text-[10px] font-bold text-green-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 uppercase tracking-widest"
-                      >
-                        Earn Free via Affiliate
-                      </Link>
-                    ) : (
-                      <div className="h-[14px]" />
-                    )}
-                    
-                    <p className="text-center text-white/30 text-xs">
-                      {plan.id === 'free' ? plan.guarantee : 'Cancel anytime • Secured by Razorpay'}
-                    </p>
-                  </div>
+
+                  <p className="text-center text-white/30 text-xs mt-2">
+                    {plan.id === 'free' ? 'No credit card required' : 'Cancel anytime'}
+                  </p>
                 </div>
-              </motion.div>
+              </div>
             )
           })}
         </div>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 flex flex-wrap justify-center gap-8 items-center text-sm text-white/40"
-        >
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-green-400" />
-            <span>Enterprise-grade security</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-yellow-400" />
-            <span>99.9% Uptime</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Check className="w-4 h-4 text-primary" />
-            <span>GDPR Compliant</span>
-          </div>
-          <span>•</span>
-          <span>Founded in 2026</span>
-          <span>•</span>
-          <a
-            href="mailto:support@prixai.xyz"
-            className="text-primary hover:text-primary/80 transition-colors"
-          >
-            support@prixai.xyz
-          </a>
-        </motion.div>
       </div>
     </section>
   )
