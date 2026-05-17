@@ -132,18 +132,16 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
   return (
     <section id="pricing" className="py-20 lg:py-24 bg-background relative border-t border-white/[0.03]">
       <div className="w-full max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="flex flex-col items-center mb-12 lg:mb-16 text-center">
-          <span className="font-mono text-xs uppercase tracking-[0.4em] text-primary mb-8 block font-bold">
-            05 — Investment
-          </span>
-          <h2 className="text-editorial text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Simple, transparent<br />
-            <span className="text-gradient-vibrant">pricing.</span>
+        <div className="flex flex-col items-center mb-10 md:mb-16 text-center">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+            Simple, transparent pricing
           </h2>
-          <p className="text-white/50 text-lg lg:text-xl max-w-xl mb-8">
+          <p className="text-white/50 text-base md:text-lg max-w-xl">
             Start free. Upgrade when you need unlimited fixes and planning. No hidden fees.
           </p>
-          <CountdownTimer />
+          <div className="mt-6">
+            <CountdownTimer />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 xl:gap-12 max-w-7xl mx-auto">
@@ -188,7 +186,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 1 }}
-                className={`relative flex flex-col p-8 lg:p-10 rounded-2xl border transition-all duration-300 ${
+                className={`relative flex flex-col p-5 md:p-8 lg:p-10 rounded-2xl border transition-all duration-300 ${
                   !disabled ? 'hover:-translate-y-1' : ''} ${
                   plan.popular 
                     ? 'border-primary/40 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 shadow-[0_20_60px_rgba(236,72,153,0.15)] ring-2 ring-primary/30' 
@@ -202,27 +200,27 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                 )}
 
                 {/* Plan Name & Tagline */}
-                <div className="mb-6">
-                  <h3 className={`text-2xl lg:text-3xl font-bold mb-2 ${plan.popular ? 'text-primary' : 'text-white'}`}>
+                <div className="mb-4 md:mb-6">
+                  <h3 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 ${plan.popular ? 'text-primary' : 'text-white'}`}>
                     {plan.name}
                   </h3>
-                  <p className="text-base lg:text-lg text-white/70 font-light leading-relaxed">
+                  <p className="text-sm md:text-base lg:text-lg text-white/70 font-light leading-relaxed">
                     {plan.description}
                   </p>
                 </div>
 
                 {/* Price */}
-                <div className="mb-8">
+                <div className="mb-5 md:mb-8">
                   <div className="flex items-baseline gap-2 mb-2">
                     {plan.getOriginalPrice && !isLocked && !isUpgrade && (
-                      <span className="text-xl lg:text-2xl font-light text-white/30 line-through">
+                      <span className="text-base md:text-xl lg:text-2xl font-light text-white/30 line-through">
                         {plan.getOriginalPrice(region)}
                       </span>
                     )}
-                    <span className={`text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular && !disabled ? 'text-primary' : 'text-white'}`}>
+                    <span className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight ${plan.popular && !disabled ? 'text-primary' : 'text-white'}`}>
                       {isLocked ? (
                         <span className="flex items-center gap-2">
-                          <Crown className="w-6 h-6 text-yellow-400" />
+                          <Crown className="w-4 h-4 md:w-6 md:h-6 text-yellow-400" />
                           {isProOnStarter ? 'Active' : 'Active'}
                         </span>
                       ) : (
@@ -230,11 +228,11 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                       )}
                     </span>
                     {plan.price !== 'Free' && !isLocked && (
-                      <span className="text-white/50 text-base font-light">/month</span>
+                      <span className="text-white/50 text-sm md:text-base font-light">/month</span>
                     )}
                   </div>
                   {plan.price === 'Free' && (
-                    <span className="text-white/50 text-base font-light">Forever</span>
+                    <span className="text-white/50 text-sm md:text-base font-light">Forever</span>
                   )}
                   {isLocked && (
                     <span className="text-green-400 text-xs font-bold block mt-1">{isProOnStarter ? 'Included in Pro' : '✓ Current Plan'}</span>
