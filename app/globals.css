@@ -50,7 +50,7 @@
   --primary-foreground: #ffffff;
   --secondary: #22c55e;
   --secondary-foreground: #ffffff;
-  --muted: #121218;
+  --muted: #16161a;
   --muted-foreground: #a1a1aa;
   --accent: #FF1B6B;
   --accent-foreground: #ffffff;
@@ -104,6 +104,12 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+  --animate-glow-pulse: glow-pulse 1s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; filter: blur(10px); }
+  50% { opacity: 1; filter: blur(20px); }
 }
 
 @layer base {
