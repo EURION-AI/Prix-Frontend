@@ -32,16 +32,16 @@ async function getOrCreateRazorpayPlan(
 ): Promise<string> {
   const planKey = `${plan}_${region}`
 
-  // Check cache first
+  // Check cache first — only use cached plan if amount matches current pricing
   const cached = await sql`
-    SELECT razorpay_plan_id FROM razorpay_plans WHERE internal_plan_id = ${planKey}
+    SELECT razorpay_plan_id, amount FROM razorpay_plans WHERE internal_plan_id = ${planKey}
   `
 
-  if (cached.length > 0) {
+  if (cached.length > 0 && Number(cached[0].amount) === amount) {
     return cached[0].razorpay_plan_id
   }
 
-  // Create on Razorpay
+  // Amount changed or no cache — create new plan on Razorpay
   const planDisplayName = plan === 'starter' ? 'Starter' : 'Pro'
   const razorpayPlan = await (razorpay as any).plans.create({
     period: 'monthly',
@@ -54,15 +54,17 @@ async function getOrCreateRazorpayPlan(
     },
   })
 
-  // Cache it
+  // Upsert cache with new plan ID and amount
   await sql`
     INSERT INTO razorpay_plans (internal_plan_id, razorpay_plan_id, amount, currency)
     VALUES (${planKey}, ${razorpayPlan.id}, ${amount}, ${currency})
     ON CONFLICT (internal_plan_id) DO UPDATE SET
-      razorpay_plan_id = EXCLUDED.razorpay_plan_id
+      razorpay_plan_id = EXCLUDED.razorpay_plan_id,
+      amount = EXCLUDED.amount,
+      currency = EXCLUDED.currency
   `
 
-  console.log(`Created Razorpay plan: ${planKey} -> ${razorpayPlan.id}`)
+  console.log(`Created Razorpay plan: ${planKey} -> ${razorpayPlan.id} (₹${(amount / 100).toFixed(0)})`)
   return razorpayPlan.id
 }
 
