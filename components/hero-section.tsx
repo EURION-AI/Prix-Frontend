@@ -21,7 +21,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-start"
+            className="flex flex-col items-center lg:items-start text-center lg:text-left"
           >
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
@@ -29,14 +29,14 @@ export function HeroSection() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="text-[clamp(2rem,5.2vw,4.25rem)] font-bold text-white mb-6 leading-[1.02] tracking-tight max-w-2xl"
             >
-              AI code review that<br />ships fixed code.<br />Every PR. Every time.
+              AI code review that<br className="hidden lg:block" />ships fixed code.<br className="hidden lg:block" />Every PR. Every time.
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="max-w-lg text-[18px] text-white/50 leading-relaxed mb-10 font-medium"
+              className="max-w-lg text-[18px] text-white/50 leading-relaxed mb-10 font-medium mx-auto lg:mx-0"
             >
               Prix understands your codebase architecture. Get automatic fixes, implementation plans, and actionable guidance before your users do.
             </motion.p>
@@ -45,7 +45,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="flex flex-wrap items-center gap-6 mb-10"
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mb-10"
             >
               <Button
                 size="lg"
@@ -84,7 +84,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="flex flex-wrap items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-white/30"
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-8 text-[11px] font-bold uppercase tracking-widest text-white/30"
             >
               {['5-min setup', 'Free forever plan', 'Cancel anytime'].map((item) => (
                 <div key={item} className="flex items-center gap-2">
