@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Navbar } from '@/components/navbar'
 import { PricingSection } from '@/components/pricing-section'
+import { ComparisonSection } from '@/components/comparison-section'
 import { CTASection } from '@/components/cta-section'
 import { Footer } from '@/components/footer'
 
@@ -23,6 +24,7 @@ export default function PricingPage() {
         <h1 className="sr-only">Prix AI Pricing — AI Code Review Plans</h1>
         <PricingSection />
       </div>
+      <ComparisonSection />
       <CTASection />
       <Footer />
     </main>
