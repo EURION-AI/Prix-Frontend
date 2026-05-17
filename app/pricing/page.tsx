@@ -17,10 +17,9 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <main className="min-h-screen bg-[#050508]">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
+    <main className="min-h-screen bg-[#0a0a0f]">
       <Navbar />
-      <div className="pt-20">
+      <div className="pt-24">
         <h1 className="sr-only">Prix AI Pricing — AI Code Review Plans</h1>
         <PricingSection />
       </div>
