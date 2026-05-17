@@ -22,7 +22,7 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
     id: 'starter',
     name: 'Starter',
     price: '', // Will be set dynamically based on region
-    pricePaise: 500,
+    pricePaise: 59900,
     features: [
       'AI-powered PR reviews (generous usage)',
       'Automated PR fixes (generous usage)',
@@ -37,7 +37,7 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
     id: 'pro',
     name: 'Pro',
     price: '', // Will be set dynamically based on region
-    pricePaise: 1000,
+    pricePaise: 79900,
     features: [
       'Everything in Starter',
       'Unlimited PR reviews',
