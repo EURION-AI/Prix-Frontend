@@ -3,6 +3,10 @@ dotenv.config()
 // Import db after dotenv config to ensure env vars are loaded
 const { sql } = require('../lib/db.ts')
 
+interface TableRow {
+  table_name: string
+}
+
 async function verifyDB() {
   console.log('--- Database Verification ---')
   try {
@@ -11,7 +15,7 @@ async function verifyDB() {
     console.log('Connection Status: SUCCESS')
     
     // List tables
-    const tables = await sql`
+    const tables: TableRow[] = await sql`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public'
