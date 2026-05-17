@@ -3,7 +3,7 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Clock, Calendar, ArrowRight } from 'lucide-react'
+import { Calendar, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 
@@ -91,49 +91,48 @@ export default function BlogIndex() {
         <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
           <header className="mb-16 text-center max-w-3xl mx-auto">
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Our Blog</Badge>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-[1.05] tracking-[-0.03em]">
               Engineering <span className="text-gradient-vibrant">Insights</span>
             </h1>
-            <p className="text-xl text-white/60">
+            <p className="text-lg text-white/50 max-w-2xl mx-auto leading-relaxed">
               Articles, guides, and best practices for modern engineering teams focused on velocity and code quality.
             </p>
           </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {blogs.map((blog, index) => (
               <Link 
                 key={index} 
                 href={blog.href}
-                className="group flex flex-col bg-white/[0.1] border border-white/10 rounded-2xl overflow-hidden hover:border-primary/30 hover:bg-white/[0.15] transition-all duration-300 hover:-translate-y-1"
+                className="group flex flex-col card-base hover:border-white/[0.12] hover:bg-white/[0.02] transition-all duration-300 hover:-translate-y-0.5 overflow-hidden"
               >
-                <div className="p-8 flex-1 flex flex-col">
-                  <div className="mb-4">
-                    <Badge className={blog.color === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-primary/10 text-primary border-primary/20'}>
+                <div className="p-7 flex-1 flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Badge className={blog.color === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20 text-[10px] font-semibold' : 'bg-primary/10 text-primary border-primary/20 text-[10px] font-semibold'}>
                       {blog.category}
                     </Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-white/40 text-sm mb-4">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      {blog.date}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" />
-                      {blog.readTime}
-                    </div>
+                    <span className="text-[10px] text-white/30 font-medium">{blog.readTime}</span>
                   </div>
                   
-                  <h2 className="text-2xl font-bold text-white mb-4 group-hover:text-primary transition-colors">
+                  <h2 className="text-xl font-bold text-white mb-3 leading-snug group-hover:text-primary transition-colors line-clamp-2">
                     {blog.title}
                   </h2>
                   
-                  <p className="text-white/60 mb-8 line-clamp-3 leading-relaxed">
+                  <p className="text-white/50 text-sm leading-relaxed mb-6 line-clamp-3">
                     {blog.description}
                   </p>
                   
-                  <div className="mt-auto flex items-center gap-2 text-primary font-semibold group/link">
-                    Read Article
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                  <div className="mt-auto">
+                    <div className="flex items-center justify-between pt-4 border-t border-white/[0.04]">
+                      <div className="flex items-center gap-1.5 text-[11px] text-white/30">
+                        <Calendar className="w-3 h-3" />
+                        {blog.date}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                        Read
+                        <ArrowRight className="w-3 h-3" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Link>

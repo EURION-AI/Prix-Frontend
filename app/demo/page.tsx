@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import Link from 'next/link'
-import { ArrowRight, Terminal, Play, Github } from 'lucide-react'
+import { ArrowRight, Terminal, Github } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'How to Use Prix AI — Demo & Documentation',
@@ -59,13 +59,13 @@ export default function DemoPage() {
         <div className="max-w-5xl mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-20">
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-primary mb-6 block font-bold">
+            <span className="section-label">
               Documentation
             </span>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="section-title text-4xl md:text-6xl mb-6">
               How Prix AI Works
             </h1>
-            <p className="text-white/50 text-lg max-w-2xl mx-auto leading-relaxed">
+            <p className="section-subtitle mx-auto">
               Three features. Zero friction. Watch how Prix automates code review, generates fixes, and plans implementations — all from inside GitHub.
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function DemoPage() {
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                   {/* Video */}
                   <div className={`${i % 2 === 1 ? 'md:order-2' : ''}`}>
-                    <div className="bg-black/60 border border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl">
+                    <div className="card-base overflow-hidden">
                       <video
                         className="w-full aspect-video object-contain"
                         preload="metadata"
@@ -102,7 +102,7 @@ export default function DemoPage() {
                     <p className="text-primary font-medium text-sm mb-6">
                       {step.subtitle}
                     </p>
-                    <p className="text-white/60 leading-relaxed mb-8 text-sm">
+                    <p className="text-white/50 leading-relaxed mb-8 text-sm">
                       {step.description}
                     </p>
 
@@ -112,7 +112,7 @@ export default function DemoPage() {
                         <li key={j} className="flex items-start gap-3 text-sm">
                           <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
                           <span
-                            className="text-white/70 leading-relaxed"
+                            className="text-white/60 leading-relaxed"
                             dangerouslySetInnerHTML={{ __html: h }}
                           />
                         </li>
@@ -136,12 +136,12 @@ export default function DemoPage() {
 
           {/* Prerequisite */}
           <div className="mt-32 mb-16">
-            <div className="max-w-2xl mx-auto bg-primary/5 border border-primary/20 rounded-2xl p-8 text-center">
+            <div className="max-w-2xl mx-auto card-base border-primary/20 bg-primary/[0.03] p-8 text-center">
               <Terminal className="w-8 h-8 text-primary mx-auto mb-4" />
               <h2 className="text-xl font-bold text-white mb-3">
                 Before you start
               </h2>
-              <p className="text-white/60 leading-relaxed mb-4 text-sm max-w-lg mx-auto">
+              <p className="text-white/50 leading-relaxed mb-4 text-sm max-w-lg mx-auto">
                 Make sure you have mounted your repositories in the{' '}
                 <Link href="/dashboard" className="text-primary hover:underline font-medium">Prix Dashboard</Link> first.
                 Install the Prix GitHub App on your repos, then select which ones to monitor.
@@ -159,11 +159,11 @@ export default function DemoPage() {
 
           {/* CTA */}
           <div className="text-center">
-            <div className="max-w-xl mx-auto bg-white/[0.03] border border-white/[0.08] rounded-2xl p-10">
+            <div className="max-w-xl mx-auto card-base p-10">
               <h2 className="text-2xl font-bold text-white mb-4">
                 Ready to try it?
               </h2>
-              <p className="text-white/50 mb-8 leading-relaxed">
+              <p className="text-white/50 mb-8 leading-relaxed text-sm">
                 Install the Prix AI GitHub App, push a PR, and watch the review appear automatically. No configuration needed.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

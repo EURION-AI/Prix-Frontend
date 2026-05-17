@@ -57,8 +57,8 @@ export function middleware(request: NextRequest) {
 
   const isDev = process.env.NODE_ENV === 'development'
   const scriptSrc = isDev 
-    ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com https://www.paypal.com https://www.paypalobjects.com"
-    : "'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com https://www.paypal.com https://www.paypalobjects.com"
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.razorpay.com https://www.paypal.com https://www.paypalobjects.com https://va.vercel-scripts.com"
+    : "'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com https://www.paypal.com https://www.paypalobjects.com https://va.vercel-scripts.com"
 
   const cspHeader = `
     default-src 'self';

@@ -86,7 +86,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <body className="font-sans antialiased bg-[#050508] text-foreground">
+      <body className="font-sans antialiased bg-background text-foreground">
         <NotificationContainer />
         <VisitTracker />
         <Analytics />

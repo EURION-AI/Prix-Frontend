@@ -86,53 +86,52 @@ const quickStats = [
 export default function ComparePage() {
   return (
     <div className="min-h-screen bg-[#050508]">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-[#050508] to-[#050508] pointer-events-none" />
       <Navbar />
       
       <article className="pt-32 pb-20 relative">
         <div className="max-w-6xl mx-auto px-6 lg:px-12 relative z-10">
           {/* Header */}
-          <header className="mb-16 text-center">
+          <header className="mb-16 text-center max-w-4xl mx-auto">
             <Badge className="bg-primary/10 text-primary border-primary/20 mb-6">Comparison</Badge>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="section-title text-4xl md:text-6xl mb-6">
               Prix vs GitHub Copilot vs Manual Code Review
             </h1>
-            <p className="text-xl text-white/60 max-w-3xl mx-auto">
+            <p className="section-subtitle mx-auto">
               See why engineering teams choose Prix for AI-powered code review with superior accuracy, speed, and cost efficiency.
             </p>
           </header>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
             {quickStats.map((stat, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-                <stat.icon className="w-8 h-8 text-primary mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-white/60 text-sm">{stat.label}</div>
+              <div key={index} className="card-base p-6 text-center">
+                <stat.icon className="w-7 h-7 text-primary mx-auto mb-3" />
+                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                <div className="text-white/50 text-sm">{stat.label}</div>
               </div>
             ))}
           </div>
 
           {/* Comparison Table */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden mb-16">
+          <div className="card-base overflow-hidden mb-16">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
-                  <th className="text-left p-6 text-white/60 font-medium">Feature</th>
-                  <th className="text-center p-6 text-primary font-bold text-lg">Prix</th>
-                  <th className="text-center p-6 text-white/60 font-medium">GitHub Copilot</th>
-                  <th className="text-center p-6 text-white/60 font-medium">Manual Review</th>
+                  <th className="text-left p-5 text-white/60 font-medium text-sm">Feature</th>
+                  <th className="text-center p-5 text-primary font-bold text-base">Prix</th>
+                  <th className="text-center p-5 text-white/60 font-medium text-sm">GitHub Copilot</th>
+                  <th className="text-center p-5 text-white/60 font-medium text-sm">Manual Review</th>
                 </tr>
               </thead>
               <tbody>
                 {comparisonData.map((row, index) => (
-                  <tr key={index} className={`border-b border-white/5 ${row.prixHighlight ? 'bg-primary/5' : ''}`}>
-                    <td className="p-6 text-white font-medium">{row.feature}</td>
-                    <td className={`p-6 text-center font-bold ${row.prixHighlight ? 'text-primary' : 'text-white'}`}>
+                  <tr key={index} className={`border-b border-white/5 ${row.prixHighlight ? 'bg-primary/[0.02]' : ''}`}>
+                    <td className="p-5 text-white font-medium text-sm">{row.feature}</td>
+                    <td className={`p-5 text-center font-bold text-sm ${row.prixHighlight ? 'text-primary' : 'text-white'}`}>
                       {row.prix}
                     </td>
-                    <td className="p-6 text-center text-white/70">{row.copilot}</td>
-                    <td className="p-6 text-center text-white/70">{row.manual}</td>
+                    <td className="p-5 text-center text-white/60 text-sm">{row.copilot}</td>
+                    <td className="p-5 text-center text-white/60 text-sm">{row.manual}</td>
                   </tr>
                 ))}
               </tbody>
@@ -140,95 +139,95 @@ export default function ComparePage() {
           </div>
 
           {/* Detailed Comparison */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 rounded-2xl p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-white" />
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            <div className="card-base p-7 border-primary/20 from-primary/[0.08] to-primary/[0.01] bg-gradient-to-br">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">Prix</h3>
+                <h3 className="text-xl font-bold text-white">Prix</h3>
               </div>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3 text-white/80">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span>Multi-dimensional graph analysis for architectural understanding</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span>Zero false positives with context-aware detection</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span>Automated fix generation with verification</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span>Built-in security vulnerability scanning</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span>70% more cost-effective than alternatives</span>
                 </li>
               </ul>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
-                  <Code className="w-6 h-6 text-white/60" />
+            <div className="card-base p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                  <Code className="w-5 h-5 text-white/60" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">GitHub Copilot</h3>
+                <h3 className="text-xl font-bold text-white">GitHub Copilot</h3>
               </div>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>General-purpose model, not code-review specific</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>High false positive rate requires manual filtering</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>Limited architectural context understanding</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>No automated fix generation</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>Higher cost per review</span>
                 </li>
               </ul>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-white/60" />
+            <div className="card-base p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-white/60" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">Manual Review</h3>
+                <h3 className="text-xl font-bold text-white">Manual Review</h3>
               </div>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>Slow 2-3 day review cycles</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>Inconsistent quality across reviewers</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>Doesn't scale with team growth</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>High opportunity cost of senior developer time</span>
                 </li>
-                <li className="flex items-start gap-3 text-white/80">
-                  <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2.5 text-white/70 text-sm">
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   <span>Most expensive option at scale</span>
                 </li>
               </ul>
@@ -236,9 +235,9 @@ export default function ComparePage() {
           </div>
 
           {/* CTA */}
-          <div className="text-center p-12 bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 rounded-2xl">
-            <h2 className="text-3xl font-bold text-white mb-4">Ready to Transform Your Code Review?</h2>
-            <p className="text-white/60 mb-8 max-w-2xl mx-auto">
+          <div className="text-center p-10 card-base border-primary/20 from-primary/[0.08] to-transparent bg-gradient-to-br">
+            <h2 className="text-2xl font-bold text-white mb-3">Ready to Transform Your Code Review?</h2>
+            <p className="text-white/50 mb-8 max-w-2xl mx-auto text-sm">
               Join engineering teams shipping 5x faster with Prix AI-powered code review. Start your free trial today.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
