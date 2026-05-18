@@ -31,7 +31,7 @@ export function HeroSection() {
             >
               <span className="block lg:hidden">
                 AI code review<br />
-                that ships fixed code.<br />
+                That ships fixed code.<br />
                 Every PR. Every time.
               </span>
               <span className="hidden lg:block">
