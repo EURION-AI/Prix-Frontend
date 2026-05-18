@@ -45,50 +45,54 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mb-10"
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-6 mb-10 w-full"
             >
-              <Button
-                size="lg"
-                asChild
-                className="h-12 px-9 rounded-xl btn-premium text-sm font-bold group"
-              >
-                <Link href={loginHref}>
-                  <span className="relative z-10 flex items-center gap-2">
-                    Start Free
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </Link>
-              </Button>
+              <div className="w-full sm:w-auto flex justify-center lg:justify-start">
+                <Button
+                  size="lg"
+                  asChild
+                  className="h-12 px-9 rounded-xl btn-premium text-sm font-bold group w-full sm:w-auto"
+                >
+                  <Link href={loginHref}>
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      Start Free
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </Link>
+                </Button>
+              </div>
 
-              <Button
-                variant="outline"
-                size="lg"
-                asChild
-                className="h-12 px-9 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white text-sm font-bold transition-all"
-              >
-                <Link href="/features">
-                  Explore Features
-                </Link>
-              </Button>
+              <div className="flex items-center justify-center gap-4 sm:gap-6">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  asChild
+                  className="h-12 px-4 sm:px-9 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white text-sm font-bold transition-all"
+                >
+                  <Link href="/features">
+                    Explore Features
+                  </Link>
+                </Button>
 
-              <Link 
-                href="/demo" 
-                className="flex items-center gap-2 text-white/50 hover:text-white transition-colors font-bold group ml-2"
-              >
-                <span className="text-sm">Watch Demo</span>
-                <PlayCircle className="w-4 h-4 text-white/30 group-hover:text-primary transition-colors" />
-              </Link>
+                <Link
+                  href="/demo"
+                  className="flex items-center justify-center gap-2 text-white/50 hover:text-white transition-colors font-bold group py-2 sm:py-0"
+                >
+                  <span className="text-sm">Watch Demo</span>
+                  <PlayCircle className="w-4 h-4 text-white/30 group-hover:text-primary transition-colors" />
+                </Link>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-8 text-[11px] font-bold uppercase tracking-widest text-white/30"
+              className="flex flex-row flex-wrap sm:flex-nowrap items-center justify-center lg:justify-start gap-x-2 gap-y-2 sm:gap-8 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest text-white/30 w-full"
             >
               {['5-min setup', 'Free forever plan', 'Cancel anytime'].map((item) => (
-                <div key={item} className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-primary" />
+                <div key={item} className="flex items-center gap-1 sm:gap-2 whitespace-nowrap">
+                  <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary shrink-0" />
                   <span>{item}</span>
                 </div>
               ))}
@@ -118,7 +122,7 @@ export function HeroSection() {
           <div className="flex items-center gap-6 border-r border-white/10 pr-10 shrink-0">
             <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">Built for engineering teams</span>
           </div>
-          
+
           <div className="flex flex-1 items-center justify-between gap-4 md:gap-8 px-2 text-white/45 transition-colors duration-300 flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
@@ -144,7 +148,7 @@ export function HeroSection() {
             </div>
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 text-[#61DAFB]">
-                <svg viewBox="0 0 100 100" className="w-full h-full fill-current"><path d="M50 42.4c-1.3 0-2.4 1.1-2.4 2.4s1.1 2.4 2.4 2.4 2.4-1.1 2.4-2.4-1.1-2.4-2.4-2.4zm23.6 2.4c0-4.6-10.5-8.4-23.6-8.4s-23.6 3.8-23.6 8.4 10.5 8.4 23.6 8.4 23.6-3.8 23.6-8.4zm-23.6 15.6c-13.1 0-23.6-3.8-23.6-8.4 0-.4.1-.8.4-1.2-2.5 4.3-3.9 9.1-3.9 14.1 0 13.1 10.5 23.6 23.6 23.6s23.6-10.5 23.6-23.6c0-5-1.4-9.8-3.9-14.1.3.4.4.8.4 1.2 0 4.6-10.5 8.4-23.6 8.4z"/></svg>
+                <svg viewBox="0 0 100 100" className="w-full h-full fill-current"><path d="M50 42.4c-1.3 0-2.4 1.1-2.4 2.4s1.1 2.4 2.4 2.4 2.4-1.1 2.4-2.4-1.1-2.4-2.4-2.4zm23.6 2.4c0-4.6-10.5-8.4-23.6-8.4s-23.6 3.8-23.6 8.4 10.5 8.4 23.6 8.4 23.6-3.8 23.6-8.4zm-23.6 15.6c-13.1 0-23.6-3.8-23.6-8.4 0-.4.1-.8.4-1.2-2.5 4.3-3.9 9.1-3.9 14.1 0 13.1 10.5 23.6 23.6 23.6s23.6-10.5 23.6-23.6c0-5-1.4-9.8-3.9-14.1.3.4.4.8.4 1.2 0 4.6-10.5 8.4-23.6 8.4z" /></svg>
               </div>
               <span className="text-sm font-bold">React</span>
             </div>
