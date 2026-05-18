@@ -29,7 +29,7 @@ export function HeroSection() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="text-[clamp(2rem,5.2vw,4.25rem)] font-bold text-white mb-6 leading-[1.02] tracking-tight max-w-2xl"
             >
-              AI code review that<br className="hidden lg:block" />ships fixed code. <br className="hidden lg:block" />Every PR. Every time.
+              AI code review that <br className="hidden lg:block" />ships fixed code. <br className="hidden lg:block" />Every PR. Every time.
             </motion.h1>
 
             <motion.p
