@@ -455,14 +455,14 @@ export default function DashboardPage() {
                 <DropdownMenuLabel className="text-white/40 font-mono text-[10px] uppercase tracking-widest">Account Settings</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-white/5" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer" asChild>
+                  <DropdownMenuItem className="focus:bg-white/10 focus:text-white hover:bg-white/10 hover:text-white cursor-pointer" asChild>
                     <Link href="/dashboard/profile">
                       <User className="mr-2 h-4 w-4 text-primary" />
                       <span>My Account</span>
                     </Link>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem className="hover:bg-white/5 cursor-pointer" asChild>
+                  <DropdownMenuItem className="focus:bg-white/10 focus:text-white hover:bg-white/10 hover:text-white cursor-pointer" asChild>
                     <Link href="/dashboard/settings/billing">
                       <CreditCard className="mr-2 h-4 w-4 text-primary" />
                       <span>Billing</span>
