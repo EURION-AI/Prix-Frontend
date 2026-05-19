@@ -155,9 +155,16 @@ export function ComparisonSection() {
                   <span className="text-[9px] font-extrabold text-primary uppercase tracking-widest mb-1.5 flex items-center gap-1">
                     Prix <Check className="w-2.5 h-2.5" />
                   </span>
-                  <span className={`text-xs font-bold leading-snug ${row.feature === 'Monthly Pricing' ? 'text-green-400' : 'text-white'}`}>
-                    {row.prix}
-                  </span>
+                  {row.prix === 'Yes (!prix fix)' ? (
+                    <div className="flex flex-col items-center">
+                      <span className="text-xs font-bold text-white leading-snug">Yes</span>
+                      <span className="text-[9px] font-semibold text-white/50 mt-1 whitespace-nowrap">(!prix fix)</span>
+                    </div>
+                  ) : (
+                    <span className={`text-xs font-bold leading-snug ${row.feature === 'Monthly Pricing' ? 'text-green-400' : 'text-white'}`}>
+                      {row.prix}
+                    </span>
+                  )}
                 </div>
 
                 {/* CodeRabbit Column */}
