@@ -124,11 +124,6 @@ export function PayPalCheckoutButton({
           throw new Error(upgradeData.error || upgradeData.details || 'Failed to process upgrade')
         }
 
-        if (upgradeData.success) {
-          onSuccess()
-          return
-        }
-
         if (upgradeData.subscriptionId && upgradeData.links) {
           const approvalLink = upgradeData.links?.find((l: { rel: string }) => l.rel === 'approve')?.href
           if (!approvalLink) {
@@ -190,7 +185,12 @@ export function PayPalCheckoutButton({
           return
         }
 
-        onSuccess()
+        if (upgradeData.success) {
+          onSuccess()
+          return
+        }
+
+        onError('Unexpected upgrade response from server')
         return
       }
 
