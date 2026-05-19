@@ -170,7 +170,7 @@ export function ComparisonSection() {
                 {/* CodeRabbit Column */}
                 <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-3 flex flex-col items-center justify-center text-center">
                   <span className="text-[9px] font-semibold text-white/30 uppercase tracking-widest mb-1.5">
-                    Rabbit
+                    CodeRabbit
                   </span>
                   <span className={`text-[10px] font-medium leading-snug ${row.feature === 'Monthly Pricing' ? 'text-red-400/90 font-bold text-xs' : 'text-white/50'}`}>
                     {row.codeRabbit}
