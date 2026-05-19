@@ -144,8 +144,24 @@ export async function createPayPalPlan(
   if (existingProduct.length > 0) {
     productId = existingProduct[0].paypal_plan_id
   } else {
-    const product = await createPayPalProduct()
-    productId = product.id
+    try {
+      const product = await createPayPalProduct()
+      productId = product.id
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error)
+      if (msg.includes('already exists')) {
+        const retry = await sql`
+          SELECT paypal_plan_id FROM paypal_plans WHERE internal_plan_id = 'product_prix_ai'
+        `
+        if (retry.length > 0) {
+          productId = retry[0].paypal_plan_id
+        } else {
+          throw new Error('PayPal product exists but could not be retrieved from database')
+        }
+      } else {
+        throw error
+      }
+    }
   }
 
   const res = await fetch(`${getBaseUrl()}/v1/billing/plans`, {
