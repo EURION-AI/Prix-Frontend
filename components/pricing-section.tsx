@@ -40,7 +40,7 @@ const plans: Plan[] = [
       { text: '3 AI issue plans / month', available: true },
       { text: '3 Auto-fixes / month', available: true },
       { text: 'Public repositories only', available: true },
-      { text: 'Standard queue processing (Slower)', available: true },
+      { text: 'Standard queue processing (Slower) ❗️', available: true, warning: true },
       { text: '1k lines limit (per PR) ❗️', available: true, warning: true },
       { text: 'Private Repository support', available: false },
       { text: 'Deep multi-file analysis', available: false },
@@ -62,7 +62,7 @@ const plans: Plan[] = [
       { text: 'Up to 7,000 lines per PR', available: true },
       { text: 'Core Bug Detection (Logic flaws & common issues)', available: true },
       { text: 'Essential Security Scanning (SQL injection, XSS, etc.)', available: true },
-      { text: 'Standard queue processing', available: true },
+      { text: 'Standard queue processing ❗️', available: true, warning: true },
       { text: 'Deep multi-file analysis (Single-file focus)', available: false },
       { text: 'Support for large PRs', available: false }
     ],

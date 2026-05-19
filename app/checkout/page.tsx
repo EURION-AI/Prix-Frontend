@@ -4,18 +4,25 @@ import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { Loader2, Check, ArrowLeft, AlertCircle, Crown, Shield } from 'lucide-react'
+import { X, Warning } from '@phosphor-icons/react'
 import Link from 'next/link'
 import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
 import { PayPalCheckoutButton } from '@/components/paypal-checkout'
 import { PaymentMethodSelector } from '@/components/payment-method-selector'
 import { PRICING, getPricing, formatPrice, getUserRegion, UPGRADE_PRICE, UPGRADE_PRICE_CENTS, type Region, type Plan } from '@/lib/pricing'
 
+interface PlanFeature {
+  text: string
+  available: boolean
+  warning?: boolean
+}
+
 interface PlanInfo {
   id: string
   name: string
   price: string
   pricePaise: number
-  features: string[]
+  features: PlanFeature[]
 }
 
 const PLAN_DETAILS: Record<string, PlanInfo> = {
@@ -25,13 +32,15 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
     price: '', // Will be set dynamically based on region
     pricePaise: 59900,
     features: [
-      '400 combined reviews & fixes / month',
-      '50 AI issue plans / month',
-      'Private repositories supported',
-      'Up to 7,000 lines per PR',
-      'Core Bug Detection (Logic flaws & common issues)',
-      'Essential Security Scanning (SQL injection, XSS, etc.)',
-      'Standard queue processing'
+      { text: '400 combined reviews & fixes / month', available: true },
+      { text: '50 AI issue plans / month', available: true },
+      { text: 'Private repositories supported', available: true },
+      { text: 'Up to 7,000 lines per PR', available: true },
+      { text: 'Core Bug Detection (Logic flaws & common issues)', available: true },
+      { text: 'Essential Security Scanning (SQL injection, XSS, etc.)', available: true },
+      { text: 'Standard queue processing ❗️', available: true, warning: true },
+      { text: 'Deep multi-file analysis (Single-file focus)', available: false },
+      { text: 'Support for large PRs', available: false }
     ]
   },
   pro: {
@@ -40,13 +49,13 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
     price: '', // Will be set dynamically based on region
     pricePaise: 79900,
     features: [
-      '700 combined reviews & fixes / month',
-      '300 AI issue plans / month',
-      'Private repositories supported',
-      'Large PRs supported (Max 15k lines)',
-      'Priority Queue Processing',
-      'Deeper Multi-File Analysis (Understands codebase context)',
-      'Advanced Bug & Security Guard (Full repo-level scanning)'
+      { text: '700 combined reviews & fixes / month', available: true },
+      { text: '300 AI issue plans / month', available: true },
+      { text: 'Private repositories supported', available: true },
+      { text: 'Large PRs supported (Max 15k lines)', available: true },
+      { text: 'Priority Queue Processing', available: true },
+      { text: 'Deeper Multi-File Analysis (Understands codebase context)', available: true },
+      { text: 'Advanced Bug & Security Guard (Full repo-level scanning)', available: true }
     ]
   }
 }
@@ -184,10 +193,26 @@ function CheckoutContent() {
         <ul className="space-y-4 mb-6">
           {plan.features.map((feature, i) => (
             <li key={i} className="flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Check className="w-3 h-3 text-primary" />
+              <div className="mt-0.5 shrink-0">
+                {feature.warning ? (
+                  <Warning size={18} weight="bold" className="text-amber-500 animate-pulse" />
+                ) : feature.available ? (
+                  <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-primary" />
+                  </div>
+                ) : (
+                  <X size={18} weight="bold" className="text-[#ff1a75]" />
+                )}
               </div>
-              <span className="text-white/70 text-sm">{feature}</span>
+              <span className={`text-sm ${
+                !feature.available 
+                  ? 'text-white/30 line-through' 
+                  : feature.warning
+                  ? 'text-amber-400 font-semibold'
+                  : 'text-white/70'
+              } leading-tight`}>
+                {feature.text}
+              </span>
             </li>
           ))}
         </ul>

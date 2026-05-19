@@ -31,7 +31,7 @@ export function HeroSection() {
             >
               <span className="block lg:hidden">
                 AI code review<br />
-                That ships fixed code.<br />
+                that ships fixed code.<br />
                 Every PR. Every time.
               </span>
               <span className="hidden lg:block">
@@ -115,7 +115,7 @@ export function HeroSection() {
             className="relative flex items-center justify-center lg:justify-end"
           >
             <div className="absolute inset-0 bg-primary/5 blur-[80px] rounded-full -z-10" />
-            <div className="w-full max-w-[620px] xl:max-w-[660px]">
+            <div className="w-full max-w-[560px] xl:max-w-[580px]">
               <ConversationScreenshot />
             </div>
           </motion.div>
