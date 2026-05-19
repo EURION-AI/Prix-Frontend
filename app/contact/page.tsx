@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Contact | Prix AI - Get Support',
   description: 'Get in touch with the Prix AI team for support, feedback, or questions. We typically respond within 24 hours.',
   alternates: {
-    canonical: './',
+    canonical: 'https://www.prixai.xyz/contact',
   },
 }
 

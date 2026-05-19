@@ -5,41 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, TrendingUp, Users, Code, Zap, Shield, Target, BarChart3, Lightbulb } from 'lucide-react'
 import Link from 'next/link'
-
-export const metadata: Metadata = {
-  title: 'How to Reduce Code Review Time by 80% with AI | Prix',
-  description: 'Discover how AI-powered code review automation can reduce review time by 80%, eliminate bottlenecks, and help development teams ship faster. Learn proven strategies and tools.',
-  keywords: ['reduce code review time', 'code review automation', 'AI code review', 'faster PR reviews', 'development velocity', 'automated code analysis'],
-  authors: [{ name: 'Prix Team', url: 'https://www.prixai.xyz' }],
-  openGraph: {
-    title: 'How to Reduce Code Review Time by 80% with AI',
-    description: 'Transform your code review process with AI automation and ship code 5x faster.',
-    type: 'article',
-    publishedTime: '2024-01-15T10:00:00Z',
-    modifiedTime: '2026-04-24T10:00:00Z',
-    authors: ['Prix Team'],
-    images: [
-      {
-        url: '/blog/reduce-code-review-time/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'AI Code Review Automation',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Reduce Code Review Time by 80% with AI',
-    description: 'Transform your code review process with AI automation and ship code 5x faster.',
-    images: ['/blog/reduce-code-review-time/og-image.jpg'],
-  },
-  alternates: {
-    canonical: './',
-    types: {
-      'text/markdown': '/markdown/blog/reduce-code-review-time',
-    },
-  },
-}
+import { BreadcrumbJsonLd } from '@/components/jsonld'
 
 const stats = [
   { value: '80%', label: 'Time Reduction', icon: TrendingUp },
@@ -70,6 +36,7 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
       <Navbar />
+      <BreadcrumbJsonLd items={[{ label: 'Blog', href: '/blog' }, { label: 'Reduce Code Review Time', href: '/blog/reduce-code-review-time' }]} />
       
       <article className="pt-32 pb-20 relative">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 relative z-10">
@@ -283,6 +250,12 @@ export default function BlogPost() {
                 <p className="text-white/60 text-sm">Discover the hidden costs of traditional review processes.</p>
               </Link>
             </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix compares to GitHub Copilot and manual review →
+            </Link>
           </div>
         </div>
       </article>

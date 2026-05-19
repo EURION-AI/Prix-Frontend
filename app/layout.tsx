@@ -20,12 +20,12 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.prixai.xyz'),
-  title: 'Prix AI - AI-Powered GitHub PR Reviewer | Ship Code Faster',
-  description: 'AI-powered GitHub PR reviewer that catches bugs, suggests fixes, and ships code faster. Start free with 15 PR reviews, 3 plans & 3 auto fixes monthly.',
+  title: 'Prix AI — #1 AI Code Review Tool for GitHub PRs | Ship Code Faster',
+  description: 'Prix AI is the #1 AI-powered GitHub PR reviewer that catches bugs, suggests fixes, and ships code faster. Start free with 15 PR reviews per month.',
   alternates: {
     canonical: 'https://www.prixai.xyz',
   },
-  keywords: ['Prix AI', 'Prix', 'prixai', 'AI code review tool', 'automated PR review', 'GitHub PR reviewer AI', 'code review automation', 'AI code reviewer for teams', 'AI code review', 'code analysis', 'developer tools', 'code quality', 'bug detection', 'security scanning'],
+  keywords: ['Prix AI', 'Prix', 'prixai', 'Prix AI code review', 'AI code review tool', 'automated PR review', 'GitHub PR reviewer AI', 'code review automation', 'AI code reviewer for teams', 'AI code review', 'code analysis', 'developer tools', 'code quality', 'bug detection', 'security scanning', 'Prixai xyz'],
   authors: [{ name: 'Prix' }],
   creator: 'Prix',
   publisher: 'Prix',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     description: 'AI-powered GitHub PR reviewer that catches bugs, suggests fixes, and ships code faster.',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://www.prixai.xyz/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Prix AI - AI Code Review Platform',
@@ -66,11 +66,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/logo.png' },
-      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo.png', sizes: 'any', type: 'image/png' },
     ],
     shortcut: '/logo.png',
-    apple: '/logo.png',
+    apple: [
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
 }
 
@@ -99,6 +100,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <link rel="manifest" href="/manifest.json" />
       </body>
     </html>
   )

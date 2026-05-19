@@ -5,8 +5,14 @@ import { sql } from '@/lib/db'
 import { markReferralAsPurchased } from '@/lib/affiliate-store-db'
 import { getAuthenticatedUser } from '@/lib/auth'
 import { PRICING } from '@/lib/pricing'
+import { rateLimit } from '@/lib/security'
 
 export async function POST(request: Request) {
+  const rateLimitResult = rateLimit(request, 10)
+  if (!rateLimitResult.allowed && rateLimitResult.response) {
+    return rateLimitResult.response
+  }
+
   try {
     const authed = await getAuthenticatedUser()
     if (!authed) {

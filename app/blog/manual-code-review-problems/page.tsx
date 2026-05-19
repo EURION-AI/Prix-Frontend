@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, AlertTriangle, TrendingDown, Users, Code, BarChart3, Target, Zap, Shield, DollarSign, Timer, Brain } from 'lucide-react'
 import Link from 'next/link'
+import { BreadcrumbJsonLd } from '@/components/jsonld'
 
 
 export const metadata: Metadata = {
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     images: ['/blog/manual-code-review-problems/og-image.jpg'],
   },
   alternates: {
-    canonical: './',
+    canonical: 'https://www.prixai.xyz/blog/manual-code-review-problems',
     types: {
       'text/markdown': '/markdown/blog/manual-code-review-problems',
     },
@@ -141,6 +142,7 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
       <Navbar />
+      <BreadcrumbJsonLd items={[{ label: 'Blog', href: '/blog' }, { label: 'Manual Code Review Problems', href: '/blog/manual-code-review-problems' }]} />
       
       <article className="pt-32 pb-20 relative">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 relative z-10">
@@ -434,6 +436,12 @@ export default function BlogPost() {
                 <p className="text-white/60 text-sm">Learn proven strategies for implementing AI code review effectively.</p>
               </Link>
             </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix compares to GitHub Copilot and manual review →
+            </Link>
           </div>
         </div>
       </article>

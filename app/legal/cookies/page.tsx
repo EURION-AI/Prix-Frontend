@@ -1,8 +1,11 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy - Prix',
+  title: 'Cookie Policy - Prix AI',
   description: 'Cookie Policy for Prix AI-powered code review platform.',
+  alternates: {
+    canonical: 'https://www.prixai.xyz/legal/cookies',
+  },
 }
 
 export default function CookiePage() {

@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, BookOpen, Zap, Shield, Target, Lightbulb, Rocket, Settings, Code2 } from 'lucide-react'
 import Link from 'next/link'
+import { BreadcrumbJsonLd } from '@/components/jsonld'
 
 export const metadata: Metadata = {
   title: 'Getting Started with AI Code Review: A Complete Guide for 2026 | Prix',
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     images: ['/blog/ai-code-review-guide-2026/og-image.jpg'],
   },
   alternates: {
-    canonical: './',
+    canonical: 'https://www.prixai.xyz/blog/ai-code-review-guide-2026',
     types: {
       'text/markdown': '/markdown/blog/ai-code-review-guide-2026',
     },
@@ -83,6 +84,7 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
       <Navbar />
+      <BreadcrumbJsonLd items={[{ label: 'Blog', href: '/blog' }, { label: 'AI Code Review Guide 2026', href: '/blog/ai-code-review-guide-2026' }]} />
       
       <article className="pt-32 pb-20 relative">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 relative z-10">
@@ -307,6 +309,12 @@ export default function BlogPost() {
                 <p className="text-white/60 text-sm">Transform your review process with AI automation.</p>
               </Link>
             </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix compares to GitHub Copilot and manual review →
+            </Link>
           </div>
         </div>
       </article>

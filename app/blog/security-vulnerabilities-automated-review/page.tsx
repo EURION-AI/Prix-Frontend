@@ -5,33 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, Shield, AlertTriangle, Lock, Eye, Bug, FileCode, Terminal } from 'lucide-react'
 import Link from 'next/link'
-
-export const metadata: Metadata = {
-  title: 'How to Fix Security Vulnerabilities with Automated Code Review | Prix',
-  description: 'Security breaches cost companies millions. Learn how AI code review tools detect SQL injection, XSS, hardcoded secrets, and vulnerabilities before they reach production.',
-  keywords: ['security vulnerabilities code review', 'automated security scanning', 'AI security code review', 'detect SQL injection', 'find hardcoded secrets', 'XSS prevention'],
-  authors: [{ name: 'Prix Team', url: 'https://www.prixai.xyz' }],
-  openGraph: {
-    title: 'How to Fix Security Vulnerabilities with Automated Code Review',
-    description: 'Detect and fix security vulnerabilities before they reach production with AI-powered code review.',
-    type: 'article',
-    publishedTime: '2026-04-28T10:00:00Z',
-    modifiedTime: '2026-04-28T10:00:00Z',
-    authors: ['Prix Team'],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Fix Security Vulnerabilities with AI Code Review',
-    description: 'Detect SQL injection, XSS, and secrets before production.',
-    images: ['/blog/security-vulnerabilities-automated-review/og-image.jpg'],
-  },
-  alternates: {
-    canonical: './',
-    types: {
-      'text/markdown': '/markdown/blog/security-vulnerabilities-automated-review',
-    },
-  },
-}
+import { BreadcrumbJsonLd } from '@/components/jsonld'
 
 const vulnerabilities = [
   {
@@ -93,6 +67,7 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
       <Navbar />
+      <BreadcrumbJsonLd items={[{ label: 'Blog', href: '/blog' }, { label: 'Security Vulnerabilities Automated Review', href: '/blog/security-vulnerabilities-automated-review' }]} />
       
       <article className="pt-32 pb-20 relative">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 relative z-10">
@@ -345,6 +320,12 @@ export default function BlogPost() {
                 <p className="text-white/60 text-sm">Everything you need to get started with AI code review.</p>
               </Link>
             </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix compares to GitHub Copilot and manual review →
+            </Link>
           </div>
         </div>
       </article>

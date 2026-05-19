@@ -6,6 +6,9 @@ import { Zap, ArrowRight, Clock, Shield, Code, Search } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'Changelog - Prix Product Updates | AI Code Review',
   description: 'See the latest updates to Prix. New features, improvements, and fixes for our AI-powered GitHub PR reviewer. Ship better code with every update.',
+  alternates: {
+    canonical: 'https://www.prixai.xyz/changelog',
+  },
 }
 
 const updates = [

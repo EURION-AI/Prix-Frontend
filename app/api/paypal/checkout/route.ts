@@ -76,8 +76,12 @@ export async function POST(request: Request) {
       planName
     )
 
-    const defaultReturnUrl = `${request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout/success?plan=${plan}`
-    const defaultCancelUrl = `${request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout/cancel?plan=${plan}`
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.headers.get('origin')
+    if (!appUrl) {
+      return NextResponse.json({ error: 'Server misconfigured: APP_URL not set' }, { status: 500 })
+    }
+    const defaultReturnUrl = `${appUrl}/checkout/success?plan=${plan}`
+    const defaultCancelUrl = `${appUrl}/checkout/cancel?plan=${plan}`
 
     const subscription = await createPayPalSubscription(
       paypalPlan.id,
@@ -97,10 +101,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('PayPal checkout error:', error)
     return NextResponse.json(
-      {
-        error: 'Failed to create subscription',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to create subscription' },
       { status: 500 }
     )
   }

@@ -21,6 +21,36 @@ export const metadata: Metadata = {
 
 const blogs = [
   {
+    title: 'Prix AI Review 2026 — Is It Worth It? Honest Pricing & Features',
+    description: 'An honest look at Prix AI\'s features, pricing, and performance. See if it\'s the right AI code review tool for your team in 2026.',
+    date: 'May 19, 2026',
+    readTime: '6 min read',
+    category: 'Review',
+    href: '/blog/prix-ai-review-2026',
+    image: '/logo.png',
+    color: 'primary'
+  },
+  {
+    title: 'Prix AI vs CodeRabbit — Which AI Code Reviewer Is Better?',
+    description: 'Head-to-head comparison of Prix AI and CodeRabbit. Features, pricing, accuracy, and real-world performance differences.',
+    date: 'May 19, 2026',
+    readTime: '5 min read',
+    category: 'Comparison',
+    href: '/blog/prix-ai-vs-coderabbit',
+    image: '/logo.png',
+    color: 'primary'
+  },
+  {
+    title: 'How to Set Up Prix AI on GitHub — Step-by-Step Guide',
+    description: 'Get Prix AI running on your GitHub repositories in under 5 minutes. Complete installation guide with step-by-step instructions.',
+    date: 'May 19, 2026',
+    readTime: '5 min read',
+    category: 'Guide',
+    href: '/blog/how-to-setup-prix-ai-github',
+    image: '/logo.png',
+    color: 'primary'
+  },
+  {
     title: 'Getting Started with AI Code Review: A Complete Guide for 2026',
     description: 'New to AI-powered code review? This comprehensive guide covers everything from setup to best practices, helping your team achieve 80% faster review cycles and higher code quality.',
     date: 'May 4, 2026',

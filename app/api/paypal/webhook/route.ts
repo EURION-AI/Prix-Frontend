@@ -5,6 +5,7 @@ import {
   cancelUserSubscription,
   expireOverduePlans,
   getUserByGithubId,
+  handleRefund,
 } from '@/lib/user-store'
 import { sql } from '@/lib/db'
 import { verifyPayPalWebhookSignature, getPayPalSubscriptionDetails } from '@/lib/paypal'
@@ -58,7 +59,8 @@ export async function POST(request: Request) {
         } catch {}
 
         const userId = parsedNotes.userId || resource.custom_id
-        const plan = parsedNotes.plan || 'starter'
+        const rawPlan = parsedNotes.plan || 'starter'
+        const plan = ['starter', 'pro'].includes(rawPlan) ? rawPlan : 'starter'
 
         if (userId && userId !== 'anonymous') {
           const githubId = parseInt(userId, 10)
@@ -104,7 +106,7 @@ export async function POST(request: Request) {
               await activateSubscription(githubId, plan || 'starter', billingAgreementId, 'paypal')
               console.log(`[PAYPAL_WEBHOOK] Subscription activated for user ${githubId}, plan: ${plan}`)
             } else {
-              await extendSubscription(githubId)
+              await extendSubscription(githubId, 'paypal')
               console.log(`[PAYPAL_WEBHOOK] Subscription renewed for user ${githubId}`)
             }
 
@@ -128,6 +130,47 @@ export async function POST(request: Request) {
             } catch (e) {
               console.error('[PAYPAL_WEBHOOK] Failed to log renewal:', e)
             }
+          }
+        }
+        break
+      }
+
+      case 'PAYMENT.SALE.REFUNDED': {
+        const resource = event.resource
+        if (!resource) break
+
+        const billingAgreementId = resource.billing_agreement_id
+        if (!billingAgreementId) break
+
+        const userLookup = await sql`
+          SELECT github_id FROM users WHERE subscription_id = ${billingAgreementId}
+        `
+        if (userLookup.length > 0) {
+          const githubId = userLookup[0].github_id
+          await handleRefund(githubId, 'paypal_refund')
+          console.log(`[PAYPAL_WEBHOOK] Refund processed for user ${githubId}`)
+        }
+        break
+      }
+
+      case 'CUSTOMER.DISPUTE.CREATED':
+      case 'CUSTOMER.DISPUTE.RESOLVED': {
+        const resource = event.resource
+        if (!resource) break
+        console.log(`[PAYPAL_WEBHOOK] Dispute event: ${eventType}, id: ${resource.dispute_id || resource.id}`)
+        const billingAgreementId = resource.billing_agreement_id || resource.subscription_id
+        if (!billingAgreementId) break
+
+        const userLookup = await sql`
+          SELECT github_id FROM users WHERE subscription_id = ${billingAgreementId}
+        `
+        if (userLookup.length > 0) {
+          const githubId = userLookup[0].github_id
+          if (eventType === 'CUSTOMER.DISPUTE.RESOLVED') {
+            await handleRefund(githubId, 'paypal_dispute_resolved')
+            console.log(`[PAYPAL_WEBHOOK] Dispute resolved against user ${githubId}`)
+          } else {
+            console.log(`[PAYPAL_WEBHOOK] Dispute created for user ${githubId}`)
           }
         }
         break
@@ -165,7 +208,8 @@ export async function POST(request: Request) {
         break
       }
 
-      case 'BILLING.SUBSCRIPTION.SUSPENDED': {
+      case 'BILLING.SUBSCRIPTION.SUSPENDED':
+      case 'BILLING.SUBSCRIPTION.PAYMENT.FAILED': {
         const resource = event.resource
         if (!resource) break
 

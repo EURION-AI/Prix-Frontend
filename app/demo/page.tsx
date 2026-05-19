@@ -3,10 +3,14 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import Link from 'next/link'
 import { ArrowRight, Terminal, Github } from 'lucide-react'
+import { BreadcrumbJsonLd, HowToJsonLd } from '@/components/jsonld'
 
 export const metadata: Metadata = {
   title: 'How to Use Prix AI — Demo & Documentation',
   description: 'Learn how Prix AI works. Automated PR reviews, !prix fix for auto-generated fixes, and !prix plan for step-by-step implementation plans.',
+  alternates: {
+    canonical: 'https://www.prixai.xyz/demo',
+  },
 }
 
 const steps = [
@@ -55,6 +59,16 @@ export default function DemoPage() {
   return (
     <div className="min-h-screen bg-[#050508]">
       <Navbar />
+      <BreadcrumbJsonLd items={[{ label: 'Demo', href: '/demo' }]} />
+      <HowToJsonLd
+        name="How to Use Prix AI for Automated Code Review"
+        description="Learn how to use Prix AI to automatically review pull requests, generate fixes, and create implementation plans."
+        steps={[
+          { title: 'Automated PR Reviews', text: 'Whenever someone opens or updates a pull request, Prix AI automatically analyzes every changed file. It detects bugs, security vulnerabilities, logic errors, performance issues, and syntax problems.' },
+          { title: 'Auto-Fix with !prix fix', text: 'After a review, type !prix fix in any PR comment to automatically generate fixes for all detected issues. Prix will analyze each bug, apply the correction, and raise a new PR with the changes.' },
+          { title: 'Issue Planning with !prix plan', text: 'Drop !prix plan on any GitHub issue, and Prix generates a detailed, phase-by-phase implementation plan. Each phase includes the specific files to modify and the exact code changes needed.' },
+        ]}
+      />
       <main className="pt-32 pb-20">
         <div className="max-w-5xl mx-auto px-6">
           {/* Header */}

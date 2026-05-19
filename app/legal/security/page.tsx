@@ -2,8 +2,11 @@ import { Metadata } from 'next'
 import { Shield, Lock, Eye, Server, Database, CreditCard } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Security - Prix',
-  description: 'Security practices and measures at Prix.',
+  title: 'Security - Prix AI',
+  description: 'Security practices and measures at Prix AI.',
+  alternates: {
+    canonical: 'https://www.prixai.xyz/legal/security',
+  },
 }
 
 export default function SecurityPage() {

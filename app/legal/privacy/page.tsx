@@ -1,8 +1,11 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - Prix',
+  title: 'Privacy Policy - Prix AI',
   description: 'Privacy Policy for Prix AI-powered code review platform.',
+  alternates: {
+    canonical: 'https://www.prixai.xyz/legal/privacy',
+  },
 }
 
 export default function PrivacyPage() {

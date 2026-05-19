@@ -12,6 +12,7 @@ import { CTASection } from '@/components/cta-section'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { BreadcrumbJsonLd } from '@/components/jsonld'
 
 export const metadata: Metadata = {
   title: 'AI Code Review Features | Prix AI — Automated PR Analysis & Fix Generation',
@@ -28,6 +29,7 @@ export default function FeaturesPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f]">
       <Navbar />
+      <BreadcrumbJsonLd items={[{ label: 'Features', href: '/features' }]} />
       <div className="pt-32 pb-20 section-container text-center">
         <h1 className="section-title mb-6">
           Engineered for<br />

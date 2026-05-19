@@ -5,8 +5,14 @@ import { getPayPalSubscriptionDetails } from '@/lib/paypal'
 import { sql } from '@/lib/db'
 import { markReferralAsPurchased } from '@/lib/affiliate-store-db'
 import { PRICING } from '@/lib/pricing'
+import { rateLimit } from '@/lib/security'
 
 export async function POST(request: Request) {
+  const rateLimitResult = rateLimit(request, 10)
+  if (!rateLimitResult.allowed && rateLimitResult.response) {
+    return rateLimitResult.response
+  }
+
   try {
     const authed = await getAuthenticatedUser()
     if (!authed) {
@@ -33,23 +39,25 @@ export async function POST(request: Request) {
 
     // Poll for ACTIVE status with retries (handles race where PayPal hasn't synced yet)
     let subscription = await getPayPalSubscriptionDetails(subscription_id)
-    const ACCEPTED_STATUSES = ['ACTIVE', 'APPROVAL_PENDING']
 
-    if (!ACCEPTED_STATUSES.includes(subscription.status)) {
-      let retries = 0
-      while (retries < 5 && subscription.status === 'APPROVAL_PENDING') {
-        await new Promise(r => setTimeout(r, 1000))
-        subscription = await getPayPalSubscriptionDetails(subscription_id)
-        retries++
-      }
+    let retries = 0
+    while (subscription.status !== 'ACTIVE' && retries < 5) {
+      await new Promise(r => setTimeout(r, 1000))
+      subscription = await getPayPalSubscriptionDetails(subscription_id)
+      retries++
+    }
 
-      if (subscription.status !== 'ACTIVE') {
-        console.error(`PayPal subscription ${subscription_id} is not active after retries, status: ${subscription.status}`)
-        return NextResponse.json(
-          { error: `Subscription is not active. Current status: ${subscription.status}` },
-          { status: 400 }
-        )
-      }
+    if (subscription.status !== 'ACTIVE') {
+      console.error(`PayPal subscription ${subscription_id} is not active after retries, status: ${subscription.status}`)
+      // Track failed attempt for monitoring
+      await sql`
+        INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
+        VALUES ('payment_verification_failed', 0, 'USD', ${parseInt(userId, 10) || 0}, ${plan}, ${sql.json({ subscriptionId: subscription_id, status: subscription.status })}, NOW())
+      `.catch(() => {})
+      return NextResponse.json(
+        { error: `Subscription is not active. Current status: ${subscription.status}` },
+        { status: 400 }
+      )
     }
 
     if (userId && userId !== 'anonymous') {
@@ -58,6 +66,24 @@ export async function POST(request: Request) {
       if (!isNaN(githubId) && githubId > 0) {
         const userRegion = (region && ['IN', 'US', 'GB', 'EU'].includes(region)) ? region : 'US'
         const pricing = PRICING[userRegion as keyof typeof PRICING][plan as keyof typeof PRICING.IN]
+
+        // Idempotency — prevent double-activation on multiple verify clicks
+        const verifyEventId = `paypal_verify_${githubId}_${subscription_id}`
+        const alreadyActivated = await sql`
+          SELECT 1 FROM processed_webhooks WHERE event_id = ${verifyEventId}
+        `
+        if (alreadyActivated.length > 0) {
+          return NextResponse.json({
+            success: true,
+            message: 'Subscription already activated',
+            plan,
+          })
+        }
+
+        await sql`
+          INSERT INTO processed_webhooks (event_id) VALUES (${verifyEventId})
+          ON CONFLICT (event_id) DO NOTHING
+        `
 
         await activateSubscription(githubId, plan, subscription_id, 'paypal')
         await markReferralAsPurchased(githubId, plan, pricing.price)
@@ -92,10 +118,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('PayPal subscription verification error:', error)
     return NextResponse.json(
-      {
-        error: 'Payment verification failed',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Payment verification failed' },
       { status: 500 }
     )
   }

@@ -7,13 +7,17 @@ import { Check, X, ArrowRight, Zap, Shield, Clock, DollarSign, Code, TrendingUp 
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Prix vs GitHub Copilot vs Manual Code Review | Compare',
+  title: 'Prix AI vs GitHub Copilot vs Manual Code Review | Compare',
   description: 'Compare Prix AI code review with GitHub Copilot and manual code review. See why Prix delivers 80% faster reviews with 95% bug detection and zero false positives.',
-  keywords: ['Prix vs Copilot', 'AI code review comparison', 'code review tools', 'automated code review', 'GitHub Copilot alternative'],
+  keywords: ['Prix vs Copilot', 'Prix AI comparison', 'AI code review comparison', 'code review tools', 'automated code review', 'GitHub Copilot alternative'],
+  alternates: {
+    canonical: 'https://www.prixai.xyz/compare',
+  },
   openGraph: {
-    title: 'Prix vs GitHub Copilot vs Manual Code Review',
-    description: 'See why Prix is the superior choice for AI-powered code review with 80% faster reviews and 95% bug detection.',
+    title: 'Prix AI vs GitHub Copilot vs Manual Code Review',
+    description: 'See why Prix AI is the superior choice for AI-powered code review with 80% faster reviews and 95% bug detection.',
     type: 'website',
+    url: 'https://www.prixai.xyz/compare',
   },
 }
 

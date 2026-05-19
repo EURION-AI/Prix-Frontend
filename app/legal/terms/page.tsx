@@ -1,8 +1,11 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - Prix',
+  title: 'Terms of Service - Prix AI',
   description: 'Terms of Service for Prix AI-powered code review platform.',
+  alternates: {
+    canonical: 'https://www.prixai.xyz/legal/terms',
+  },
 }
 
 export default function TermsPage() {

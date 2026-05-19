@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { activateSubscription, extendSubscription, cancelUserSubscription, expireOverduePlans, getUserByGithubId } from '@/lib/user-store'
+import { activateSubscription, extendSubscription, cancelUserSubscription, expireOverduePlans, getUserByGithubId, handleRefund } from '@/lib/user-store'
 import { sql } from '@/lib/db'
 
 export async function POST(request: Request) {
@@ -38,6 +38,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true })
   }
 
+  // Record as processed BEFORE handling to prevent double-processing on crash/retry
+  try {
+    await sql`
+      INSERT INTO processed_webhooks (event_id) VALUES (${eventId})
+      ON CONFLICT (event_id) DO NOTHING
+    `
+  } catch (e) {
+    console.error('[WEBHOOK] Failed to record processed event:', e)
+  }
+
   try {
     const eventType = event.event
     console.log(`[WEBHOOK] Received event: ${eventType}`)
@@ -45,6 +55,7 @@ export async function POST(request: Request) {
     switch (eventType) {
       // ── Initial subscription authentication success ──
       // Note: activation moved to subscription.charged to prevent granting access before payment
+      // Intentionally a no-op. Do NOT add activation here — it would grant access before payment capture.
       case 'subscription.authenticated': {
         break
       }
@@ -68,7 +79,7 @@ export async function POST(request: Request) {
               await activateSubscription(githubId, plan, subscription.id)
               console.log(`[WEBHOOK] Subscription activated for user ${githubId}, plan: ${plan}`)
             } else {
-              await extendSubscription(githubId)
+              await extendSubscription(githubId, 'razorpay')
               console.log(`[WEBHOOK] Subscription renewed for user ${githubId}`)
             }
 
@@ -271,18 +282,43 @@ export async function POST(request: Request) {
         break
       }
 
+      // ── Payment refunded / chargeback ──
+      case 'payment.refunded': {
+        const payment = event.payload.payment?.entity
+        if (!payment) break
+
+        const notes = payment.notes || {}
+        const userId = notes.userId
+
+        if (userId && userId !== 'anonymous') {
+          const githubId = parseInt(userId, 10)
+          if (!isNaN(githubId) && githubId > 0) {
+            await handleRefund(githubId, 'razorpay_refund')
+            console.log(`[WEBHOOK] Refund processed for user ${githubId}`)
+
+            try {
+              await sql`
+                INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
+                VALUES (
+                  'payment_refunded',
+                  ${-(payment.amount || 0)},
+                  ${payment.currency || 'INR'},
+                  ${githubId},
+                  ${notes.plan || 'unknown'},
+                  ${sql.json({ paymentId: payment.id, reason: 'refund' })},
+                  NOW()
+                )
+              `
+            } catch (e) {
+              console.error('[WEBHOOK] Failed to log refund event:', e)
+            }
+          }
+        }
+        break
+      }
+
       default:
         console.log(`[WEBHOOK] Unhandled event type: ${eventType}`)
-    }
-
-    // Record event as processed for idempotency
-    try {
-      await sql`
-        INSERT INTO processed_webhooks (event_id) VALUES (${eventId})
-        ON CONFLICT (event_id) DO NOTHING
-      `
-    } catch (e) {
-      console.error('[WEBHOOK] Failed to record processed event:', e)
     }
 
     // Opportunistically expire overdue plans

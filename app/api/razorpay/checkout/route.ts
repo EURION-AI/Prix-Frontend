@@ -160,7 +160,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         upgraded: true,
         subscriptionId: updatedSub.id,
-        key: process.env.RAZORPAY_KEY_ID,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID,
       });
     }
 
@@ -178,7 +178,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       subscriptionId: subscription.id,
-      key: process.env.RAZORPAY_KEY_ID,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID,
     })
   } catch (error: any) {
     console.error('Razorpay subscription checkout error:', error)
@@ -186,10 +186,7 @@ export async function POST(request: Request) {
     const razorpayError = error?.error?.description || error?.description || null
 
     return NextResponse.json(
-      { 
-        error: 'Failed to create subscription', 
-        details: razorpayError || (error instanceof Error ? error.message : 'Unknown error'),
-      },
+      { error: 'Failed to create subscription' },
       { status: 500 }
     )
   }

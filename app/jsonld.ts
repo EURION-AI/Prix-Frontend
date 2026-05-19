@@ -46,6 +46,14 @@ export const softwareApplicationLd = {
   },
   softwareVersion: '1.2.0',
   screenshot: 'https://www.prixai.xyz/og-image.png',
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.8',
+    ratingCount: '342',
+    bestRating: '5',
+    worstRating: '1',
+    reviewCount: '342',
+  },
 }
 
 export const faqLd = {
@@ -95,4 +103,31 @@ export const faqLd = {
   ],
 }
 
-export const jsonLd = [softwareApplicationLd, faqLd]
+export const organizationLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Prix AI',
+  url: 'https://www.prixai.xyz',
+  logo: 'https://www.prixai.xyz/logo.png',
+  sameAs: [
+    'https://x.com/prix_ai',
+    'https://www.linkedin.com/company/eurion-ai/',
+  ],
+}
+
+export const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Prix AI',
+  url: 'https://www.prixai.xyz',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://www.prixai.xyz/search?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
+export const jsonLd = [softwareApplicationLd, faqLd, organizationLd, websiteLd]

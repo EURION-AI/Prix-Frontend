@@ -5,33 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, TrendingDown, GitGraph, Layers, Sparkles, Target, Zap, Code2, Recycle } from 'lucide-react'
 import Link from 'next/link'
-
-export const metadata: Metadata = {
-  title: 'Reducing Technical Debt with AI-Powered Code Analysis | Prix',
-  description: 'Technical debt slowing your feature delivery? Discover how AI code review identifies code smells, complexity hotspots, and refactoring opportunities automatically.',
-  keywords: ['technical debt reduction', 'AI code analysis', 'code smells detection', 'automated refactoring', 'code complexity analysis'],
-  authors: [{ name: 'Prix Team', url: 'https://www.prixai.xyz' }],
-  openGraph: {
-    title: 'Reducing Technical Debt with AI-Powered Code Analysis',
-    description: 'Identify and eliminate technical debt automatically with AI code review tools.',
-    type: 'article',
-    publishedTime: '2026-04-18T10:00:00Z',
-    modifiedTime: '2026-04-18T10:00:00Z',
-    authors: ['Prix Team'],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Reduce Technical Debt with AI Code Analysis',
-    description: 'Automatically identify code smells and complexity hotspots.',
-    images: ['/blog/technical-debt-ai-analysis/og-image.jpg'],
-  },
-  alternates: {
-    canonical: './',
-    types: {
-      'text/markdown': '/markdown/blog/technical-debt-ai-analysis',
-    },
-  },
-}
+import { BreadcrumbJsonLd } from '@/components/jsonld'
 
 const codeSmells = [
   {
@@ -89,6 +63,7 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen bg-[#050508]">
       <Navbar />
+      <BreadcrumbJsonLd items={[{ label: 'Blog', href: '/blog' }, { label: 'Technical Debt AI Analysis', href: '/blog/technical-debt-ai-analysis' }]} />
       
       <article className="pt-32 pb-20 relative">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 relative z-10">
@@ -360,6 +335,12 @@ export default function BlogPost() {
                 <p className="text-white/60 text-sm">Speed up your development cycle with automated review.</p>
               </Link>
             </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix compares to GitHub Copilot and manual review →
+            </Link>
           </div>
         </div>
       </article>
