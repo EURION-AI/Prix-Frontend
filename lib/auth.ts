@@ -61,8 +61,24 @@ export async function getAuthenticatedUser(): Promise<{ githubId: number } | nul
   if (!session) return null
 
   try {
-    await activateQueuedPlan(session.id)
-    await expireOverduePlan(session.id)
+    // Only run plan transitions for paid users to avoid DB queries on every request
+    const user = await sql`
+      SELECT plan, queued_plan, plan_expires_at FROM users WHERE github_id = ${session.id}
+    `
+    if (user.length > 0) {
+      if (user[0].queued_plan && user[0].plan_expires_at) {
+        const expiresAt = new Date(user[0].plan_expires_at).getTime()
+        if (expiresAt < Date.now()) {
+          await activateQueuedPlan(session.id)
+        }
+      }
+      if ((user[0].plan === 'starter' || user[0].plan === 'pro') && user[0].plan_expires_at) {
+        const expiresAt = new Date(user[0].plan_expires_at).getTime()
+        if (expiresAt < Date.now()) {
+          await expireOverduePlan(session.id)
+        }
+      }
+    }
   } catch (e) {
     console.error('Failed to process plan state:', e)
   }

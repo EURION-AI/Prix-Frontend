@@ -40,6 +40,7 @@ export async function initializeDatabase() {
     await sql`
       CREATE TABLE IF NOT EXISTS processed_webhooks (
         event_id VARCHAR(100) PRIMARY KEY,
+        provider VARCHAR(20) DEFAULT NULL,
         processed_at TIMESTAMP DEFAULT NOW()
       )
     `
@@ -216,6 +217,21 @@ export async function initializeDatabase() {
     await sql`
       CREATE INDEX IF NOT EXISTS idx_users_selected_repos ON users USING gin(selected_repos)
     `
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_revenue_events_github_id ON revenue_events(github_id)
+    `
+
+    // Clean up processed_webhooks older than 90 days
+    try {
+      const deleted = await sql`
+        DELETE FROM processed_webhooks WHERE processed_at < NOW() - INTERVAL '90 days'
+      `
+      if (deleted.count > 0) {
+        console.log(`Cleaned up ${deleted.count} old processed_webhooks records`)
+      }
+    } catch (e) {
+      // Table may not exist yet, ignore
+    }
 
     // Add github_installation_id column if it doesn't exist
     try {

@@ -104,20 +104,6 @@ export async function activateSubscription(
         updated_at = NOW()
     WHERE github_id = ${githubId}
   `
-
-  // Reset consumption counters on plan upgrade so user starts fresh
-  await sql`
-    UPDATE user_consumption
-    SET prs_reviewed_monthly = 0,
-        auto_prs_monthly = 0,
-        issues_planned_monthly = 0,
-        monthly_grand_total = 0,
-        prs_reviewed_daily = 0,
-        last_reset_at = NOW(),
-        last_daily_reset = NOW(),
-        updated_at = NOW()
-    WHERE github_id = ${githubId}
-  `
 }
 
 /**

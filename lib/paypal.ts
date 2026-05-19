@@ -91,7 +91,18 @@ export async function createPayPalProduct(): Promise<PayPalProduct> {
         return { id: existing.id, name: 'Prix AI' }
       }
     }
-    throw new Error('PayPal product already exists but could not be retrieved')
+    const fallbackListRes = await fetch(`${getBaseUrl()}/v1/catalogs/products?page_size=50`, {
+      headers: { 'Authorization': `Bearer ${await getPayPalAccessToken()}` },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (fallbackListRes.ok) {
+      const data = await fallbackListRes.json()
+      const existing = data.products?.find((p: any) => p.name === 'Prix AI')
+      if (existing) {
+        return { id: existing.id, name: 'Prix AI' }
+      }
+    }
+    throw new Error('PayPal product already exists but could not be retrieved from PayPal API')
   }
 
   if (!res.ok) {
@@ -107,7 +118,10 @@ export interface PayPalPlan {
   product_id: string
 }
 
+let paypalPlansEnsured = false
+
 async function ensurePayPalPlansTable() {
+  if (paypalPlansEnsured) return
   await sql`
     CREATE TABLE IF NOT EXISTS paypal_plans (
       id SERIAL PRIMARY KEY,
@@ -119,6 +133,7 @@ async function ensurePayPalPlansTable() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `
+  paypalPlansEnsured = true
 }
 
 export async function createPayPalPlan(
@@ -259,7 +274,12 @@ export async function createPayPalSubscription(
 
   if (notes) {
     const customId = JSON.stringify(notes)
-    body.custom_id = customId.length > 127 ? customId.substring(0, 127) : customId
+    if (customId.length > 127) {
+      const truncated = JSON.stringify({ plan: notes.plan, userId: notes.userId })
+      body.custom_id = truncated.length > 127 ? truncated.substring(0, 124) + '...' : truncated
+    } else {
+      body.custom_id = customId
+    }
   }
 
   const res = await fetch(`${getBaseUrl()}/v1/billing/subscriptions`, {

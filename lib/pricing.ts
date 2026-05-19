@@ -19,6 +19,7 @@ export const PRICING = {
 
 export type Region = keyof typeof PRICING
 export type Plan = 'starter' | 'pro'
+export const SUPPORTED_REGIONS = Object.keys(PRICING)
 
 /**
  * Centralized region detection helper

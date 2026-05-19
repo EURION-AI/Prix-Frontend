@@ -158,8 +158,8 @@ export async function markReferralAsPurchased(referredGithubId: number, plan: st
       `
     })
   } catch (error) {
-    console.error('Error marking referral as purchased:', error)
-    throw error
+    console.error('[NON-CRITICAL] Error marking referral as purchased:', error)
+    // Non-critical — subscription activation should not be blocked by affiliate tracking
   }
 }
 
