@@ -24,7 +24,7 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
     price: '', // Will be set dynamically based on region
     pricePaise: 59900,
     features: [
-      '400 combined reviews & fixes / month (Huge upgrade!)',
+      '400 combined reviews & fixes / month',
       '50 AI issue plans / month',
       'Private repositories supported',
       'Up to 7,000 lines per PR',
