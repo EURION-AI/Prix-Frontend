@@ -1,0 +1,16 @@
+{
+  "name": "Prix AI - AI Code Review Tool",
+  "short_name": "Prix AI",
+  "description": "AI-powered GitHub PR reviewer that catches bugs, suggests fixes, and ships code faster.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
