@@ -173,6 +173,7 @@ export function PayPalCheckoutButton({
               }
             } catch {
               // Cross-origin errors are expected while PayPal hosts the popup
+              console.debug('[PAYPAL POLL] Cross-origin — popup still on PayPal domain')
             }
           }, 500)
 
@@ -275,6 +276,7 @@ export function PayPalCheckoutButton({
           }
         } catch {
           // Cross-origin errors are expected while PayPal hosts the popup
+          console.debug('[PAYPAL POLL] Cross-origin — popup still on PayPal domain')
         }
       }, 500)
 
