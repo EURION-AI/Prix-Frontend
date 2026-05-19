@@ -37,8 +37,8 @@ export async function POST(request: Request) {
     // Record as processed BEFORE handling to prevent double-processing on crash/retry
     try {
       await sql`
-        INSERT INTO processed_webhooks (event_id) VALUES (${eventId})
-        ON CONFLICT (event_id) DO NOTHING
+        INSERT INTO processed_webhooks (event_id, provider) VALUES (${eventId}, 'paypal')
+        ON CONFLICT (event_id) DO UPDATE SET provider = 'paypal'
       `
     } catch (e) {
       console.error('[PAYPAL_WEBHOOK] Failed to record processed event:', e)

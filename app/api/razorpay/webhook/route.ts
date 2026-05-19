@@ -41,8 +41,8 @@ export async function POST(request: Request) {
   // Record as processed BEFORE handling to prevent double-processing on crash/retry
   try {
     await sql`
-      INSERT INTO processed_webhooks (event_id) VALUES (${eventId})
-      ON CONFLICT (event_id) DO NOTHING
+      INSERT INTO processed_webhooks (event_id, provider) VALUES (${eventId}, 'razorpay')
+      ON CONFLICT (event_id) DO UPDATE SET provider = 'razorpay'
     `
   } catch (e) {
     console.error('[WEBHOOK] Failed to record processed event:', e)
@@ -275,6 +275,7 @@ export async function POST(request: Request) {
             UPDATE users
             SET plan = ${internalPlan},
                 plan_expires_at = TO_TIMESTAMP(${subscription.current_end}),
+                subscription_provider = 'razorpay',
                 updated_at = NOW()
             WHERE github_id = ${githubId}
           `

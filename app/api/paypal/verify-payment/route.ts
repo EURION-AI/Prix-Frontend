@@ -8,7 +8,7 @@ import { PRICING } from '@/lib/pricing'
 import { rateLimit } from '@/lib/security'
 
 export async function POST(request: Request) {
-  const rateLimitResult = rateLimit(request, 10)
+  const rateLimitResult = rateLimit(request, 20)
   if (!rateLimitResult.allowed && rateLimitResult.response) {
     return rateLimitResult.response
   }
@@ -81,8 +81,8 @@ export async function POST(request: Request) {
         }
 
         await sql`
-          INSERT INTO processed_webhooks (event_id) VALUES (${verifyEventId})
-          ON CONFLICT (event_id) DO NOTHING
+          INSERT INTO processed_webhooks (event_id, provider) VALUES (${verifyEventId}, 'paypal')
+          ON CONFLICT (event_id) DO UPDATE SET provider = 'paypal'
         `
 
         await activateSubscription(githubId, plan, subscription_id, 'paypal')
@@ -116,9 +116,10 @@ export async function POST(request: Request) {
       plan,
     })
   } catch (error) {
-    console.error('PayPal subscription verification error:', error)
+    console.error('[PAYPAL VERIFY] Error:', error)
+    const message = error instanceof Error ? error.message : 'Payment verification failed'
     return NextResponse.json(
-      { error: 'Payment verification failed' },
+      { error: message },
       { status: 500 }
     )
   }

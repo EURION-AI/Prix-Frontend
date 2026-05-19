@@ -8,7 +8,7 @@ import { PRICING } from '@/lib/pricing'
 import { rateLimit } from '@/lib/security'
 
 export async function POST(request: Request) {
-  const rateLimitResult = rateLimit(request, 10)
+  const rateLimitResult = rateLimit(request, 20)
   if (!rateLimitResult.allowed && rateLimitResult.response) {
     return rateLimitResult.response
   }
@@ -78,6 +78,24 @@ export async function POST(request: Request) {
         const userRegion = (region && ['IN', 'US', 'GB', 'EU'].includes(region)) ? region : 'US'
         const pricing = PRICING[userRegion as keyof typeof PRICING][plan as keyof typeof PRICING.IN]
 
+        // Idempotency — prevent double-activation on multiple verify clicks
+        const verifyEventId = `razorpay_verify_${githubId}_${razorpay_subscription_id}`
+        const alreadyActivated = await sql`
+          SELECT 1 FROM processed_webhooks WHERE event_id = ${verifyEventId}
+        `
+        if (alreadyActivated.length > 0) {
+          return NextResponse.json({
+            success: true,
+            message: 'Subscription already activated',
+            plan,
+          })
+        }
+
+        await sql`
+          INSERT INTO processed_webhooks (event_id, provider) VALUES (${verifyEventId}, 'razorpay')
+          ON CONFLICT (event_id) DO UPDATE SET provider = 'razorpay'
+        `
+
         // CRITICAL: Activate subscription with expiration tracking
         await activateSubscription(githubId, plan, razorpay_subscription_id)
         await markReferralAsPurchased(githubId, plan, pricing.price)
@@ -113,12 +131,9 @@ export async function POST(request: Request) {
       plan
     })
   } catch (error) {
-    console.error('Razorpay subscription verification error (CRITICAL):', error)
+    console.error('[RAZORPAY VERIFY] Error:', error)
     return NextResponse.json(
-      { 
-        error: 'Payment verification failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Payment verification failed' },
       { status: 500 }
     )
   }

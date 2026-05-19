@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/security'
 import { validateCSRFToken, addCSRFTokenToResponse } from '@/lib/csrf'
 import { getAuthenticatedUser } from '@/lib/auth'
-import { PRICING } from '@/lib/pricing'
+import { PRICING, SUPPORTED_REGIONS } from '@/lib/pricing'
 import { createPayPalPlan, createPayPalSubscription } from '@/lib/paypal'
 import { getUserSubscriptionId } from '@/lib/user-store'
 
@@ -36,6 +36,13 @@ export async function POST(request: Request) {
     if (!plan || (plan !== 'starter' && plan !== 'pro')) {
       return NextResponse.json(
         { error: 'Invalid plan. Must be "starter" or "pro"' },
+        { status: 400 }
+      )
+    }
+
+    if (!SUPPORTED_REGIONS.includes(region)) {
+      return NextResponse.json(
+        { error: `Unsupported region: ${region}. Supported: ${SUPPORTED_REGIONS.join(', ')}` },
         { status: 400 }
       )
     }
@@ -99,9 +106,10 @@ export async function POST(request: Request) {
       links: subscription.links,
     })
   } catch (error: any) {
-    console.error('PayPal checkout error:', error)
+    console.error('[PAYPAL CHECKOUT] Error:', error)
+    const message = error?.message || 'Failed to create subscription'
     return NextResponse.json(
-      { error: 'Failed to create subscription' },
+      { error: message },
       { status: 500 }
     )
   }
