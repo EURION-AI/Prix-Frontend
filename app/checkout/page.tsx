@@ -43,7 +43,7 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
       '300 AI issue plans / month',
       'Private repositories supported',
       'Large PRs supported (Max 15k lines)',
-      'Priority Queue Processing (Sub-second, instant reviews)',
+      'Priority Queue Processing',
       'Deeper Multi-File Analysis (Understands codebase context)',
       'Advanced Bug & Security Guard (Full repo-level scanning)'
     ]
