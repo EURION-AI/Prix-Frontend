@@ -23,7 +23,6 @@ export default function Home() {
     <main className="min-h-screen bg-[#0a0a0f]">
       <Navbar />
       <div className="relative z-10">
-        <h1 className="sr-only">AI Code Review That Ships Fixed Code — Every PR. Every Time.</h1>
         <HeroSection />
         <FeaturesSection />
         <HowItWorksSection />
