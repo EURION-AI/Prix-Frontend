@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { RazorpayCheckoutButton } from '@/components/razorpay-checkout'
 import { PayPalCheckoutButton } from '@/components/paypal-checkout'
 import { PaymentMethodSelector } from '@/components/payment-method-selector'
+
 import { PRICING, getPricing, formatPrice, getUserRegion, UPGRADE_PRICE, UPGRADE_PRICE_CENTS, type Region, type Plan } from '@/lib/pricing'
 
 interface PlanFeature {
@@ -74,7 +75,7 @@ function CheckoutContent() {
   const [userName, setUserName] = useState<string>('')
   const [userEmail, setUserEmail] = useState<string>('')
   const [userPlan, setUserPlan] = useState<string | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'paypal' | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'paypal' | null>(region === 'IN' ? 'razorpay' : 'paypal')
 
   const plan = { ...(PLAN_DETAILS[planId] || PLAN_DETAILS.starter) }
   const pricing = getPricing(region, planId)
@@ -106,6 +107,10 @@ function CheckoutContent() {
     }
     fetchUserData()
   }, [])
+
+  useEffect(() => {
+    setPaymentMethod(region === 'IN' ? 'razorpay' : 'paypal')
+  }, [region])
 
   const handleSuccess = () => {
     router.push('/dashboard?refresh=true')
@@ -229,8 +234,11 @@ function CheckoutContent() {
           <PaymentMethodSelector
             selected={paymentMethod}
             onSelect={setPaymentMethod}
+            region={region}
           />
         </div>
+
+
 
         {paymentMethod === 'razorpay' && (
           <RazorpayCheckoutButton

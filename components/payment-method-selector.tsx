@@ -5,9 +5,12 @@ import { Check } from 'lucide-react'
 interface PaymentMethodSelectorProps {
   selected: 'razorpay' | 'paypal' | null
   onSelect: (method: 'razorpay' | 'paypal') => void
+  region?: string
 }
 
-export function PaymentMethodSelector({ selected, onSelect }: PaymentMethodSelectorProps) {
+export function PaymentMethodSelector({ selected, onSelect, region }: PaymentMethodSelectorProps) {
+  const isIndia = region === 'IN'
+
   return (
     <div className="space-y-4">
       <p className="text-sm font-medium text-white/60 uppercase tracking-wider">
@@ -16,22 +19,31 @@ export function PaymentMethodSelector({ selected, onSelect }: PaymentMethodSelec
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button
           type="button"
+          disabled={isIndia}
           onClick={() => onSelect('paypal')}
           className={`relative flex items-center gap-4 p-5 rounded-2xl border transition-all text-left
-            ${selected === 'paypal'
+            ${isIndia
+              ? 'border-white/5 bg-white/[0.02] opacity-40 cursor-not-allowed'
+              : selected === 'paypal'
               ? 'border-primary bg-primary/5 shadow-[0_0_15px_-3px] shadow-primary/20'
               : 'border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/[0.07]'
             }`}
         >
-          {selected === 'paypal' && (
+          {selected === 'paypal' && !isIndia && (
             <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
               <Check className="w-3 h-3 text-white" />
             </div>
           )}
-          {selected !== 'paypal' && selected === null && (
-            <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-white/10 text-white/40 text-[10px] font-bold uppercase tracking-wider">
-              Available
+          {isIndia ? (
+            <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-wider">
+              Unavailable
             </div>
+          ) : (
+            selected !== 'paypal' && selected === null && (
+              <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-white/10 text-white/40 text-[10px] font-bold uppercase tracking-wider">
+                Available
+              </div>
+            )
           )}
           <div className="w-12 h-12 rounded-xl bg-white/[0.05] flex items-center justify-center shrink-0">
             <svg viewBox="0 0 36 36" className="w-7 h-7">
@@ -48,7 +60,9 @@ export function PaymentMethodSelector({ selected, onSelect }: PaymentMethodSelec
           </div>
           <div>
             <p className="text-white font-bold text-base">PayPal</p>
-            <p className="text-white/40 text-xs mt-0.5">Pay with your PayPal account</p>
+            <p className="text-white/40 text-xs mt-0.5">
+              {isIndia ? 'Not supported in your region' : 'Pay with your PayPal account'}
+            </p>
           </div>
         </button>
 

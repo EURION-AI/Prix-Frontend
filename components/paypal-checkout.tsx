@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Loader2, ArrowUpRight, ExternalLink } from 'lucide-react'
+import { PRICING } from '@/lib/pricing'
 
 interface PayPalCheckoutButtonProps {
   plan: 'starter' | 'pro'
@@ -41,6 +42,17 @@ export function PayPalCheckoutButton({
   const STORAGE_KEY = `paypal_verified_${plan}_${region}`
   // Note: sessionStorage is client-controllable (user can set via dev tools).
   // This is UI-only — the real gate is the server-side verify-payment endpoint.
+
+  const SUPPORTED_PAYPAL_CURRENCIES = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY', 'MXN']
+  
+  let displayCurrency = currency
+  let displayAmount = amount
+
+  if (!SUPPORTED_PAYPAL_CURRENCIES.includes(currency)) {
+    displayCurrency = 'USD'
+    const usPricing = PRICING.US[plan]
+    displayAmount = upgradeParam ? PRICING.US.pro.price : usPricing.price
+  }
 
   const formatDisplayPrice = (amount: number, currency: string): string => {
     if (currency === 'INR') {
@@ -373,7 +385,7 @@ export function PayPalCheckoutButton({
         className="w-full h-14 rounded-xl bg-[#0070ba] text-white font-bold text-base hover:bg-[#003087] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
       >
         {upgradeParam ? (
-          `Upgrade ${formatDisplayPrice(amount, currency)}/mo`
+          `Upgrade ${formatDisplayPrice(displayAmount, displayCurrency)}/mo`
         ) : paymentConfirmed ? (
           <>
             Payment Confirmed ✓
@@ -396,7 +408,7 @@ export function PayPalCheckoutButton({
               <path d="M17.81 4.04A6.37 6.37 0 0 0 13.6 2H4.35a1.8 1.8 0 0 0-1.79 1.54L.8 15.62a1.07 1.07 0 0 0 1.06 1.24h3.97l1.02-6.48-.03.18c.1-.61.63-1.06 1.26-1.06h3.49c2.29 0 4.24 1.65 4.6 3.88H16.8l1.01-6.42z"/>
               <path d="M8.9 1.79A1.8 1.8 0 0 1 10.69.25h8.9a6.37 6.37 0 0 1 4.22 2.04c.4.47.72 1 .95 1.56l-1.01 6.42h.01c-.36-2.23-2.31-3.88-4.6-3.88h-3.49c-.63 0-1.16.45-1.26 1.06l-.03.18-1.02 6.48H8.9l-1.01-6.42H7.87l1.03-6.53z" opacity=".3"/>
             </svg>
-            Subscribe {formatDisplayPrice(amount, currency)}/mo
+            Subscribe {formatDisplayPrice(displayAmount, displayCurrency)}/mo
           </>
         )}
       </button>

@@ -64,8 +64,14 @@ export async function POST(request: Request) {
       const githubId = parseInt(userId, 10)
 
       if (!isNaN(githubId) && githubId > 0) {
-        const userRegion = (region && ['IN', 'US', 'GB', 'EU'].includes(region)) ? region : 'US'
-        const pricing = PRICING[userRegion as keyof typeof PRICING][plan as keyof typeof PRICING.IN]
+        const SUPPORTED_PAYPAL_CURRENCIES = ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY', 'MXN']
+        let paypalRegion = (region && ['IN', 'US', 'GB', 'EU'].includes(region)) ? region : 'US'
+        let pricing = PRICING[paypalRegion as keyof typeof PRICING][plan as keyof typeof PRICING.IN]
+
+        if (!SUPPORTED_PAYPAL_CURRENCIES.includes(pricing.currency)) {
+          paypalRegion = 'US'
+          pricing = PRICING.US[plan as keyof typeof PRICING.US]
+        }
 
         // Idempotency — prevent double-activation on multiple verify clicks
         const verifyEventId = `paypal_verify_${githubId}_${subscription_id}`
