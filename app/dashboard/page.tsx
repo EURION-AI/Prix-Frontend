@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, LayoutDashboard, Settings, Gift, LogOut, User, CreditCard } from 'lucide-react'
+import { Loader2, Github, Search, Check, AlertCircle, ChevronRight, ChevronDown, LayoutDashboard, Settings, Gift, LogOut, User, CreditCard } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 import {
@@ -403,8 +403,9 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-6 md:mt-0">
-            <div className="flex flex-col items-start sm:items-end gap-1.5 w-full sm:w-auto">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 mt-6 md:mt-0 w-full md:w-auto">
+            {/* Left side: Mount Repositories (large button) */}
+            <div className="flex flex-col gap-1.5 flex-grow md:flex-initial">
               <a 
                 href={user?.githubInstallationId 
                   ? `https://github.com/settings/installations/${user.githubInstallationId}`
@@ -412,33 +413,37 @@ export default function DashboardPage() {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 group"
+                className="h-[104px] px-8 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/95 hover:to-primary/80 border border-primary/20 rounded-xl transition-all flex flex-col justify-center items-center gap-1.5 group shadow-[0_0_20px_rgba(var(--primary-rgb),0.15)] text-center min-w-[240px]"
               >
-                <Github className="w-4 h-4 text-primary" />
-                <span className="font-medium text-primary">
-                  {user?.githubInstallationId ? 'Manage Repositories' : 'Mount Repositories'}
+                <div className="flex items-center gap-2">
+                  <Github className="w-5 h-5 text-white" />
+                  <span className="font-extrabold text-white text-base tracking-wide">
+                    {user?.githubInstallationId ? 'Manage Access' : 'Mount Prix Bot'}
+                  </span>
+                </div>
+                <span className="text-[10px] text-white/70 max-w-[200px] leading-tight font-semibold">
+                  Change bot installation & repo access on GitHub
                 </span>
               </a>
-              <p className="text-[11px] text-white/30 text-center sm:text-right w-full sm:max-w-[200px] leading-tight">
-                Click here to install the Prix bot on your repos or change which repos it can access.
-              </p>
             </div>
 
-            <Link 
-              href="/affiliate"
-              className="w-full sm:w-auto px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 group h-fit"
-            >
-              <Gift className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
-              <span className="font-medium">Affiliate Program</span>
-            </Link>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="w-full sm:w-auto px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 group outline-none h-fit">
-                  <Settings className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
-                  <span className="font-medium">Settings</span>
-                </button>
-              </DropdownMenuTrigger>
+            {/* Right side: 2 stacked horizontal buttons */}
+            <div className="flex flex-col gap-2 min-w-[200px] flex-grow md:flex-initial">
+              <Link 
+                href="/affiliate"
+                className="w-full h-[48px] px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center justify-start gap-3 group"
+              >
+                <Gift className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                <span className="font-semibold text-sm text-white/90 group-hover:text-white">Affiliate Program</span>
+              </Link>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="w-full h-[48px] px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center justify-start gap-3 group outline-none">
+                    <Settings className="w-4 h-4 text-white/60 group-hover:rotate-45 transition-transform" />
+                    <span className="font-semibold text-sm text-white/90 group-hover:text-white">Account Settings</span>
+                  </button>
+                </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 bg-[#0c0c12] border-white/10 text-white" align="end">
                 <DropdownMenuLabel className="text-white/40 font-mono text-[10px] uppercase tracking-widest">Account Settings</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-white/5" />
@@ -468,6 +473,7 @@ export default function DashboardPage() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+        </div>
         </div>
 
         {error && (
@@ -541,16 +547,21 @@ export default function DashboardPage() {
               />
             </div>
             
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value as any)}
-              className="bg-white/5 border border-white/10 rounded-2xl px-5 py-5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-white/80 cursor-pointer min-w-[200px]"
-            >
-              <option value="date" className="bg-[#0c0c12] text-white">Date Created</option>
-              <option value="name-asc" className="bg-[#0c0c12] text-white">Name (A-Z)</option>
-              <option value="name-desc" className="bg-[#0c0c12] text-white">Name (Z-A)</option>
-              <option value="selected" className="bg-[#0c0c12] text-white">Selected by Prix AI</option>
-            </select>
+            <div className="relative min-w-[200px] flex-grow sm:flex-grow-0 group">
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value as any)}
+                className="w-full appearance-none bg-white/5 border border-white/10 rounded-2xl pl-5 pr-12 py-5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-white/80 cursor-pointer hover:bg-white/[0.07] transition-all"
+              >
+                <option value="date" className="bg-[#0c0c12] text-white/80">📅 Date Created</option>
+                <option value="name-asc" className="bg-[#0c0c12] text-white/80">🔤 Name (A-Z)</option>
+                <option value="name-desc" className="bg-[#0c0c12] text-white/80">🔤 Name (Z-A)</option>
+                <option value="selected" className="bg-[#0c0c12] text-white/80">✅ Selected by Prix</option>
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-white/40 group-hover:text-white/60 transition-colors">
+                <ChevronDown className="w-4 h-4" />
+              </div>
+            </div>
           </div>
           {user && (
             <div className="bg-white/5 border border-white/10 rounded-2xl py-5 px-6 flex items-center gap-4 min-w-max">
@@ -588,8 +599,8 @@ export default function DashboardPage() {
                 </div>
                 
                 <div className="flex items-center gap-4 w-full min-w-0">
-                  <div className={`p-2 rounded-lg shrink-0 ${repo.private ? 'bg-yellow-500/10 text-yellow-500' : 'bg-green-500/10 text-green-500'}`}>
-                    <Github className="w-5 h-5" />
+                  <div className={`p-2 rounded-lg shrink-0 ${repo.private ? 'bg-yellow-500 text-black font-extrabold shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'bg-green-500 text-black font-extrabold shadow-[0_0_10px_rgba(34,197,94,0.3)]'}`}>
+                    <Github className="w-5 h-5 stroke-[2.5]" />
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">

@@ -171,8 +171,8 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
             return (
               <div
                 key={index}
-                className={`relative flex flex-col p-4 md:p-6 lg:p-8 rounded-lg border backdrop-blur-md ${
-                  isPro ? 'border-primary/40 bg-[#121218]/90 shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]' : 'border-white/[0.1] bg-[#0a0a0f]/90'
+                className={`relative flex flex-col p-4 md:p-5 lg:p-6 rounded-lg border ${
+                  isPro ? 'border-primary/50 bg-[#161622] shadow-[0_0_30px_rgba(var(--primary-rgb),0.12)]' : 'border-white/[0.12] bg-[#0e0e14]'
                 } ${disabled ? 'opacity-70' : ''}`}
               >
                 {isPro && (
@@ -181,33 +181,33 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                   </div>
                 )}
 
-                <div className="mb-4 md:mb-6">
-                  <h3 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 ${isPro ? 'text-primary' : 'text-white'}`}>
+                <div className="mb-3 md:mb-4">
+                  <h3 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-1.5 ${isPro ? 'text-primary' : 'text-white'}`}>
                     {plan.name}
                   </h3>
-                  <p className="text-sm md:text-base lg:text-lg text-white/50 leading-relaxed">
+                  <p className="text-xs md:text-sm lg:text-base text-white/50 leading-relaxed">
                     {plan.description}
                   </p>
                 </div>
 
-                <div className="mb-5 md:mb-8">
-                  <div className="flex items-baseline gap-2 mb-2">
+                <div className="mb-4 md:mb-5">
+                  <div className="flex items-baseline gap-2 mb-1.5">
                     <span className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight ${isPro && !disabled ? 'text-primary' : 'text-white'}`}>
                       {displayPrice}
                     </span>
                     {plan.price !== 'Free' && !isLocked && (
-                      <span className="text-white/50 text-sm md:text-base font-light">/month</span>
+                      <span className="text-white/50 text-xs md:text-sm font-light">/month</span>
                     )}
                   </div>
                   {plan.price === 'Free' && (
-                    <span className="text-white/50 text-sm md:text-base font-light">Forever</span>
+                    <span className="text-white/50 text-xs md:text-sm font-light">Forever</span>
                   )}
                   {isLocked && (
-                    <span className="text-green-400 text-xs font-bold block mt-1">{isProOnStarter ? 'Included in Pro' : 'Current Plan'}</span>
+                    <span className="text-green-400 text-[10px] font-bold block mt-1">{isProOnStarter ? 'Included in Pro' : 'Current Plan'}</span>
                   )}
                 </div>
 
-                <div className="space-y-2.5 mb-6 flex-grow">
+                <div className="space-y-1.5 mb-4 flex-grow">
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <div className="mt-[2px] shrink-0">
