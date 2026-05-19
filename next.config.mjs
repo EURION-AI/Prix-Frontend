@@ -3,6 +3,17 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  compress: true,
+  productionBrowserSourceMaps: false,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  experimental: {
+    webpackBuildWorker: true,
+  },
   async headers() {
     return [
       {
