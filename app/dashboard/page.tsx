@@ -539,9 +539,9 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-center gap-4 mb-8">
-          <div className="flex flex-col sm:flex-row gap-3 flex-grow lg:flex-grow-0 max-w-3xl">
-            <div className="relative group flex-grow sm:flex-grow-0 sm:w-auto">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-3 flex-grow max-w-3xl">
+            <div className="relative group flex-grow">
               <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-white/20 group-focus-within:text-primary transition-colors">
                 <Search className="w-5 h-5" />
               </div>
@@ -550,7 +550,7 @@ export default function DashboardPage() {
                 placeholder="Search your repositories..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:w-64 h-[70px] bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
+                className="w-full h-[70px] bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
               />
             </div>
             
@@ -559,7 +559,7 @@ export default function DashboardPage() {
                 value={filterType}
                 onValueChange={(val) => setFilterType(val as any)}
               >
-                <SelectTrigger className="w-full sm:w-48 !h-[70px] bg-[#0c0c12]/80 backdrop-blur border border-white/10 rounded-2xl pl-6 pr-12 text-sm sm:text-base font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 text-white/90 cursor-pointer hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex justify-between items-center outline-none [&>span]:w-full [&>span]:text-left border-solid">
+                <SelectTrigger className="w-full !h-[70px] bg-[#0c0c12]/80 backdrop-blur border border-white/10 rounded-2xl pl-6 pr-12 text-sm sm:text-base font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 text-white/90 cursor-pointer hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex justify-between items-center outline-none [&>span]:w-full [&>span]:text-left border-solid">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0c0c12]/95 backdrop-blur-md border border-white/10 text-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden">
@@ -580,10 +580,8 @@ export default function DashboardPage() {
             </div>
           </div>
           {user && (
-            <div className={`h-[70px] bg-white/5 border border-white/10 rounded-2xl px-6 flex items-center gap-4 ${
-              user.plan === 'free' ? 'w-auto' : 'min-w-[280px]'
-            }`}>
-              <span className="text-white/40 font-medium whitespace-nowrap">Selected Repositories</span>
+            <div className="h-[70px] bg-white/5 border border-white/10 rounded-2xl px-6 flex items-center gap-4 min-w-max">
+              <span className="text-white/40 font-medium">Selected Repositories</span>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-black text-primary">{selectedRepos.length}</span>
                 <span className="text-white/20">/</span>
