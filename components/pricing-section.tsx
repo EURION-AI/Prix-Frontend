@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { getUserRegion, formatPrice, UPGRADE_PRICE, type Region } from '@/lib/pricing'
-import { Check, X, Info } from '@phosphor-icons/react'
+import { Check, X, Info, Warning } from '@phosphor-icons/react'
 
 interface PlanFeature {
   text: string
   available: boolean
   subtext?: string
   tooltip?: string
+  warning?: boolean
 }
 
 interface Plan {
@@ -38,12 +39,12 @@ const plans: Plan[] = [
       { text: '15 PR reviews / month', available: true },
       { text: '3 AI issue plans / month', available: true },
       { text: '3 Auto-fixes / month', available: true },
-      { text: '1k lines of change limit (per PR)', available: true },
+      { text: '1k lines limit (per PR) ❗️', available: true, warning: true },
       { text: 'Public repositories only', available: true },
       { text: 'Private Repository support', available: false },
       { text: 'Deep multi-file analysis', available: false },
       { text: 'Advanced security scanning', available: false },
-      { text: 'Standard queue processing (Slower)', available: false }
+      { text: 'Standard queue processing (Slower)', available: true }
     ],
     cta: 'Get Started for Free',
     href: '/login',
@@ -62,7 +63,7 @@ const plans: Plan[] = [
       { text: 'Core Bug Detection (Logic flaws & common issues)', available: true },
       { text: 'Essential Security Scanning (SQL injection, XSS, etc.)', available: true },
       { text: 'Deep multi-file analysis (Single-file focus)', available: false },
-      { text: 'Standard queue processing', available: false },
+      { text: 'Standard queue processing', available: true },
       { text: 'Support for large PRs', available: false }
     ],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'starter')}`,
@@ -211,7 +212,9 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <div className="mt-[2px] shrink-0">
-                        {feature.available ? (
+                        {feature.warning ? (
+                          <Warning size={18} weight="bold" className="text-amber-500 animate-pulse" />
+                        ) : feature.available ? (
                           <Check size={18} weight="bold" className="text-green-500" />
                         ) : (
                           <X size={18} weight="bold" className="text-[#ff1a75]" />
@@ -222,6 +225,8 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                           <span className={`text-xs lg:text-sm font-medium ${
                             !feature.available 
                               ? 'text-white/30 line-through' 
+                              : feature.warning
+                              ? 'text-amber-400 font-semibold'
                               : isPro ? 'text-white/90' : 'text-white/70'
                           } leading-tight`}>
                             {feature.text}

@@ -29,7 +29,8 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
       'Private repositories supported',
       'Up to 7,000 lines per PR',
       'Core Bug Detection (Logic flaws & common issues)',
-      'Essential Security Scanning (SQL injection, XSS, etc.)'
+      'Essential Security Scanning (SQL injection, XSS, etc.)',
+      'Standard queue processing'
     ]
   },
   pro: {

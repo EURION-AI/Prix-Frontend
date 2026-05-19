@@ -13,6 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { Plan } from '@/lib/user-store'
 
 interface Repository {
@@ -547,20 +554,29 @@ export default function DashboardPage() {
               />
             </div>
             
-            <div className="relative min-w-[200px] flex-grow sm:flex-grow-0 group">
-              <select
+            <div className="min-w-[200px] flex-grow sm:flex-grow-0">
+              <Select
                 value={filterType}
-                onChange={(e) => setFilterType(e.target.value as any)}
-                className="w-full appearance-none bg-[#0c0c12]/80 backdrop-blur border border-white/10 rounded-2xl pl-6 pr-12 py-5 text-sm sm:text-base font-bold focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-white/90 cursor-pointer hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
+                onValueChange={(val) => setFilterType(val as any)}
               >
-                <option value="date" className="bg-[#0c0c12] text-white/90 font-medium">Sort by: Date Created</option>
-                <option value="name-asc" className="bg-[#0c0c12] text-white/90 font-medium">Sort by: Name (A to Z)</option>
-                <option value="name-desc" className="bg-[#0c0c12] text-white/90 font-medium">Sort by: Name (Z to A)</option>
-                <option value="selected" className="bg-[#0c0c12] text-white/90 font-medium">Filter: Selected by Prix</option>
-              </select>
-              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-white/40 group-hover:text-white/60 transition-colors">
-                <ChevronDown className="w-4 h-4" />
-              </div>
+                <SelectTrigger className="w-full h-auto bg-[#0c0c12]/80 backdrop-blur border border-white/10 rounded-2xl pl-6 pr-12 py-5 text-sm sm:text-base font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 text-white/90 cursor-pointer hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex justify-between items-center outline-none [&>span]:w-full [&>span]:text-left border-solid">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0c0c12]/95 backdrop-blur-md border border-white/10 text-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden min-w-[200px]">
+                  <SelectItem value="date" className="hover:bg-white/[0.05] focus:bg-white/[0.05] text-white/90 font-semibold py-3.5 px-6 cursor-pointer rounded-none border-b border-white/5 last:border-b-0">
+                    Sort: Most Recent
+                  </SelectItem>
+                  <SelectItem value="name-asc" className="hover:bg-white/[0.05] focus:bg-white/[0.05] text-white/90 font-semibold py-3.5 px-6 cursor-pointer rounded-none border-b border-white/5 last:border-b-0">
+                    Sort: Name (A-Z)
+                  </SelectItem>
+                  <SelectItem value="name-desc" className="hover:bg-white/[0.05] focus:bg-white/[0.05] text-white/90 font-semibold py-3.5 px-6 cursor-pointer rounded-none border-b border-white/5 last:border-b-0">
+                    Sort: Name (Z-A)
+                  </SelectItem>
+                  <SelectItem value="selected" className="hover:bg-white/[0.05] focus:bg-white/[0.05] text-white/90 font-semibold py-3.5 px-6 cursor-pointer rounded-none">
+                    Filter: Selected by Prix
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           {user && (

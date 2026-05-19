@@ -112,8 +112,8 @@ export default function ComparePage() {
             ))}
           </div>
 
-          {/* Comparison Table */}
-          <div className="card-base overflow-hidden mb-16">
+          {/* Comparison Table (Desktop) */}
+          <div className="hidden md:block card-base overflow-hidden mb-16">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
@@ -136,6 +136,51 @@ export default function ComparePage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile View: Stacked Comparison Cards */}
+          <div className="block md:hidden space-y-4 mb-16">
+            {comparisonData.map((row, index) => (
+              <div key={index} className={`card-base p-5 shadow-lg relative overflow-hidden backdrop-blur-sm ${row.prixHighlight ? 'border-primary/20 from-primary/[0.03] to-transparent bg-gradient-to-br' : ''}`}>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none" />
+                
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/[0.05]">
+                  <h4 className="text-sm font-bold text-white leading-tight">{row.feature}</h4>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2.5">
+                  {/* Prix Column */}
+                  <div className="bg-primary/[0.04] border border-primary/20 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <span className="text-[9px] font-extrabold text-primary uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                      Prix <Check className="w-2.5 h-2.5" />
+                    </span>
+                    <span className="text-xs font-bold text-white leading-snug">
+                      {row.prix}
+                    </span>
+                  </div>
+
+                  {/* Copilot Column */}
+                  <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <span className="text-[9px] font-semibold text-white/30 uppercase tracking-widest mb-1.5">
+                      Copilot
+                    </span>
+                    <span className="text-[10px] font-medium text-white/50 leading-snug">
+                      {row.copilot}
+                    </span>
+                  </div>
+
+                  {/* Manual Column */}
+                  <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <span className="text-[9px] font-semibold text-white/30 uppercase tracking-widest mb-1.5">
+                      Manual
+                    </span>
+                    <span className="text-[10px] font-medium text-white/50 leading-snug">
+                      {row.manual}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Detailed Comparison */}

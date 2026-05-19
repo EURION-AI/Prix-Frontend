@@ -68,7 +68,8 @@ export function ComparisonSection() {
           </p>
         </div>
 
-        <div className="border border-white/[0.05] rounded-xl overflow-hidden">
+        {/* Desktop View: Wide Grid Table */}
+        <div className="hidden md:block border border-white/[0.05] rounded-xl overflow-hidden">
           <div className="-mx-6 lg:mx-0 overflow-x-auto">
             <div className="min-w-[580px] lg:min-w-0 px-6 lg:px-0 pb-2">
               <div className="grid grid-cols-[1fr_1fr_1fr_1fr] border-b border-white/10">
@@ -133,6 +134,54 @@ export function ComparisonSection() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Mobile View: Stacked Comparison Cards */}
+        <div className="block md:hidden space-y-4">
+          {comparisonData.map((row, index) => (
+            <div key={index} className="bg-[#0e0e14]/60 border border-white/[0.06] rounded-xl p-5 shadow-lg relative overflow-hidden backdrop-blur-sm">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none" />
+              
+              <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/[0.05]">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                  <row.icon className="w-4 h-4 text-white/40" />
+                </div>
+                <h4 className="text-sm font-bold text-white leading-tight">{row.feature}</h4>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2.5">
+                {/* Prix Column */}
+                <div className="bg-primary/[0.04] border border-primary/20 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                  <span className="text-[9px] font-extrabold text-primary uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                    Prix <Check className="w-2.5 h-2.5" />
+                  </span>
+                  <span className={`text-xs font-bold leading-snug ${row.feature === 'Monthly Pricing' ? 'text-green-400' : 'text-white'}`}>
+                    {row.prix}
+                  </span>
+                </div>
+
+                {/* CodeRabbit Column */}
+                <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                  <span className="text-[9px] font-semibold text-white/30 uppercase tracking-widest mb-1.5">
+                    Rabbit
+                  </span>
+                  <span className={`text-[10px] font-medium leading-snug ${row.feature === 'Monthly Pricing' ? 'text-red-400/90 font-bold text-xs' : 'text-white/50'}`}>
+                    {row.codeRabbit}
+                  </span>
+                </div>
+
+                {/* Qodo Column */}
+                <div className="bg-white/[0.01] border border-white/[0.04] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                  <span className="text-[9px] font-semibold text-white/30 uppercase tracking-widest mb-1.5">
+                    Qodo
+                  </span>
+                  <span className={`text-[10px] font-medium leading-snug ${row.feature === 'Monthly Pricing' ? 'text-red-400/90 font-bold text-xs' : 'text-white/50'}`}>
+                    {row.qodo}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="mt-8 text-center">
