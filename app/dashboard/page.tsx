@@ -391,8 +391,8 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="flex gap-3">
-            <div className="flex flex-col items-end gap-1.5">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-6 md:mt-0">
+            <div className="flex flex-col items-start sm:items-end gap-1.5 w-full sm:w-auto">
               <a 
                 href={user?.githubInstallationId 
                   ? `https://github.com/settings/installations/${user.githubInstallationId}`
@@ -400,21 +400,21 @@ export default function DashboardPage() {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl transition-all flex items-center gap-2 group"
+                className="w-full sm:w-auto px-6 py-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 group"
               >
                 <Github className="w-4 h-4 text-primary" />
                 <span className="font-medium text-primary">
                   {user?.githubInstallationId ? 'Manage Repositories' : 'Mount Repositories'}
                 </span>
               </a>
-              <p className="text-[11px] text-white/30 text-right max-w-[200px] leading-tight">
+              <p className="text-[11px] text-white/30 text-center sm:text-right w-full sm:max-w-[200px] leading-tight">
                 Click here to install the Prix bot on your repos or change which repos it can access.
               </p>
             </div>
 
             <Link 
               href="/affiliate"
-              className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center gap-2 group"
+              className="w-full sm:w-auto px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 group h-fit"
             >
               <Gift className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
               <span className="font-medium">Affiliate Program</span>
@@ -422,7 +422,7 @@ export default function DashboardPage() {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center gap-2 group outline-none">
+                <button className="w-full sm:w-auto px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 group outline-none h-fit">
                   <Settings className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors" />
                   <span className="font-medium">Settings</span>
                 </button>
@@ -541,67 +541,63 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
           {filteredRepos.length > 0 ? (
             filteredRepos.map((repo) => (
               <button
                 key={repo.id}
                 onClick={() => handleRepoSelect(repo.full_name, repo.id)}
                 disabled={isSaving}
-                className={`text-left p-6 rounded-2xl border transition-all relative group card-interactive ${
+                className={`w-full text-left p-4 sm:p-5 transition-all flex items-center gap-4 group ${
                   selectedRepos.includes(repo.full_name) 
-                    ? 'bg-primary/10 border-primary !opacity-100 shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
-                    : ''
+                    ? 'bg-primary/5 hover:bg-primary/10' 
+                    : 'hover:bg-white/5 opacity-70 hover:opacity-100'
                 }`}
               >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${repo.private ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                      <Github className="w-5 h-5" />
-                    </div>
-                    <span className="font-bold text-lg truncate max-w-[200px]">{repo.name}</span>
-                  </div>
-                  {repo.private && (
-                    <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-white/5 border border-white/10 rounded-md text-white/40">
-                      Private
-                    </span>
-                  )}
+                <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  selectedRepos.includes(repo.full_name)
+                    ? 'bg-primary border-primary text-white'
+                    : 'border-white/20 bg-transparent text-transparent group-hover:border-white/40'
+                }`}>
+                  <Check className="w-3.5 h-3.5" />
                 </div>
                 
-                <p className="text-white/40 text-sm mb-6 line-clamp-2 min-h-[40px]">
-                  {repo.description || "No description provided."}
-                </p>
-
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="text-[10px] text-white/20 font-mono">
-                    Last updated: {new Date(repo.updated_at).toLocaleDateString()}
-                  </span>
-                  <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                    {isSaving && selectedRepos.includes(repo.full_name) ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : selectedRepos.includes(repo.full_name) ? (
-                      <span className="flex items-center gap-2 text-red-400 hover:text-red-300">
-                        Remove
+                <div className="flex items-center gap-4 w-full min-w-0">
+                  <div className={`p-2 rounded-lg shrink-0 ${repo.private ? 'bg-white/5 text-zinc-400' : 'bg-white/10 text-white/80'}`}>
+                    <Github className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`font-semibold truncate text-sm sm:text-base ${selectedRepos.includes(repo.full_name) ? 'text-white' : 'text-white/90'}`}>
+                        {repo.name}
                       </span>
-                    ) : (
-                      <>
-                        <span>Select</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </>
+                      {repo.private && (
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 bg-white/10 rounded text-white/60 shrink-0">
+                          Private
+                        </span>
+                      )}
+                    </div>
+                    {repo.description && (
+                      <span className="text-white/40 text-xs truncate max-w-xl">
+                        {repo.description}
+                      </span>
                     )}
                   </div>
                 </div>
 
-                {selectedRepos.includes(repo.full_name) && (
-                  <div className="absolute top-4 right-4 bg-primary text-white p-1 rounded-full">
-                    <Check className="w-3 h-3" />
-                  </div>
-                )}
+                <div className="hidden sm:flex items-center gap-4 shrink-0">
+                  <span className="text-xs text-white/30 font-mono">
+                    {new Date(repo.updated_at).toLocaleDateString()}
+                  </span>
+                  {isSaving && selectedRepos.includes(repo.full_name) && (
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                  )}
+                </div>
               </button>
             ))
           ) : (
-            <div className="col-span-full py-20 text-center">
-              <p className="text-white/20 text-xl">No repositories found matching your search.</p>
+            <div className="py-20 text-center">
+              <p className="text-white/40 text-lg">No repositories found matching your search.</p>
             </div>
           )}
         </div>

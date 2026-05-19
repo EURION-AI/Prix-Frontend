@@ -4,15 +4,44 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { getUserRegion, formatPrice, type Region } from '@/lib/pricing'
+import { Check, X, Info } from '@phosphor-icons/react'
 
-const plans = [
+interface PlanFeature {
+  text: string
+  available: boolean
+  subtext?: string
+  tooltip?: string
+}
+
+interface Plan {
+  id: string
+  name: string
+  price?: string
+  getPrice?: (region: Region) => string
+  priceValue: number
+  description: string
+  features: PlanFeature[]
+  cta?: string
+  getCta?: (region: Region) => string
+  href?: string
+  getHref?: (region: Region) => string
+}
+
+const plans: Plan[] = [
   {
     id: 'free',
     name: 'Free',
     price: 'Free',
     priceValue: 0,
     description: '15 PR reviews/month, public repos only.',
-    features: ['15 PR reviews / month', '3 AI issue plans / month', '3 auto fixes / month', 'Public repositories', 'GitHub integration'],
+    features: [
+      { text: '15 PR reviews / month', available: true },
+      { text: '3 AI issue plans / month', available: true },
+      { text: '3 auto fixes / month', available: true },
+      { text: 'Public repositories', available: true },
+      { text: 'GitHub integration', available: true },
+      { text: 'Large PRs supported', available: false }
+    ],
     cta: 'Get Started for Free',
     href: '/login',
   },
@@ -22,7 +51,15 @@ const plans = [
     getPrice: (region: Region) => formatPrice(region, 'starter'),
     priceValue: 5,
     description: '400 combined reviews & fixes/month, private repos.',
-    features: ['400 combined reviews & fixes / month', '50 issue plans / month', 'Private repositories', 'Bug detection (logic + common issues)', 'Security scanning (SQL injection, XSS, etc.)'],
+    features: [
+      { text: '400 combined reviews & fixes / month', available: true },
+      { text: '50 issue plans / month', available: true },
+      { text: 'Private repositories', available: true },
+      { text: 'Bug detection (logic + common issues)', available: true },
+      { text: 'Security scanning (SQL injection, XSS, etc.)', available: true },
+      { text: 'PR support up to 7,000 lines', available: true, subtext: 'No support for large PRs' },
+      { text: 'Large PRs supported', available: false }
+    ],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'starter')}`,
     getHref: (region: Region) => `/checkout?plan=starter&region=${region}`,
   },
@@ -32,7 +69,14 @@ const plans = [
     getPrice: (region: Region) => formatPrice(region, 'pro'),
     priceValue: 10,
     description: 'Unlimited reviews, priority processing.',
-    features: ['Unlimited PR reviews', 'Unlimited auto-fixes', 'Unlimited issue plans', 'Priority queue processing', 'Deeper multi-file analysis'],
+    features: [
+      { text: 'Unlimited PR reviews', available: true },
+      { text: 'Unlimited auto-fixes', available: true },
+      { text: 'Unlimited issue plans', available: true },
+      { text: 'Priority queue processing', available: true },
+      { text: 'Deeper multi-file analysis', available: true },
+      { text: 'Large PRs supported', available: true, tooltip: 'Supports up to 75 large PRs with a maximum of 15,000 lines per PR.' }
+    ],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'pro')}`,
     getHref: (region: Region) => `/checkout?plan=pro&region=${region}`,
   },
@@ -104,7 +148,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
               displayHref = userPlan ? '#' : (refCode ? `/login?ref=${refCode}` : '/login')
               disabled = !!userPlan
             } else if (isLocked) {
-              displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
+              displayPrice = plan.getPrice ? plan.getPrice(region) : (plan.price || '')
               displayCta = isProOnStarter ? 'Already on Pro' : 'Already Purchased'
               displayHref = '#'
               disabled = true
@@ -113,9 +157,9 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
               displayCta = 'Upgrade'
               displayHref = appendRef(`/checkout?plan=pro&region=${region}&upgrade=true`)
             } else {
-              displayPrice = plan.getPrice ? plan.getPrice(region) : plan.price
-              displayCta = plan.getCta ? plan.getCta(region) : plan.cta
-              displayHref = plan.getHref ? appendRef(plan.getHref(region)) : plan.href
+              displayPrice = plan.getPrice ? plan.getPrice(region) : (plan.price || '')
+              displayCta = plan.getCta ? plan.getCta(region) : (plan.cta || '')
+              displayHref = plan.getHref ? appendRef(plan.getHref(region)) : (plan.href || '')
             }
 
             return (
@@ -157,13 +201,43 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                   )}
                 </div>
 
-                <div className="space-y-2 mb-6 flex-grow">
+                <div className="space-y-4 mb-6 flex-grow">
                   {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <span className="text-zinc-500 mt-[3px] shrink-0">·</span>
-                      <span className={`text-xs lg:text-sm ${isPro ? 'text-white/80' : 'text-white/50'} leading-tight`}>
-                        {feature}
-                      </span>
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="mt-[2px] shrink-0">
+                        {feature.available ? (
+                          <Check size={18} weight="bold" className="text-green-500" />
+                        ) : (
+                          <X size={18} weight="bold" className="text-[#ff1a75]" />
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs lg:text-sm font-medium ${
+                            !feature.available 
+                              ? 'text-white/30 line-through' 
+                              : isPro ? 'text-white/90' : 'text-white/70'
+                          } leading-tight`}>
+                            {feature.text}
+                          </span>
+                          {feature.tooltip && (
+                            <div className="group relative flex items-center">
+                              <Info size={16} weight="regular" className="text-white/50 hover:text-white/80 cursor-help" />
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-zinc-900 border border-white/10 rounded-md text-[10px] text-white/90 text-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-xl">
+                                {feature.tooltip}
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        {feature.subtext && (
+                          <span className={`text-[10px] mt-1 ${
+                            !feature.available ? 'text-white/20' : 'text-white/40'
+                          }`}>
+                            {feature.subtext}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
