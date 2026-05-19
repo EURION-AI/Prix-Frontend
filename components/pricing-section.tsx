@@ -40,7 +40,7 @@ const plans: Plan[] = [
       { text: '3 Auto-fixes / month', available: true },
       { text: '1k lines of change limit (per PR)', available: true },
       { text: 'Public repositories only', available: true },
-      { text: 'Private Repository support', available: false, subtext: 'No support for large PRs' },
+      { text: 'Private Repository support', available: false },
       { text: 'Deep multi-file analysis', available: false },
       { text: 'Advanced security scanning', available: false },
       { text: 'Standard queue processing (Slower)', available: false }
@@ -55,7 +55,7 @@ const plans: Plan[] = [
     priceValue: 5,
     description: 'Perfect for freelancers and growing indie-developers.',
     features: [
-      { text: '400 combined reviews & fixes / month (Huge upgrade!)', available: true },
+      { text: '400 combined reviews & fixes / month', available: true },
       { text: '50 AI issue plans / month', available: true },
       { text: 'Private repositories supported', available: true },
       { text: 'Up to 7,000 lines per PR', available: true },
