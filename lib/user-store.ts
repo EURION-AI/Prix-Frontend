@@ -123,7 +123,7 @@ export async function activateSubscription(
 /**
  * Extend a subscription by 30 days from the current expiration date.
  */
-export async function extendSubscription(githubId: number): Promise<void> {
+export async function extendSubscription(githubId: number, provider: string = ''): Promise<void> {
   const user = await getUserByGithubId(githubId)
   const cap = user ? getLimitForPlan(user.plan) : 15
 
@@ -131,6 +131,7 @@ export async function extendSubscription(githubId: number): Promise<void> {
     UPDATE users
     SET plan_expires_at = GREATEST(plan_expires_at, NOW()) + INTERVAL '30 days',
         usage_limit_cap = ${cap},
+        subscription_provider = CASE WHEN ${provider} != '' THEN ${provider} ELSE subscription_provider END,
         updated_at = NOW()
     WHERE github_id = ${githubId}
   `
@@ -154,13 +155,12 @@ export async function updateUserPlan(githubId: number, plan: string): Promise<vo
 /**
  * Cancel a user's subscription. Does NOT immediately downgrade.
  * User keeps access until plan_expires_at.
- * The razorpay_subscription_id is cleared so we know it's cancelled.
+ * subscription_provider is preserved for audit trail.
  */
 export async function cancelUserSubscription(githubId: number): Promise<void> {
   await sql`
     UPDATE users
     SET subscription_id = NULL,
-        subscription_provider = NULL,
         usage_limit_cap = 15,
         updated_at = NOW()
     WHERE github_id = ${githubId}
@@ -190,6 +190,25 @@ export async function expireOverduePlans(): Promise<number> {
     console.log(`Expired ${result.length} overdue plans:`, result.map(r => r.github_id))
   }
   return result.length
+}
+
+/**
+ * Handle a refund or chargeback — immediately downgrades the user.
+ * Clears subscription fields since the payment was reversed.
+ */
+export async function handleRefund(githubId: number, reason: string = 'refunded'): Promise<void> {
+  await sql`
+    UPDATE users
+    SET plan = 'free',
+        subscription_id = NULL,
+        subscription_provider = NULL,
+        plan_started_at = NULL,
+        plan_expires_at = NULL,
+        usage_limit_cap = 15,
+        updated_at = NOW()
+    WHERE github_id = ${githubId}
+  `
+  console.log(`User ${githubId} downgraded due to ${reason}`)
 }
 
 /**

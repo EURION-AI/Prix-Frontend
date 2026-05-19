@@ -15,6 +15,8 @@ interface PayPalToken {
 }
 
 let tokenCache: PayPalToken | null = null
+// Note: In-memory cache is lost on serverless cold starts.
+// Safe because PayPal OAuth tokens are cheap to regenerate.
 
 export async function getPayPalAccessToken(): Promise<string> {
   if (tokenCache && Date.now() < tokenCache.expires_at) {
@@ -37,6 +39,7 @@ export async function getPayPalAccessToken(): Promise<string> {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: 'grant_type=client_credentials',
+    signal: AbortSignal.timeout(15000),
   })
 
   if (!res.ok) {
@@ -73,10 +76,22 @@ export async function createPayPalProduct(): Promise<PayPalProduct> {
       type: 'SERVICE',
       category: 'SOFTWARE',
     }),
+    signal: AbortSignal.timeout(15000),
   })
 
   if (res.status === 409) {
-    return { id: 'PRODUCT-ALREADY-EXISTS', name: 'Prix AI' }
+    const listRes = await fetch(`${getBaseUrl()}/v1/catalogs/products?page_size=50`, {
+      headers: { 'Authorization': `Bearer ${await getPayPalAccessToken()}` },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (listRes.ok) {
+      const data = await listRes.json()
+      const existing = data.products?.find((p: any) => p.name === 'Prix AI')
+      if (existing) {
+        return { id: existing.id, name: 'Prix AI' }
+      }
+    }
+    throw new Error('PayPal product already exists but could not be retrieved')
   }
 
   if (!res.ok) {
@@ -164,9 +179,10 @@ export async function createPayPalPlan(
           currency_code: currency,
         },
         setup_fee_failure_action: 'CONTINUE',
-        payment_failure_threshold: 3,
+        payment_failure_threshold: 1,
       },
     }),
+    signal: AbortSignal.timeout(15000),
   })
 
   if (!res.ok) {
@@ -226,7 +242,8 @@ export async function createPayPalSubscription(
   }
 
   if (notes) {
-    body.custom_id = JSON.stringify(notes)
+    const customId = JSON.stringify(notes)
+    body.custom_id = customId.length > 127 ? customId.substring(0, 127) : customId
   }
 
   const res = await fetch(`${getBaseUrl()}/v1/billing/subscriptions`, {
@@ -236,6 +253,7 @@ export async function createPayPalSubscription(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(15000),
   })
 
   if (!res.ok) {
@@ -258,6 +276,7 @@ export async function getPayPalSubscriptionDetails(subscriptionId: string): Prom
     headers: {
       'Authorization': `Bearer ${token}`,
     },
+    signal: AbortSignal.timeout(15000),
   })
 
   if (!res.ok) {
@@ -280,6 +299,7 @@ export async function cancelPayPalSubscription(subscriptionId: string): Promise<
     body: JSON.stringify({
       reason: 'Cancelled by user',
     }),
+    signal: AbortSignal.timeout(15000),
   })
 
   if (!res.ok) {
@@ -317,6 +337,7 @@ export async function verifyPayPalWebhookSignature(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(15000),
   })
 
   if (!res.ok) {
