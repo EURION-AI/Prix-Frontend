@@ -550,7 +550,7 @@ export default function DashboardPage() {
                 placeholder="Search your repositories..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
+                className="w-full h-[70px] bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
               />
             </div>
             
@@ -559,7 +559,7 @@ export default function DashboardPage() {
                 value={filterType}
                 onValueChange={(val) => setFilterType(val as any)}
               >
-                <SelectTrigger className="w-full h-auto bg-[#0c0c12]/80 backdrop-blur border border-white/10 rounded-2xl pl-6 pr-12 py-5 text-sm sm:text-base font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 text-white/90 cursor-pointer hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex justify-between items-center outline-none [&>span]:w-full [&>span]:text-left border-solid">
+                <SelectTrigger className="w-full !h-[70px] bg-[#0c0c12]/80 backdrop-blur border border-white/10 rounded-2xl pl-6 pr-12 text-sm sm:text-base font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 text-white/90 cursor-pointer hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex justify-between items-center outline-none [&>span]:w-full [&>span]:text-left border-solid">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0c0c12]/95 backdrop-blur-md border border-white/10 text-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden min-w-[200px]">
@@ -580,7 +580,7 @@ export default function DashboardPage() {
             </div>
           </div>
           {user && (
-            <div className="bg-white/5 border border-white/10 rounded-2xl py-5 px-6 flex items-center gap-4 min-w-max">
+            <div className="h-[70px] bg-white/5 border border-white/10 rounded-2xl px-6 flex items-center gap-4 min-w-max">
               <span className="text-white/40 font-medium">Selected Repositories</span>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-black text-primary">{selectedRepos.length}</span>
