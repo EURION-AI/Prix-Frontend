@@ -57,6 +57,7 @@ export default function DashboardPage() {
   const [pendingAppName, setPendingAppName] = useState('prix-ai-automation')
   const [promptError, setPromptError] = useState<string | null>(null)
   const [isCheckingInstall, setIsCheckingInstall] = useState(false)
+  const [filterType, setFilterType] = useState<'date' | 'name-asc' | 'name-desc' | 'selected'>('date')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -157,11 +158,22 @@ export default function DashboardPage() {
 
   
   useEffect(() => {
-    const filtered = repos.filter(repo => 
+    let result = [...repos].filter(repo => 
       repo.full_name.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    setFilteredRepos(filtered)
-  }, [searchTerm, repos])
+
+    if (filterType === 'date') {
+      result.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    } else if (filterType === 'name-asc') {
+      result.sort((a, b) => a.name.localeCompare(b.name))
+    } else if (filterType === 'name-desc') {
+      result.sort((a, b) => b.name.localeCompare(a.name))
+    } else if (filterType === 'selected') {
+      result = result.filter(repo => selectedRepos.includes(repo.full_name))
+    }
+
+    setFilteredRepos(result)
+  }, [searchTerm, repos, filterType, selectedRepos])
 
   async function fetchRepos() {
     try {
@@ -514,18 +526,31 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div className="relative group flex-1">
-            <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-white/20 group-focus-within:text-primary transition-colors">
-              <Search className="w-5 h-5" />
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-3 flex-grow max-w-3xl">
+            <div className="relative group flex-grow">
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-white/20 group-focus-within:text-primary transition-colors">
+                <Search className="w-5 h-5" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search your repositories..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Search your repositories..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/20"
-            />
+            
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as any)}
+              className="bg-white/5 border border-white/10 rounded-2xl px-5 py-5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-white/80 cursor-pointer min-w-[200px]"
+            >
+              <option value="date" className="bg-[#0c0c12] text-white">Date Created</option>
+              <option value="name-asc" className="bg-[#0c0c12] text-white">Name (A-Z)</option>
+              <option value="name-desc" className="bg-[#0c0c12] text-white">Name (Z-A)</option>
+              <option value="selected" className="bg-[#0c0c12] text-white">Selected by Prix AI</option>
+            </select>
           </div>
           {user && (
             <div className="bg-white/5 border border-white/10 rounded-2xl py-5 px-6 flex items-center gap-4 min-w-max">
@@ -548,10 +573,10 @@ export default function DashboardPage() {
                 key={repo.id}
                 onClick={() => handleRepoSelect(repo.full_name, repo.id)}
                 disabled={isSaving}
-                className={`w-full text-left p-4 sm:p-5 transition-all flex items-center gap-4 group ${
+                className={`w-full text-left p-4 sm:p-5 transition-all flex items-center gap-4 group border-l-2 ${
                   selectedRepos.includes(repo.full_name) 
-                    ? 'bg-primary/5 hover:bg-primary/10' 
-                    : 'hover:bg-white/5 opacity-70 hover:opacity-100'
+                    ? 'bg-primary/10 hover:bg-primary/15 opacity-100 border-l-primary' 
+                    : 'hover:bg-white/5 opacity-50 hover:opacity-90 border-l-transparent'
                 }`}
               >
                 <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
@@ -563,7 +588,7 @@ export default function DashboardPage() {
                 </div>
                 
                 <div className="flex items-center gap-4 w-full min-w-0">
-                  <div className={`p-2 rounded-lg shrink-0 ${repo.private ? 'bg-white/5 text-zinc-400' : 'bg-white/10 text-white/80'}`}>
+                  <div className={`p-2 rounded-lg shrink-0 ${repo.private ? 'bg-yellow-500/10 text-yellow-500' : 'bg-green-500/10 text-green-500'}`}>
                     <Github className="w-5 h-5" />
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">

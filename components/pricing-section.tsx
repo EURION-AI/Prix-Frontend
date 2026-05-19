@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { getUserRegion, formatPrice, type Region } from '@/lib/pricing'
+import { getUserRegion, formatPrice, UPGRADE_PRICE, type Region } from '@/lib/pricing'
 import { Check, X, Info } from '@phosphor-icons/react'
 
 interface PlanFeature {
@@ -33,14 +33,17 @@ const plans: Plan[] = [
     name: 'Free',
     price: 'Free',
     priceValue: 0,
-    description: '15 PR reviews/month, public repos only.',
+    description: 'Ideal for individuals and open-source hobbyists.',
     features: [
       { text: '15 PR reviews / month', available: true },
       { text: '3 AI issue plans / month', available: true },
-      { text: '3 auto fixes / month', available: true },
-      { text: 'Public repositories', available: true },
-      { text: 'GitHub integration', available: true },
-      { text: 'Large PRs supported', available: false }
+      { text: '3 Auto-fixes / month', available: true },
+      { text: '1k lines of change limit (per PR)', available: true },
+      { text: 'Public repositories only', available: true },
+      { text: 'Private Repository support', available: false, subtext: 'No support for large PRs' },
+      { text: 'Deep multi-file analysis', available: false },
+      { text: 'Advanced security scanning', available: false },
+      { text: 'Standard queue processing (Slower)', available: false }
     ],
     cta: 'Get Started for Free',
     href: '/login',
@@ -50,15 +53,17 @@ const plans: Plan[] = [
     name: 'Starter',
     getPrice: (region: Region) => formatPrice(region, 'starter'),
     priceValue: 5,
-    description: '400 combined reviews & fixes/month, private repos.',
+    description: 'Perfect for freelancers and growing indie-developers.',
     features: [
-      { text: '400 combined reviews & fixes / month', available: true },
-      { text: '50 issue plans / month', available: true },
-      { text: 'Private repositories', available: true },
-      { text: 'Bug detection (logic + common issues)', available: true },
-      { text: 'Security scanning (SQL injection, XSS, etc.)', available: true },
-      { text: 'PR support up to 7,000 lines', available: true, subtext: 'No support for large PRs' },
-      { text: 'Large PRs supported', available: false }
+      { text: '400 combined reviews & fixes / month (Huge upgrade!)', available: true },
+      { text: '50 AI issue plans / month', available: true },
+      { text: 'Private repositories supported', available: true },
+      { text: 'Up to 7,000 lines per PR', available: true },
+      { text: 'Core Bug Detection (Logic flaws & common issues)', available: true },
+      { text: 'Essential Security Scanning (SQL injection, XSS, etc.)', available: true },
+      { text: 'Deep multi-file analysis (Single-file focus)', available: false },
+      { text: 'Standard queue processing', available: false },
+      { text: 'Support for large PRs', available: false }
     ],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'starter')}`,
     getHref: (region: Region) => `/checkout?plan=starter&region=${region}`,
@@ -68,14 +73,15 @@ const plans: Plan[] = [
     name: 'Pro',
     getPrice: (region: Region) => formatPrice(region, 'pro'),
     priceValue: 10,
-    description: 'Unlimited reviews, priority processing.',
+    description: 'Built for power users, professionals, and fast-moving teams.',
     features: [
-      { text: 'Unlimited PR reviews', available: true },
-      { text: 'Unlimited auto-fixes', available: true },
-      { text: 'Unlimited issue plans', available: true },
-      { text: 'Priority queue processing', available: true },
-      { text: 'Deeper multi-file analysis', available: true },
-      { text: 'Large PRs supported', available: true, tooltip: 'Supports up to 75 large PRs with a maximum of 15,000 lines per PR.' }
+      { text: '700 combined reviews & fixes / month', available: true },
+      { text: '300 AI issue plans / month', available: true },
+      { text: 'Private repositories supported', available: true },
+      { text: 'Large PRs supported', available: true, tooltip: 'Max 15k lines, 75 large PRs' },
+      { text: 'Priority Queue Processing (Sub-second, instant reviews)', available: true },
+      { text: 'Deeper Multi-File Analysis (Understands codebase context)', available: true },
+      { text: 'Advanced Bug & Security Guard (Full repo-level scanning)', available: true }
     ],
     getCta: (region: Region) => `Subscribe for ${formatPrice(region, 'pro')}`,
     getHref: (region: Region) => `/checkout?plan=pro&region=${region}`,
@@ -153,8 +159,8 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
               displayHref = '#'
               disabled = true
             } else if (isUpgrade) {
-              displayPrice = plan.getPrice ? plan.getPrice(region) : ''
-              displayCta = 'Upgrade'
+              displayPrice = UPGRADE_PRICE[region] || '$2.99'
+              displayCta = 'Upgrade to Pro'
               displayHref = appendRef(`/checkout?plan=pro&region=${region}&upgrade=true`)
             } else {
               displayPrice = plan.getPrice ? plan.getPrice(region) : (plan.price || '')
@@ -165,8 +171,8 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
             return (
               <div
                 key={index}
-                className={`relative flex flex-col p-5 md:p-8 lg:p-10 rounded-lg border ${
-                  isPro ? 'border-primary/30 bg-[#121218]' : 'border-white/[0.08] bg-[#0a0a0f]'
+                className={`relative flex flex-col p-4 md:p-6 lg:p-8 rounded-lg border backdrop-blur-md ${
+                  isPro ? 'border-primary/40 bg-[#121218]/90 shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]' : 'border-white/[0.1] bg-[#0a0a0f]/90'
                 } ${disabled ? 'opacity-70' : ''}`}
               >
                 {isPro && (
@@ -201,9 +207,9 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                   )}
                 </div>
 
-                <div className="space-y-4 mb-6 flex-grow">
+                <div className="space-y-2.5 mb-6 flex-grow">
                   {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-3">
+                    <div key={i} className="flex items-start gap-2">
                       <div className="mt-[2px] shrink-0">
                         {feature.available ? (
                           <Check size={18} weight="bold" className="text-green-500" />

@@ -24,13 +24,12 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
     price: '', // Will be set dynamically based on region
     pricePaise: 59900,
     features: [
-      'AI-powered PR reviews (generous usage)',
-      'Automated PR fixes (generous usage)',
-      'Private repositories',
-      'Bug detection (logic + common issues)',
-      'Security issue detection',
-      'Basic performance analysis',
-      'Basic AI issue planning'
+      '400 combined reviews & fixes / month (Huge upgrade!)',
+      '50 AI issue plans / month',
+      'Private repositories supported',
+      'Up to 7,000 lines per PR',
+      'Core Bug Detection (Logic flaws & common issues)',
+      'Essential Security Scanning (SQL injection, XSS, etc.)'
     ]
   },
   pro: {
@@ -39,13 +38,13 @@ const PLAN_DETAILS: Record<string, PlanInfo> = {
     price: '', // Will be set dynamically based on region
     pricePaise: 79900,
     features: [
-      'Everything in Starter',
-      'Unlimited PR reviews',
-      'Unlimited AI issue planning',
-      'High automated fixes',
-      'Faster processing (priority queue)',
-      'Better multi-file context understanding',
-      'Deeper analysis (bugs, performance, security)'
+      '700 combined reviews & fixes / month',
+      '300 AI issue plans / month',
+      'Private repositories supported',
+      'Large PRs supported (Max 15k lines)',
+      'Priority Queue Processing (Sub-second, instant reviews)',
+      'Deeper Multi-File Analysis (Understands codebase context)',
+      'Advanced Bug & Security Guard (Full repo-level scanning)'
     ]
   }
 }
@@ -163,8 +162,8 @@ function CheckoutContent() {
       <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-6">
         <div className="flex items-center justify-between mb-6 pb-6 border-b border-white/10">
           <div>
-            <h3 className="text-lg font-bold text-white">{plan.name} Plan</h3>
-            <p className="text-white/40 text-sm">Monthly subscription</p>
+            <h3 className="text-lg font-bold text-white">{isUpgrade ? `Upgrade to ${plan.name}` : `${plan.name} Plan`}</h3>
+            <p className="text-white/40 text-sm">{isUpgrade ? 'Monthly upgrade cost' : 'Monthly subscription'}</p>
           </div>
           <div className="text-right">
             {isUpgrade ? (

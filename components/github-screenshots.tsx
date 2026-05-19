@@ -9,12 +9,11 @@ export function ConversationScreenshot() {
       {/* Header */}
       <div className="px-4 py-2.5 bg-[#121218]/50 border-b border-white/[0.1]">
         <div className="flex items-center gap-2 mb-1">
-          <span className="px-1.5 py-0.5 text-[8px] font-bold text-white bg-[#a855f7] rounded-full uppercase tracking-wider">Open</span>
+          <span className="px-1.5 py-0.5 text-[8px] font-bold text-white bg-[#238636] rounded-full uppercase tracking-wider">Open</span>
           <h3 className="text-[12px] font-bold text-white opacity-95">Fix memory leak in AuthProvider</h3>
-          <span className="text-white/40 text-[12px] font-medium">#427</span>
+          <span className="text-white/40 text-[12px] font-medium">#67</span>
         </div>
         <div className="flex items-center gap-1.5 text-[10px] text-white/50">
-          <span className="text-white/90 font-bold">user-name</span>
           <span>wants to merge 2 commits into</span>
           <span className="text-[#3b82f6] font-bold opacity-90">main</span>
           <span>from</span>
