@@ -108,6 +108,8 @@ export function PayPalCheckoutButton({
 
     setIsLoading(true)
 
+    let popupReady = false
+
     try {
       if (upgradeParam) {
         const upgradeResponse = await fetch('/api/subscription/upgrade', {
@@ -147,16 +149,21 @@ export function PayPalCheckoutButton({
             return
           }
 
+          const readyDelay = setTimeout(() => { popupReady = true }, 3000)
+
           const pollTimer = setInterval(async () => {
             try {
               if (popup.closed) {
                 clearInterval(pollTimer)
+                clearTimeout(readyDelay)
                 setIsLoading(false)
                 return
               }
 
+              if (!popupReady) return
+
               const popupUrl = popup.location.href
-              if (popupUrl && popupUrl.includes(window.location.origin)) {
+              if (popupUrl && popupUrl.startsWith(window.location.origin)) {
                 clearInterval(pollTimer)
                 popup.close()
 
@@ -238,17 +245,23 @@ export function PayPalCheckoutButton({
         return
       }
 
+      const readyDelay = setTimeout(() => { popupReady = true }, 3000)
+
       const pollTimer = setInterval(async () => {
         try {
           if (popup.closed) {
             clearInterval(pollTimer)
+            clearTimeout(readyDelay)
             setIsLoading(false)
             return
           }
 
+          if (!popupReady) return
+
           const popupUrl = popup.location.href
-          if (popupUrl && popupUrl.includes(window.location.origin)) {
+          if (popupUrl && popupUrl.startsWith(window.location.origin)) {
             clearInterval(pollTimer)
+            clearTimeout(readyDelay)
             popup.close()
 
             const url = new URL(popupUrl)
