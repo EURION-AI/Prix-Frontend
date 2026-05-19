@@ -173,7 +173,58 @@ export async function POST(request: Request) {
           SELECT github_id FROM users WHERE subscription_id = ${resource.id}
         `
         if (userLookup.length > 0) {
-          console.log(`[PAYPAL_WEBHOOK] Subscription suspended for user ${userLookup[0].github_id}`)
+          const githubId = userLookup[0].github_id
+          await cancelUserSubscription(githubId)
+          console.log(`[PAYPAL_WEBHOOK] Subscription suspended for user ${githubId} — access continues until plan_expires_at`)
+
+          try {
+            await sql`
+              INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
+              VALUES (
+                'subscription_halted',
+                0,
+                'USD',
+                ${githubId},
+                'unknown',
+                ${sql.json({ subscriptionId: resource.id, reason: 'payment_failed' })},
+                NOW()
+              )
+            `
+          } catch (e) {
+            console.error('[PAYPAL_WEBHOOK] Failed to log suspension:', e)
+          }
+        }
+        break
+      }
+
+      case 'BILLING.SUBSCRIPTION.EXPIRED': {
+        const resource = event.resource
+        if (!resource) break
+
+        const userLookup = await sql`
+          SELECT github_id FROM users WHERE subscription_id = ${resource.id}
+        `
+        if (userLookup.length > 0) {
+          const githubId = userLookup[0].github_id
+          await cancelUserSubscription(githubId)
+          console.log(`[PAYPAL_WEBHOOK] Subscription expired for user ${githubId}`)
+
+          try {
+            await sql`
+              INSERT INTO revenue_events (event_type, amount, currency, github_id, subscription_tier, metadata, created_at)
+              VALUES (
+                'subscription_cancelled',
+                0,
+                'USD',
+                ${githubId},
+                'unknown',
+                ${sql.json({ subscriptionId: resource.id, reason: 'expired' })},
+                NOW()
+              )
+            `
+          } catch (e) {
+            console.error('[PAYPAL_WEBHOOK] Failed to log expiration:', e)
+          }
         }
         break
       }

@@ -12,6 +12,7 @@ interface UserData {
   id: number
   username: string
   plan: Plan
+  subscriptionProvider?: string | null
 }
 
 interface UpgradeOption {
@@ -31,6 +32,7 @@ export default function BillingPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [region, setRegion] = useState<Region>('US')
   const [isUpgrading, setIsUpgrading] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
@@ -58,10 +60,27 @@ export default function BillingPage() {
 
   const handleUpgrade = (targetPlan: string) => {
     if (targetPlan === 'pro-upgrade') {
-      // Special $2 upgrade for Starter users to Pro
       window.location.href = `/checkout?plan=pro&region=${region}&upgrade=starter_to_pro&discount=2`
     } else {
       window.location.href = `/checkout?plan=${targetPlan}&region=${region}`
+    }
+  }
+
+  const handleCancelPayPal = async () => {
+    setIsCancelling(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/paypal/cancel-subscription', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to cancel subscription')
+      }
+      setSuccessMessage(data.message || 'Subscription cancelled. Access continues until your current period ends.')
+      setUser(prev => prev ? { ...prev, subscriptionProvider: null } : null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to cancel subscription')
+    } finally {
+      setIsCancelling(false)
     }
   }
 
@@ -207,13 +226,29 @@ export default function BillingPage() {
             <p className="text-white/30 text-sm">
               Need to manage your subscription or cancel?
             </p>
-            <a
-              href="mailto:support@prixai.xyz"
-              className="px-6 py-3 bg-white/5 text-white/60 rounded-xl font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-2"
-            >
-              <CreditCard className="w-4 h-4" />
-              Contact Support
-            </a>
+            <div className="flex gap-3">
+              {user?.subscriptionProvider === 'paypal' ? (
+                <button
+                  onClick={handleCancelPayPal}
+                  disabled={isCancelling}
+                  className="px-6 py-3 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl font-medium hover:bg-red-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isCancelling ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Cancelling...</>
+                  ) : (
+                    <><CreditCard className="w-4 h-4" /> Cancel PayPal Subscription</>
+                  )}
+                </button>
+              ) : (
+                <a
+                  href="mailto:support@prixai.xyz"
+                  className="px-6 py-3 bg-white/5 text-white/60 rounded-xl font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-2"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Contact Support
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>

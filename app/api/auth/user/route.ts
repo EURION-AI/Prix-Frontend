@@ -56,6 +56,7 @@ export async function GET(request: Request) {
       planExpiresAt: dbUser.planExpiresAt || null,
       planStartedAt: dbUser.planStartedAt || null,
       hasActiveSubscription: !!dbUser.subscriptionId,
+      subscriptionProvider: dbUser.subscriptionProvider,
     }
 
     return NextResponse.json({ user: safeUserData })

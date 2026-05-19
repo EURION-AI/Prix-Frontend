@@ -75,26 +75,38 @@ export async function POST(request: Request) {
 
     // Handle PayPal upgrade
     if (provider === 'paypal') {
-      const { createPayPalPlan } = await import('@/lib/paypal')
-      const planKey = `${newPlanId}_${region}`
+      const { createPayPalPlan, createPayPalSubscription } = await import('@/lib/paypal')
+      const planKey = `${newPlanId}_paypal_${region}`
       const regionalPricing = PRICING[region as keyof typeof PRICING] || PRICING.US
       type PlanKey = 'starter' | 'pro'
       const planPricing = regionalPricing[newPlanId as PlanKey]
       const planName = newPlanId === 'starter' ? 'Starter' : 'Pro'
 
-      await createPayPalPlan(planKey, planPricing.price, planPricing.currency, planName)
+      const upgradeCents = UPGRADE_PRICE_CENTS[region] || 299
+      const upgradeCurrency: Record<string, string> = { IN: 'INR', US: 'USD', GB: 'GBP', EU: 'EUR' }
+      const currency = upgradeCurrency[region] || 'USD'
 
-      await sql`
-        UPDATE users
-        SET plan = ${newPlanId},
-            usage_limit_cap = 1000,
-            updated_at = NOW()
-        WHERE github_id = ${githubId}
-      `
+      const upgradePlanKey = `${newPlanId}_paypal_upgrade_${region}`
+      const paypalPlan = await createPayPalPlan(upgradePlanKey, upgradeCents, currency, `${planName} Upgrade`)
+
+      const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      const returnUrl = `${origin}/checkout/success?plan=${newPlanId}`
+      const cancelUrl = `${origin}/checkout/cancel?plan=${newPlanId}`
+
+      const subscription = await createPayPalSubscription(
+        paypalPlan.id,
+        returnUrl,
+        cancelUrl,
+        { plan: newPlanId, userId: String(githubId), region, upgrade: 'true' }
+      )
+
+      console.log(`[UPGRADE_PAYPAL] Subscription created: ${subscription.id}`)
 
       return NextResponse.json({
         success: true,
-        message: 'Plan upgraded successfully. The new price will apply from your next billing cycle.',
+        subscriptionId: subscription.id,
+        status: subscription.status,
+        links: subscription.links,
       })
     }
 

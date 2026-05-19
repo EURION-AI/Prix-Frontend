@@ -104,14 +104,87 @@ export function PayPalCheckoutButton({
       return
     }
 
-    if (upgradeParam) {
-      onError('PayPal upgrade is not supported yet. Please use Razorpay for upgrades.')
-      return
-    }
-
     setIsLoading(true)
 
     try {
+      if (upgradeParam) {
+        const upgradeResponse = await fetch('/api/subscription/upgrade', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ newPlanId: plan, region }),
+        })
+
+        const upgradeData = await upgradeResponse.json()
+
+        if (!upgradeResponse.ok) {
+          throw new Error(upgradeData.error || upgradeData.details || 'Failed to process upgrade')
+        }
+
+        if (upgradeData.success) {
+          onSuccess()
+          return
+        }
+
+        if (upgradeData.subscriptionId && upgradeData.links) {
+          const approvalLink = upgradeData.links?.find((l: { rel: string }) => l.rel === 'approve')?.href
+          if (!approvalLink) {
+            throw new Error('No approval link received')
+          }
+
+          const popup = window.open(
+            approvalLink,
+            'paypal-subscription',
+            'width=600,height=700,scrollbars=yes'
+          )
+
+          if (!popup || popup.closed) {
+            setPendingApprovalLink(approvalLink)
+            setPendingSubscriptionId(upgradeData.subscriptionId)
+            setShowManualLink(true)
+            setIsLoading(false)
+            return
+          }
+
+          const pollTimer = setInterval(async () => {
+            try {
+              if (popup.closed) {
+                clearInterval(pollTimer)
+                setIsLoading(false)
+                return
+              }
+
+              const popupUrl = popup.location.href
+              if (popupUrl && popupUrl.includes(window.location.origin)) {
+                clearInterval(pollTimer)
+                popup.close()
+
+                const url = new URL(popupUrl)
+                const subscriptionId = url.searchParams.get('subscription_id')
+                if (subscriptionId) {
+                  await verifyAndActivate(subscriptionId)
+                } else {
+                  onError('Payment was not completed. Please try again.')
+                  setIsLoading(false)
+                }
+              }
+            } catch {
+              // Cross-origin errors are expected while PayPal hosts the popup
+            }
+          }, 500)
+
+          setTimeout(() => {
+            clearInterval(pollTimer)
+            setIsLoading(false)
+            onError('Payment window timed out. Please try again.')
+          }, 300000)
+
+          return
+        }
+
+        onSuccess()
+        return
+      }
+
       const csrfResponse = await fetch('/api/paypal/checkout')
       const { csrfToken } = await csrfResponse.json()
 
@@ -283,7 +356,7 @@ export function PayPalCheckoutButton({
         className="w-full h-14 rounded-xl bg-[#0070ba] text-white font-bold text-base hover:bg-[#003087] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
       >
         {upgradeParam ? (
-          'Upgrade via Razorpay'
+          `Upgrade ${formatDisplayPrice(amount, currency)}/mo`
         ) : paymentConfirmed ? (
           <>
             Payment Confirmed ✓
