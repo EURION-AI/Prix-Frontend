@@ -8,6 +8,8 @@ const footerLinks = {
   Product: [
     { label: 'Features', href: '/features' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Compare', href: '/compare' },
+    { label: 'Demo', href: '/demo' },
     { label: 'Blog', href: '/blog' },
     { label: 'Changelog', href: '/changelog' },
   ],
@@ -21,7 +23,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-[#0a0a0f] border-t border-white/5 pt-16 pb-10">
+    <footer className="bg-black pt-16 pb-10 relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/[0.08] before:to-transparent">
       <div className="section-container">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10 mb-16">
           <div className="col-span-2">

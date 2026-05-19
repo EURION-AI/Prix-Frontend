@@ -39,6 +39,8 @@ export function PayPalCheckoutButton({
   const [paymentConfirmed, setPaymentConfirmed] = useState(false)
 
   const STORAGE_KEY = `paypal_verified_${plan}_${region}`
+  // Note: sessionStorage is client-controllable (user can set via dev tools).
+  // This is UI-only — the real gate is the server-side verify-payment endpoint.
 
   const formatDisplayPrice = (amount: number, currency: string): string => {
     if (currency === 'INR') {

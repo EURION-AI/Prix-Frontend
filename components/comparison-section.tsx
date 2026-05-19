@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { Check, Lightning as Zap, MagnifyingGlass as Search, Brain, Shield, CurrencyDollar as DollarSign, Command, Cpu } from '@phosphor-icons/react'
 
 const comparisonData = [
@@ -195,6 +196,9 @@ export function ComparisonSection() {
           <p className="text-[11px] text-white/20">
             Benchmark data based on internal testing and publicly available features as of April 2026.
           </p>
+          <Link href="/compare" className="mt-4 inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors font-medium">
+            Full comparison with GitHub Copilot and manual review →
+          </Link>
         </div>
       </div>
     </section>

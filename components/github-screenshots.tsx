@@ -7,79 +7,80 @@ export function ConversationScreenshot() {
   return (
     <div className="w-full overflow-hidden border border-white/[0.12] bg-[#0d0d12] rounded-xl shadow-2xl shadow-black/50">
       {/* Header */}
-      <div className="px-5 py-4 bg-[#121218]/50 border-b border-white/[0.1]">
-        <div className="flex items-center gap-2.5">
-          <span className="px-2.5 py-1 text-[10px] font-bold text-white bg-[#238636] rounded-full uppercase tracking-wider flex items-center gap-1.5 shrink-0">
-            <svg className="w-3 h-3 text-white fill-current" viewBox="0 0 16 16">
-              <path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.24 5.136a.75.75 0 1 1-1.06 1.06l-2.5-2.5a.75.75 0 0 1 0-1.06l2.5-2.5a.75.75 0 1 1 1.06 1.06L7.177 2.323h3.573a3.25 3.25 0 0 1 3.25 3.25v6.177a2.251 2.251 0 1 1-1.5 0V5.573a1.75 1.75 0 0 0-1.75-1.75H7.177ZM2.5 2a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 10.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM14 12.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" />
-            </svg>
-            Open
-          </span>
-          <h3 className="text-[14px] md:text-[15px] font-bold text-white opacity-95">Fix memory leak in AuthProvider</h3>
-          <span className="text-white/40 text-[14px] md:text-[15px] font-medium">#67</span>
+      <div className="px-4 py-2.5 bg-[#121218]/50 border-b border-white/[0.1]">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="px-1.5 py-0.5 text-[8px] font-bold text-white bg-[#238636] rounded-full uppercase tracking-wider">Open</span>
+          <h3 className="text-[12px] font-bold text-white opacity-95">Fix memory leak in AuthProvider</h3>
+          <span className="text-white/40 text-[12px] font-medium">#427</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-[10px] text-white/50">
+          <span>wants to merge 2 commits into</span>
+          <span className="text-[#3b82f6] font-bold opacity-90">main</span>
+          <span>from</span>
+          <span className="text-[#3b82f6] font-bold opacity-90">fix/auth-memory-leak</span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-white/[0.1] text-[10px] md:text-[11px] font-bold uppercase tracking-widest px-5">
-        <div className="py-2.5 text-primary border-b-2 border-primary mr-6 relative">
+      <div className="flex border-b border-white/[0.1] text-[9px] font-bold uppercase tracking-widest px-4">
+        <div className="py-2 text-primary border-b-2 border-primary mr-5 relative">
           Review
         </div>
-        <div className="py-2.5 text-white/40 mr-6">Files changed <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded-full ml-0.5">12</span></div>
-        <div className="py-2.5 text-white/40 mr-6">Commits <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded-full ml-0.5">2</span></div>
-        <div className="py-2.5 text-white/40">Checks <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded-full ml-0.5">3</span></div>
+        <div className="py-2 text-white/40 mr-5">Files changed <span className="text-[8px] bg-white/10 px-1 py-0.5 rounded-full ml-0.5">12</span></div>
+        <div className="py-2 text-white/40 mr-5">Commits <span className="text-[8px] bg-white/10 px-1 py-0.5 rounded-full ml-0.5">2</span></div>
+        <div className="py-2 text-white/40">Checks <span className="text-[8px] bg-white/10 px-1 py-0.5 rounded-full ml-0.5">3</span></div>
       </div>
 
-      <div className="p-5 md:p-6">
+      <div className="p-4">
         {/* Bot Info Row */}
-        <div className="flex items-center gap-2.5 mb-4">
-          <div className="w-7 h-7 rounded bg-black border border-white/20 flex items-center justify-center">
-            <Image src="/logo.png" alt="Prix" width={16} height={18} className="brightness-150" />
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 rounded bg-black border border-white/20 flex items-center justify-center">
+            <Image src="/logo.png" alt="Prix" width={14} height={16} className="brightness-150" />
           </div>
           <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-white text-[12px] md:text-[13px] opacity-95">PrixAI</span>
-              <span className="px-1.5 py-0.25 text-[8px] font-black bg-white/10 text-white/70 rounded uppercase">bot</span>
+            <div className="flex items-center gap-1">
+              <span className="font-bold text-white text-[11px] opacity-95">PrixAI</span>
+              <span className="px-1 py-0.25 text-[7px] font-black bg-white/10 text-white/70 rounded uppercase">bot</span>
             </div>
-            <span className="text-[9px] md:text-[10px] text-white/40 tracking-tight">reviewed 19 hours ago</span>
+            <span className="text-[8px] text-white/40 tracking-tight">reviewed 19 hours ago</span>
           </div>
-          <button className="ml-auto px-3 py-1 text-[9px] md:text-[10px] font-bold text-white/70 bg-white/5 border border-white/15 rounded hover:bg-white/10 transition-colors">
+          <button className="ml-auto px-2 py-0.5 text-[8px] font-bold text-white/70 bg-white/5 border border-white/15 rounded hover:bg-white/10 transition-colors">
             View changes
           </button>
         </div>
 
         {/* Content Box */}
-        <div className="bg-[#121218] border border-white/[0.1] rounded-lg p-4 md:p-5 space-y-4">
-          <div className="flex items-center gap-2 text-[13px] md:text-[14px] font-bold text-white opacity-95">
-            <span className="text-base">🤖</span>
+        <div className="bg-[#121218] border border-white/[0.1] rounded-lg p-3.5 space-y-3">
+          <div className="flex items-center gap-1.5 text-[12px] font-bold text-white opacity-95">
+            <span className="text-sm">🤖</span>
             PRIX AI Review
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <div className="text-[10px] md:text-[11px] font-mono text-[#3b82ff] underline opacity-90">43a535c</div>
-            <p className="text-[11px] md:text-[12px] text-white/50">Reviewing 3 files...</p>
+          <div className="flex items-center gap-2">
+            <div className="text-[9px] font-mono text-[#3b82ff] underline opacity-90">43a535c</div>
+            <p className="text-[10px] text-white/50">Reviewing 3 files...</p>
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-[11px] md:text-[12px] font-bold text-white opacity-90">
-              <span className="text-sm">⚠️</span>
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-white opacity-90">
+              <span className="text-xs">⚠️</span>
               Issues detected: 10
             </div>
-            <div className="text-[11px] md:text-[12px] text-white/60 ml-6">
+            <div className="text-[10px] text-white/60 ml-5">
               • 10 issues need attention
             </div>
           </div>
 
           <div className="h-px bg-white/[0.08]" />
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-[11px] md:text-[12px] font-bold text-white opacity-90">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-white opacity-90">
               <span className="text-pink-500">🛠️</span>
               Fix all issues instantly
             </div>
-            <div className="flex flex-wrap gap-1.5 ml-6">
+            <div className="flex flex-wrap gap-1 ml-5">
               {['data_processor.py', 'math_utils.py', 'string_utils.py'].map(file => (
-                <div key={file} className="text-[10px] md:text-[11px] font-mono bg-white/5 px-2 py-0.5 rounded border border-white/[0.1] text-white/80">
+                <div key={file} className="text-[9px] font-mono bg-white/5 px-1.5 py-0.25 rounded border border-white/[0.1] text-white/80">
                   {file}
                 </div>
               ))}
@@ -88,14 +89,14 @@ export function ConversationScreenshot() {
 
           <div className="h-px bg-white/[0.08]" />
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-[11px] md:text-[12px] font-bold text-white opacity-90">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-white opacity-90">
               <span className="text-yellow-600">📂</span>
               Files affected
             </div>
-            <div className="flex flex-wrap gap-1.5 ml-6">
+            <div className="flex flex-wrap gap-1 ml-5">
               {['data_processor.py', 'math_utils.py', 'string_utils.py'].map(file => (
-                <div key={file} className="text-[10px] md:text-[11px] font-mono bg-white/5 px-2 py-0.5 rounded border border-white/[0.1] text-white/80">
+                <div key={file} className="text-[9px] font-mono bg-white/5 px-1.5 py-0.25 rounded border border-white/[0.1] text-white/80">
                   {file}
                 </div>
               ))}
@@ -104,15 +105,15 @@ export function ConversationScreenshot() {
 
           <div className="h-px bg-white/[0.08]" />
 
-          <div className="flex items-center gap-2 text-[11px] md:text-[12px] text-white/80">
+          <div className="flex items-center gap-1.5 text-[10px] text-white/80">
             <span>💡</span>
-            Use <code className="px-1.5 py-0.5 bg-white/10 rounded text-[9px] md:text-[10px] font-mono border border-white/5">!prix fix</code> to auto-generate fixes.
+            Use <code className="px-1 py-0.25 bg-white/10 rounded text-[8px] font-mono border border-white/5">!prix fix</code> to auto-generate fixes.
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] md:text-[12px] font-bold text-white/90">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-white/90">
             <span>▶️</span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-[10px] md:text-[11px]">🤖</span> Master AI Prompt
+            <span className="flex items-center gap-1">
+              <span className="text-[9px]">🤖</span> Master AI Prompt
             </span>
           </div>
         </div>
@@ -131,7 +132,7 @@ export function DiffScreenshot() {
           <span className="text-[#8b949e] text-sm">#429</span>
         </div>
         <div className="flex items-center gap-1 text-xs text-[#8b949e]">
-          <span className="text-[#e6edf3]">username</span>
+          <span className="text-[#e6edf3]">PrixAI</span>
           <span>wants to merge 1 commit into</span>
           <span className="text-[#58a6ff]">main</span>
           <span>from</span>
@@ -226,7 +227,7 @@ export function SummaryScreenshot() {
           <span className="text-[#8b949e] text-sm">#436</span>
         </div>
         <div className="flex items-center gap-1 text-xs text-[#8b949e]">
-          <span className="text-[#e6edf3]">username</span>
+          <span className="text-[#e6edf3]">PrixAI</span>
           <span>wants to merge 3 commits into</span>
           <span className="text-[#58a6ff]">main</span>
           <span>from</span>

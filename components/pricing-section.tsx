@@ -39,9 +39,9 @@ const plans: Plan[] = [
       { text: '15 PR reviews / month', available: true },
       { text: '3 AI issue plans / month', available: true },
       { text: '3 Auto-fixes / month', available: true },
-      { text: 'Public repositories only', available: true },
-      { text: 'Standard queue processing (Slower) ❗️', available: true, warning: true },
-      { text: '1k lines limit (per PR) ❗️', available: true, warning: true },
+      { text: 'Public repositories only', available: true, warning: true },
+      { text: 'Standard queue processing (Slower)', available: true, warning: true },
+      { text: '1k lines limit (per PR)', available: true, warning: true },
       { text: 'Private Repository support', available: false },
       { text: 'Deep multi-file analysis', available: false },
       { text: 'Advanced security scanning', available: false }
@@ -62,7 +62,7 @@ const plans: Plan[] = [
       { text: 'Up to 7,000 lines per PR', available: true },
       { text: 'Core Bug Detection (Logic flaws & common issues)', available: true },
       { text: 'Essential Security Scanning (SQL injection, XSS, etc.)', available: true },
-      { text: 'Standard queue processing ❗️', available: true, warning: true },
+      { text: 'Standard queue processing', available: true, warning: true },
       { text: 'Deep multi-file analysis (Single-file focus)', available: false },
       { text: 'Support for large PRs', available: false }
     ],
@@ -275,13 +275,15 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                     {plan.id === 'free' ? 'No credit card required' : 'Cancel anytime'}
                   </p>
 
-                  {plan.id !== 'free' && !isLocked && (
+                  {plan.id !== 'free' && !isLocked ? (
                     <Link
                       href="/affiliate"
                       className="mt-3 inline-block w-full text-center text-[11px] font-semibold text-green-400 hover:text-green-300 transition-colors"
                     >
                       Earn for free →
                     </Link>
+                  ) : (
+                    <div className="mt-3 h-[16px]" />
                   )}
                 </div>
               </div>

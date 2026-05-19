@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ConversationScreenshot } from './github-screenshots'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Check, PlayCircle, Lightning as Zap } from '@phosphor-icons/react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
@@ -47,7 +48,7 @@ export function HeroSection() {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="max-w-lg text-[18px] text-white/50 leading-relaxed mb-10 font-medium mx-auto lg:mx-0"
             >
-              Prix understands your codebase architecture. Get automatic fixes, implementation plans, and actionable guidance before your users do.
+              Prix AI understands your codebase architecture. Get automatic fixes, implementation plans, and actionable guidance before your users do.
             </motion.p>
 
             <motion.div
@@ -134,37 +135,27 @@ export function HeroSection() {
 
           <div className="flex flex-1 items-center justify-between gap-4 md:gap-8 px-2 text-white/45 transition-colors duration-300 flex-shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <span className="text-black font-black text-[10px]">N</span>
-              </div>
+              <Image src="/logos/nextjs.svg" alt="Next.js" width={24} height={24} className="w-6 h-6" />
               <span className="text-sm font-bold">Next.js</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-[#3178C6] rounded flex items-center justify-center">
-                <span className="text-white font-black text-[10px]">TS</span>
-              </div>
+              <Image src="/logos/typescript.svg" alt="TypeScript" width={24} height={24} className="w-6 h-6" />
               <span className="text-sm font-bold">TypeScript</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-[#3776AB] rounded-full flex items-center justify-center overflow-hidden">
-                <span className="text-white font-black text-[8px]">PY</span>
-              </div>
+              <Image src="/logos/python.svg" alt="Python" width={24} height={24} className="w-6 h-6" />
               <span className="text-sm font-bold">Python</span>
             </div>
             <div className="flex items-center gap-3">
-              <Zap className="w-6 h-6 text-[#05998B]" fill="#05998B" />
+              <Image src="/logos/fastapi.svg" alt="FastAPI" width={24} height={24} className="w-6 h-6" />
               <span className="text-sm font-bold">FastAPI</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 text-[#61DAFB]">
-                <svg viewBox="0 0 100 100" className="w-full h-full fill-current"><path d="M50 42.4c-1.3 0-2.4 1.1-2.4 2.4s1.1 2.4 2.4 2.4 2.4-1.1 2.4-2.4-1.1-2.4-2.4-2.4zm23.6 2.4c0-4.6-10.5-8.4-23.6-8.4s-23.6 3.8-23.6 8.4 10.5 8.4 23.6 8.4 23.6-3.8 23.6-8.4zm-23.6 15.6c-13.1 0-23.6-3.8-23.6-8.4 0-.4.1-.8.4-1.2-2.5 4.3-3.9 9.1-3.9 14.1 0 13.1 10.5 23.6 23.6 23.6s23.6-10.5 23.6-23.6c0-5-1.4-9.8-3.9-14.1.3.4.4.8.4 1.2 0 4.6-10.5 8.4-23.6 8.4z" /></svg>
-              </div>
+              <Image src="/logos/react.svg" alt="React" width={24} height={24} className="w-6 h-6" />
               <span className="text-sm font-bold">React</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-[#CC0000] rounded flex items-center justify-center">
-                <span className="text-white font-black text-[8px]">Rails</span>
-              </div>
+              <Image src="/logos/rails.svg" alt="Rails" width={24} height={24} className="w-6 h-6" />
               <span className="text-sm font-bold">Rails</span>
             </div>
           </div>
