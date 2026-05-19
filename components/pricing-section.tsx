@@ -78,7 +78,7 @@ const plans: Plan[] = [
       { text: '700 combined reviews & fixes / month', available: true },
       { text: '300 AI issue plans / month', available: true },
       { text: 'Private repositories supported', available: true },
-      { text: 'Large PRs supported', available: true, tooltip: 'Max 15k lines, 75 large PRs' },
+      { text: 'Large PRs supported', available: true, tooltip: 'Supports up to 75 large PRs with a maximum of 15,000 lines per PR.' },
       { text: 'Priority Queue Processing (Sub-second, instant reviews)', available: true },
       { text: 'Deeper Multi-File Analysis (Understands codebase context)', available: true },
       { text: 'Advanced Bug & Security Guard (Full repo-level scanning)', available: true }
@@ -207,7 +207,7 @@ export function PricingSection({ region: initialRegion = 'US' }: { region?: Regi
                   )}
                 </div>
 
-                <div className="space-y-1.5 mb-4 flex-grow">
+                <div className={`mb-4 flex-grow ${isPro ? 'space-y-3 lg:space-y-3.5' : 'space-y-1.5'}`}>
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <div className="mt-[2px] shrink-0">

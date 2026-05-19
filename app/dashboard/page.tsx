@@ -551,12 +551,12 @@ export default function DashboardPage() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value as any)}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-2xl pl-5 pr-12 py-5 text-sm sm:text-base font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-white/80 cursor-pointer hover:bg-white/[0.07] transition-all"
+                className="w-full appearance-none bg-[#0c0c12]/80 backdrop-blur border border-white/10 rounded-2xl pl-6 pr-12 py-5 text-sm sm:text-base font-bold focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-white/90 cursor-pointer hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
               >
-                <option value="date" className="bg-[#0c0c12] text-white/80">📅 Date Created</option>
-                <option value="name-asc" className="bg-[#0c0c12] text-white/80">🔤 Name (A-Z)</option>
-                <option value="name-desc" className="bg-[#0c0c12] text-white/80">🔤 Name (Z-A)</option>
-                <option value="selected" className="bg-[#0c0c12] text-white/80">✅ Selected by Prix</option>
+                <option value="date" className="bg-[#0c0c12] text-white/90 font-medium">Sort by: Date Created</option>
+                <option value="name-asc" className="bg-[#0c0c12] text-white/90 font-medium">Sort by: Name (A to Z)</option>
+                <option value="name-desc" className="bg-[#0c0c12] text-white/90 font-medium">Sort by: Name (Z to A)</option>
+                <option value="selected" className="bg-[#0c0c12] text-white/90 font-medium">Filter: Selected by Prix</option>
               </select>
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-white/40 group-hover:text-white/60 transition-colors">
                 <ChevronDown className="w-4 h-4" />

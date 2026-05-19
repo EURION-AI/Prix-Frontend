@@ -9,7 +9,12 @@ export function ConversationScreenshot() {
       {/* Header */}
       <div className="px-5 py-4 bg-[#121218]/50 border-b border-white/[0.1]">
         <div className="flex items-center gap-2.5">
-          <span className="px-2.5 py-1 text-[10px] font-bold text-white bg-[#238636] rounded-full uppercase tracking-wider">Open</span>
+          <span className="px-2.5 py-1 text-[10px] font-bold text-white bg-[#238636] rounded-full uppercase tracking-wider flex items-center gap-1.5 shrink-0">
+            <svg className="w-3 h-3 text-white fill-current" viewBox="0 0 16 16">
+              <path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.24 5.136a.75.75 0 1 1-1.06 1.06l-2.5-2.5a.75.75 0 0 1 0-1.06l2.5-2.5a.75.75 0 1 1 1.06 1.06L7.177 2.323h3.573a3.25 3.25 0 0 1 3.25 3.25v6.177a2.251 2.251 0 1 1-1.5 0V5.573a1.75 1.75 0 0 0-1.75-1.75H7.177ZM2.5 2a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 10.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM14 12.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" />
+            </svg>
+            Open
+          </span>
           <h3 className="text-[14px] md:text-[15px] font-bold text-white opacity-95">Fix memory leak in AuthProvider</h3>
           <span className="text-white/40 text-[14px] md:text-[15px] font-medium">#67</span>
         </div>
