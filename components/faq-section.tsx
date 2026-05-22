@@ -117,7 +117,7 @@ export function FAQSection() {
           className="mt-16 text-center"
         >
           <p className="text-white/40 mb-4">Still have questions?</p>
-          <a href="mailto:support@prix.dev" className="text-primary hover:text-primary/80 transition-colors font-medium">
+          <a href="mailto:support@prixai.xyz" className="text-primary hover:text-primary/80 transition-colors font-medium">
             Contact our team
           </a>
         </motion.div>

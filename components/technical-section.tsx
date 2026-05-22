@@ -14,18 +14,6 @@ export function TechnicalSection() {
     return () => clearInterval(interval)
   }, [])
 
-  const configSnippet = [
-    { line: 'version: 1.4', color: 'text-white/40' },
-    { line: 'engine: architectural-v2', color: 'text-primary' },
-    { line: 'analysis:', color: 'text-white' },
-    { line: '  depth: full-graph', color: 'text-secondary' },
-    { line: '  logic_consistency: true', color: 'text-secondary' },
-    { line: '  dependency_cascade: enabled', color: 'text-secondary' },
-    { line: 'rules:', color: 'text-white' },
-    { line: '  - security/owasp-top-10', color: 'text-white/60' },
-    { line: '  - architecture/pattern-integrity', color: 'text-white/60' }
-  ]
-
   const benchmarks = [
     { 
       label: 'Reasoning Latency', 
@@ -65,11 +53,16 @@ export function TechnicalSection() {
             <div className="bg-white/[0.02] border border-white/[0.08] rounded-xl p-6 mb-12">
               <div className="flex items-center gap-3 mb-4 text-white/40">
                 <Terminal className="w-4 h-4" />
-                <span className="text-xs text-white/40">Project Initialization</span>
+                <span className="text-xs text-white/40">Zero-Config Setup</span>
               </div>
-              <code className="text-base font-mono text-primary flex items-center gap-4">
-                <span className="text-white/20 select-none">$</span> npx prix@latest init
-              </code>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg">
+                  <span className="text-sm font-mono text-primary font-bold">Install GitHub App</span>
+                  <span className="text-white/30">→</span>
+                  <span className="text-sm font-mono text-white/60">Auto-reviews every PR</span>
+                </div>
+              </div>
+              <p className="text-xs text-white/30 mt-3">No CLI. No config files. No API keys. Just install and go.</p>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
@@ -103,17 +96,32 @@ export function TechnicalSection() {
               <div className="flex items-center justify-between mb-6 border-b border-white/[0.05] pb-5">
                 <div className="flex items-center gap-3">
                   <Code2 className="w-4 h-4 text-primary" />
-                  <span className="text-xs text-white/40">Engine_Config.yaml</span>
+                  <span className="text-xs text-white/40">How It Works</span>
                 </div>
               </div>
               
-              <div className="space-y-3">
-                {configSnippet.map((c, i) => (
-                  <div key={i} className="flex gap-6">
-                    <span className="text-white/10 text-[13px] select-none w-6">{i + 1}</span>
-                    <span className={`${c.color} text-[14px] font-medium`}>{c.line}</span>
+              <div className="space-y-5">
+                <div className="flex items-start gap-4">
+                  <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                  <div>
+                    <div className="text-white text-sm font-semibold">Install on GitHub</div>
+                    <div className="text-white/40 text-xs mt-1">One-click install from GitHub Marketplace</div>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-start gap-4">
+                  <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                  <div>
+                    <div className="text-white text-sm font-semibold">Open a Pull Request</div>
+                    <div className="text-white/40 text-xs mt-1">Prix automatically detects and reviews every PR</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                  <div>
+                    <div className="text-white text-sm font-semibold">Get AI Review + Fixes</div>
+                    <div className="text-white/40 text-xs mt-1">Bugs caught, security scanned, fixes generated</div>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
