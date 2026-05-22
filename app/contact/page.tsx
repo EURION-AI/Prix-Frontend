@@ -4,10 +4,22 @@ import { Footer } from '@/components/footer'
 import { Mail, Clock, MessageCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Contact | Prix AI - Get Support',
+  title: 'Contact Prix AI — Support, Sales & Partnership Inquiries',
   description: 'Get in touch with the Prix AI team for support, feedback, or questions. We typically respond within 24 hours.',
   alternates: {
     canonical: 'https://www.prixai.xyz/contact',
+  },
+  openGraph: {
+    title: 'Contact Prix AI',
+    description: 'Get in touch with the Prix AI team for support, feedback, or questions.',
+    type: 'website',
+    url: 'https://www.prixai.xyz/contact',
+    siteName: 'Prix AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact Prix AI',
+    description: 'Get in touch with the Prix AI team for support, feedback, or questions.',
   },
 }
 

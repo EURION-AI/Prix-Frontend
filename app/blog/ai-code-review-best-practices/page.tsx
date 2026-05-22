@@ -346,8 +346,8 @@ export default function BlogPost() {
           </div>
 
           <div className="mt-8 text-center">
-            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
-              See how Prix compares to GitHub Copilot and manual review →
+            <Link href="/features" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See all Prix AI features →
             </Link>
           </div>
         </div>

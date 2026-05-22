@@ -7,6 +7,25 @@ import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, Shield, Aler
 import Link from 'next/link'
 import { BreadcrumbJsonLd } from '@/components/jsonld'
 
+export const metadata: Metadata = {
+  title: 'How to Fix Security Vulnerabilities with Automated Code Review | Prix AI Blog',
+  description: 'Learn how AI-powered automated code review catches security vulnerabilities before they reach production. Real examples and best practices.',
+  alternates: { canonical: 'https://www.prixai.xyz/blog/security-vulnerabilities-automated-review' },
+  openGraph: {
+    title: 'Fix Security Vulnerabilities with Automated Code Review',
+    description: 'Learn how AI-powered automated code review catches security vulnerabilities.',
+    type: 'article',
+    url: 'https://www.prixai.xyz/blog/security-vulnerabilities-automated-review',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fix Security Vulnerabilities with Automated Code Review',
+    description: 'Learn how AI-powered automated code review catches security vulnerabilities.',
+  },
+  keywords: ['security vulnerabilities', 'automated code review', 'AI security scanning', 'code security'],
+  authors: [{ name: 'Prix AI' }],
+}
+
 const vulnerabilities = [
   {
     icon: Bug,
@@ -323,8 +342,8 @@ export default function BlogPost() {
           </div>
 
           <div className="mt-8 text-center">
-            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
-              See how Prix compares to GitHub Copilot and manual review →
+            <Link href="/features" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix AI scans for security issues →
             </Link>
           </div>
         </div>

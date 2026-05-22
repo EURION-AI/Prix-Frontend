@@ -11,6 +11,18 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://www.prixai.xyz/demo',
   },
+  openGraph: {
+    title: 'Prix AI Demo — See AI Code Review in Action',
+    description: 'Watch how Prix AI automatically reviews PRs, generates fixes, and creates implementation plans.',
+    type: 'website',
+    url: 'https://www.prixai.xyz/demo',
+    siteName: 'Prix AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prix AI Demo — See AI Code Review in Action',
+    description: 'Watch how Prix AI automatically reviews PRs, generates fixes, and creates implementation plans.',
+  },
 }
 
 const steps = [

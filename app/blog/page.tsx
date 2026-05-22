@@ -17,6 +17,18 @@ export const metadata: Metadata = {
       'text/markdown': '/markdown/blog',
     },
   },
+  openGraph: {
+    title: 'Prix AI Blog — AI Code Review Insights',
+    description: 'Articles, guides, and best practices for modern engineering teams focused on velocity and code quality.',
+    type: 'website',
+    url: 'https://www.prixai.xyz/blog',
+    siteName: 'Prix AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prix AI Blog — AI Code Review Insights',
+    description: 'Articles, guides, and best practices for modern engineering teams.',
+  },
 }
 
 const blogs = [

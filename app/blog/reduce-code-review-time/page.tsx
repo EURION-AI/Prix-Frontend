@@ -7,6 +7,25 @@ import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, TrendingUp, 
 import Link from 'next/link'
 import { BreadcrumbJsonLd } from '@/components/jsonld'
 
+export const metadata: Metadata = {
+  title: 'How to Reduce Code Review Time by 80% with AI | Prix AI Blog',
+  description: 'Learn how AI-powered code review cuts review time from hours to minutes. Practical strategies for engineering teams to ship faster.',
+  alternates: { canonical: 'https://www.prixai.xyz/blog/reduce-code-review-time' },
+  openGraph: {
+    title: 'How to Reduce Code Review Time by 80% with AI',
+    description: 'Learn how AI-powered code review cuts review time from hours to minutes.',
+    type: 'article',
+    url: 'https://www.prixai.xyz/blog/reduce-code-review-time',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'How to Reduce Code Review Time by 80% with AI',
+    description: 'Learn how AI-powered code review cuts review time from hours to minutes.',
+  },
+  keywords: ['reduce code review time', 'AI code review', 'faster PR reviews', 'developer productivity'],
+  authors: [{ name: 'Prix AI' }],
+}
+
 const stats = [
   { value: '80%', label: 'Time Reduction', icon: TrendingUp },
   { value: '5x', label: 'Faster Shipping', icon: Zap },
@@ -253,8 +272,8 @@ export default function BlogPost() {
           </div>
 
           <div className="mt-8 text-center">
-            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
-              See how Prix compares to GitHub Copilot and manual review →
+            <Link href="/features" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix AI automates your code review →
             </Link>
           </div>
         </div>

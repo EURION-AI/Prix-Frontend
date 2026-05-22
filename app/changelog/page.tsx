@@ -4,48 +4,69 @@ import { Footer } from '@/components/footer'
 import { Zap, ArrowRight, Clock, Shield, Code, Search } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Changelog - Prix Product Updates | AI Code Review',
-  description: 'See the latest updates to Prix. New features, improvements, and fixes for our AI-powered GitHub PR reviewer. Ship better code with every update.',
+  title: 'Changelog — Prix AI Product Updates & Releases',
+  description: 'See the latest updates to Prix AI. New features, improvements, and fixes for our AI-powered GitHub PR reviewer.',
   alternates: {
     canonical: 'https://www.prixai.xyz/changelog',
+  },
+  openGraph: {
+    title: 'Prix AI Changelog — Product Updates',
+    description: 'See the latest features, improvements, and fixes for Prix AI.',
+    type: 'website',
+    url: 'https://www.prixai.xyz/changelog',
+    siteName: 'Prix AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prix AI Changelog — Product Updates',
+    description: 'See the latest features, improvements, and fixes for Prix AI.',
   },
 }
 
 const updates = [
   {
+    version: 'v1.1.0',
+    date: 'May 20, 2026',
+    type: 'Improvement',
+    typeColor: 'bg-green-500',
+    title: 'Performance & Polish',
+    description: 'Faster review analysis, improved fix accuracy, refined GitHub comment formatting, and UI improvements across the dashboard.',
+    icon: Zap
+  },
+  {
     version: 'v1.0.0',
-    date: 'May 5, 2026',
+    date: 'May 15, 2026',
     type: 'Launch',
     typeColor: 'bg-purple-500',
-    title: 'Prix Launch',
-    description: 'Official launch with AI-powered PR reviews, bug detection, and automated fix generation. GitHub integration and 30-second average review time.',
+    title: 'Soft Launch',
+    description: 'Prix AI goes live. Full PR review pipeline with bug detection, security scanning, auto-fix generation, and issue planning. GitHub integration complete.',
     icon: Search
   },
   {
-    version: 'v0.9.0',
-    date: 'Late April 2026',
+    version: 'v0.3.0',
+    date: 'May 10, 2026',
     type: 'New Feature',
     typeColor: 'bg-primary',
-    title: 'Chat With Your Code',
-    description: 'Natural language interface to ask Prix questions about your codebase. Get explanations, refactoring suggestions, and architectural guidance.',
+    title: 'Issue Planning (!prix plan)',
+    description: 'Introduced !prix plan command — drop it on any GitHub issue and get a detailed, phase-by-phase implementation breakdown with file paths and code changes.',
     icon: Code
   },
   {
-    version: 'v0.5.0',
-    date: 'Mid April 2026',
-    type: 'Improvement',
-    typeColor: 'bg-green-500',
-    title: '10x Faster Analysis Engine',
-    description: 'Rewrote the analysis pipeline from scratch. PR reviews that took minutes now complete in seconds. Average review time: 47 seconds.',
+    version: 'v0.2.0',
+    date: 'May 2, 2026',
+    type: 'New Feature',
+    typeColor: 'bg-primary',
+    title: 'Auto-Fix (!prix fix)',
+    description: 'Introduced !prix fix command — automatically generates and applies code fixes for detected issues. Prix creates a new PR with the patch.',
     icon: Zap
   },
   {
     version: 'v0.1.0',
     date: 'March 28, 2026',
-    type: 'New Feature',
-    typeColor: 'bg-primary',
-    title: 'Deep Security Vulnerability Scanning',
-    description: 'Integrated CVE monitoring and real-time dependency scanning. Catches OWASP Top 10 vulnerabilities before they reach production.',
+    type: 'Foundation',
+    typeColor: 'bg-white/20',
+    title: 'Project Started',
+    description: 'Initial work begins on Prix AI. Core review engine architecture, GitHub API integration, and LLM pipeline design.',
     icon: Shield
   }
 ]

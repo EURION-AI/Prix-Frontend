@@ -23,6 +23,18 @@ export const metadata: Metadata = {
       'text/markdown': '/markdown/features',
     },
   },
+  openGraph: {
+    title: 'Prix AI Features — AI-Powered Code Review',
+    description: 'Automated bug detection, security scanning, and AI-generated fixes for GitHub PRs.',
+    type: 'website',
+    url: 'https://www.prixai.xyz/features',
+    siteName: 'Prix AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prix AI Features — AI-Powered Code Review',
+    description: 'Automated bug detection, security scanning, and AI-generated fixes for GitHub PRs.',
+  },
 }
 
 export default function FeaturesPage() {

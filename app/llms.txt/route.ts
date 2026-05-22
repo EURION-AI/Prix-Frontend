@@ -19,7 +19,6 @@ export async function GET() {
 - **/blog/security-vulnerabilities-automated-review** — Detecting security vulns with automated review
 - **/blog/manual-code-review-problems** — Problems with manual code reviews
 - **/blog/technical-debt-ai-analysis** — Reducing technical debt with AI analysis
-- **/compare** — Prix vs GitHub Copilot vs Manual code review
 - **/changelog** — Product changelog and updates
 - **/contact** — Contact and support
 - **/demo** — How Prix AI works documentation

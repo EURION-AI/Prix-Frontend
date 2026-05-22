@@ -7,6 +7,25 @@ import { Clock, Calendar, User, ArrowLeft, ArrowRight, CheckCircle, AlertTriangl
 import Link from 'next/link'
 import { BreadcrumbJsonLd } from '@/components/jsonld'
 
+export const metadata: Metadata = {
+  title: 'Reducing Technical Debt with AI Code Analysis | Prix AI Blog',
+  description: 'Discover how AI code review identifies and prevents technical debt before it accumulates. Strategies for cleaner, maintainable codebases.',
+  alternates: { canonical: 'https://www.prixai.xyz/blog/technical-debt-ai-analysis' },
+  openGraph: {
+    title: 'Reducing Technical Debt with AI Code Analysis',
+    description: 'Discover how AI code review identifies and prevents technical debt.',
+    type: 'article',
+    url: 'https://www.prixai.xyz/blog/technical-debt-ai-analysis',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Reducing Technical Debt with AI Code Analysis',
+    description: 'Discover how AI code review identifies and prevents technical debt.',
+  },
+  keywords: ['technical debt', 'AI code analysis', 'code quality', 'maintainable code'],
+  authors: [{ name: 'Prix AI' }],
+}
+
 const codeSmells = [
   {
     icon: GitGraph,
@@ -338,8 +357,8 @@ export default function BlogPost() {
           </div>
 
           <div className="mt-8 text-center">
-            <Link href="/compare" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
-              See how Prix compares to GitHub Copilot and manual review →
+            <Link href="/features" className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+              See how Prix AI analyzes your code →
             </Link>
           </div>
         </div>
