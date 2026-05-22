@@ -14,6 +14,21 @@ const nextConfig = {
   experimental: {
     webpackBuildWorker: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'prixai.xyz',
+          },
+        ],
+        destination: 'https://www.prixai.xyz/:path*',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {
