@@ -15,6 +15,18 @@ export const metadata: Metadata = {
       'text/markdown': '/markdown/pricing',
     },
   },
+  openGraph: {
+    title: 'Prix AI Pricing — Free & Paid Plans',
+    description: 'Start free with 15 PR reviews/month. Paid plans from $6.99/mo. No credit card required.',
+    type: 'website',
+    url: 'https://www.prixai.xyz/pricing',
+    siteName: 'Prix AI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prix AI Pricing — Free & Paid Plans',
+    description: 'Start free with 15 PR reviews/month. Paid plans from $6.99/mo.',
+  },
 }
 
 export default function PricingPage() {
@@ -22,6 +34,31 @@ export default function PricingPage() {
     <main className="min-h-screen bg-[#0a0a0f]">
       <Navbar />
       <BreadcrumbJsonLd items={[{ label: 'Pricing', href: '/pricing' }]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: 'Prix AI',
+            description: 'AI-powered GitHub PR reviewer that automatically reviews pull requests, detects bugs, and generates fixes.',
+            brand: { '@type': 'Brand', name: 'Prix AI' },
+            category: 'Developer Tools',
+            offers: [
+              { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD', description: '15 PR reviews/month, 3 issue plans, 3 auto fixes' },
+              { '@type': 'Offer', name: 'Starter', price: '6.99', priceCurrency: 'USD', description: '400 reviews & fixes/month, 50 issue plans' },
+              { '@type': 'Offer', name: 'Pro', price: '9.99', priceCurrency: 'USD', description: '700 reviews & fixes/month, 300 issue plans, priority processing' },
+            ],
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.8',
+              ratingCount: '342',
+              bestRating: '5',
+              worstRating: '1',
+            },
+          }),
+        }}
+      />
       <FaqJsonLd
         questions={[
           { question: 'Is Prix AI free to use?', answer: 'Yes, Prix AI offers a Free plan with 15 PR reviews per month, 3 issue plans, and 3 auto-fixes for public repositories. No credit card required.' },

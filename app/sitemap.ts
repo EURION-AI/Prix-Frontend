@@ -83,12 +83,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/compare`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
       url: `${baseUrl}/changelog`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
@@ -104,19 +98,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/feedback`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.4,
-    },
-    {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/checkout`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      priority: 0.3,
     },
     {
       url: `${baseUrl}/demo`,
