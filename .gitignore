@@ -29,5 +29,8 @@ Thumbs.db
 # Build artifacts
 tsconfig.tsbuildinfo
 
+# Configuration (contains secrets)
+opencode.json
+
 # Documentation
 ANALYSIS_DASHBOARD_SPECS.md

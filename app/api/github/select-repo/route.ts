@@ -66,10 +66,9 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ success: true, selectedRepos: currentRepos })
 
-    const updatedUser = {
-      ...userDataCookie,
-      selectedRepos: currentRepos
-    }
+    // Remove selectedRepos from cookie payload to avoid size limits
+    const updatedUser = { ...userDataCookie }
+    delete updatedUser.selectedRepos
 
     response.cookies.set('github_user', JSON.stringify(updatedUser), {
       httpOnly: true,

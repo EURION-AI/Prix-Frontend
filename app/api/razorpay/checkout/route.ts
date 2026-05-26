@@ -173,7 +173,7 @@ export async function POST(request: Request) {
       console.log(`[CHECKOUT] Upgrading existing subscription ${currentSubId} to plan ${plan}`);
 
       try {
-        const updatedSub = await withTimeout(
+        const updatedSub = await withTimeout<any>(
           (razorpay as any).subscriptions.update(currentSubId, {
             plan_id: razorpayPlanId,
             schedule_change_at: 'now',
@@ -198,7 +198,7 @@ export async function POST(request: Request) {
     }
 
     // Otherwise, create a new Subscription
-    const subscription = await withTimeout(
+    const subscription = await withTimeout<any>(
       (razorpay as any).subscriptions.create({
         plan_id: razorpayPlanId,
         total_count: 120,

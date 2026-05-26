@@ -221,15 +221,13 @@ export async function GET(request: NextRequest) {
     // Determine redirect: new users go to GitHub App install, returning users go to dashboard
     const GITHUB_APP_NAME = process.env.GITHUB_APP_NAME || 'prix-ai-automation'
     let redirectPath: string
-    let selectedRepos: string[] = []
     let prsReviewed: number = 0
     let plan: string = 'free'
     let githubInstallationId: number | null = null
     let installationStatus: string = 'disconnected'
     
     try {
-      const userRecord = await sql`SELECT selected_repos, prs_reviewed, plan, github_installation_id, installation_status FROM users WHERE github_id = ${userData.id}`
-      selectedRepos = userRecord[0]?.selected_repos || []
+      const userRecord = await sql`SELECT prs_reviewed, plan, github_installation_id, installation_status FROM users WHERE github_id = ${userData.id}`
       prsReviewed = userRecord[0]?.prs_reviewed || 0
       plan = userRecord[0]?.plan || 'free'
       githubInstallationId = userRecord[0]?.github_installation_id
@@ -237,8 +235,7 @@ export async function GET(request: NextRequest) {
     } catch (error: any) {
       console.error('[AUTH] Failed to query user data for cookies:', error.message || error)
       try {
-        const basicRecord = await sql`SELECT selected_repos, prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
-        selectedRepos = basicRecord[0]?.selected_repos || []
+        const basicRecord = await sql`SELECT prs_reviewed, plan FROM users WHERE github_id = ${userData.id}`
         prsReviewed = basicRecord[0]?.prs_reviewed || 0
         plan = basicRecord[0]?.plan || 'free'
       } catch (basicError) {
@@ -274,7 +271,6 @@ export async function GET(request: NextRequest) {
       name: userData.name,
       email: userData.email,
       avatarUrl: userData.avatar_url,
-      selectedRepos,
       prsReviewed,
       plan,
       githubInstallationId,
@@ -291,7 +287,11 @@ export async function GET(request: NextRequest) {
     response.cookies.delete('affiliate_code')
 
     return response
-  } catch (err) {
+  } catch (err: any) {
+    if (err.code === '23505') {
+      console.warn('[AUTH] GitHub OAuth callback unique constraint violation:', err.message || err)
+      return NextResponse.redirect(new URL('/login?error=email_taken', request.url))
+    }
     console.error('[AUTH] GitHub OAuth callback UNEXPECTED error:', err instanceof Error ? err.message : err)
     return NextResponse.redirect(new URL('/login?error=server_error', request.url))
   }
